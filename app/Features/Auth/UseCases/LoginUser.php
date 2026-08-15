@@ -19,7 +19,7 @@ class LoginUser
 
         if (!$user || !Hash::check($loginUserDTO->password, $user->password)) {
             return [
-                'success' => false,
+                'error' => true,
                 'message' => 'بيانات تسجيل الدخول غير صحيحة',
             ];
         }
@@ -27,10 +27,7 @@ class LoginUser
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return [
-            'user' => [
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-            ],
+            'user' => $user,
             'token' => $token,
         ];
     }

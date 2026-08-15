@@ -4,7 +4,7 @@ namespace App\Features\Auth\UseCases;
 
 use App\Features\Auth\InterFaces\AuthRepositoryInterFace;
 
-class LogOut
+class LogOutUser
 {
     public function __construct(
         private AuthRepositoryInterFace $authRepositoryInterFace,
@@ -12,6 +12,6 @@ class LogOut
     
     public function logout() 
     {
-        $this->authRepositoryInterFace->logout();
+       return $this->authRepositoryInterFace->logout();
     }
 }
