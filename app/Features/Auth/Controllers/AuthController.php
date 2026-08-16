@@ -47,7 +47,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'تم تسجيل المستخدم بنجاح',
-        ], 200);
+        ], 201);
     }
 
     public function login(LoginRequest $loginRequest)

@@ -26,10 +26,13 @@ class RegisterRequest extends FormRequest
                 'required',
                 'string',
                 'email',
+                'regex:/^[\x00-\x7F]+$/',
                 'unique:users,email',
             ],
             'phone_number' => [
                 'string',
+                'required',
+                'phone:INTERNATIONAL',
                 'unique:users,phone_number',
             ],
             'password' => [
