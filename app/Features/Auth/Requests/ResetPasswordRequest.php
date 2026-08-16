@@ -5,7 +5,7 @@ namespace App\Features\Auth\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class RestPasswordRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
     public function rules(): array
     {
@@ -15,7 +15,7 @@ class RestPasswordRequest extends FormRequest
                 'email',
             ],
             'code' => [
-                'required'
+                'required',
             ],
             'password' => [
                 'required',

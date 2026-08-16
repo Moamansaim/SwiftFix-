@@ -4,15 +4,14 @@ namespace App\Features\Auth\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-
-class PasswordVerifyEmailRequest extends FormRequest
+class SendVerificationEmailRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
             'email' => [
                 'required',
-                'email'
+                'email',
             ],
         ];
     }

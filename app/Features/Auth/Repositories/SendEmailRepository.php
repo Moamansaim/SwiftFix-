@@ -2,16 +2,17 @@
 
 namespace App\Features\Auth\Repositories;
 
-use App\Features\Auth\InterFaces\SendEamilInterFace;
-use App\Mail\SendCode;
+use App\Features\Auth\Interfaces\SendEmailInterface;
+use App\Features\Auth\Mail\SendCode;
+use App\Features\Auth\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
-class SendEamilRepository implements SendEamilInterFace
+class SendEmailRepository implements SendEmailInterface
 {
-    public function sendCodeToEamil($user)
+    public function sendResetCodeToEmail(User $user): void
     {
-        $code = random_int(10000, 99999);
+        $code = (string) random_int(100000, 999999);
 
         Mail::to($user->email)->send(new SendCode($user, $code));
 

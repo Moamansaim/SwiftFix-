@@ -1,19 +1,24 @@
 <?php
 
-namespace App\Features\Auth\InterFaces;
+namespace App\Features\Auth\Interfaces;
 
 use App\Features\Auth\DTOs\LoginUserDTO;
-use App\Features\Auth\DTOs\PasswordVerifyEmailUserDTO;
 use App\Features\Auth\DTOs\RegisterUserDTO;
-use App\Features\Auth\DTOs\RestPasswordDTO;
+use App\Features\Auth\DTOs\ResetPasswordDTO;
+use App\Features\Auth\DTOs\SendPasswordResetCodeDTO;
 use App\Features\Auth\Models\User;
 
-interface AuthRepositoryInterFace
+interface AuthRepositoryInterface
 {
     public function create(RegisterUserDTO $registerUserDTO);
+
     public function login(LoginUserDTO $loginUserDTO);
+
     public function logout();
-    public function checkEmailToSendCode(PasswordVerifyEmailUserDTO $passwordVerifyEmailUserDTO);
-    public function findEmail(RestPasswordDTO $restPasswordDTO);
-    public function restPassword(RestPasswordDTO $restPasswordDTO, User $user);
+
+    public function findUserByEmailForResetCode(SendPasswordResetCodeDTO $sendPasswordResetCodeDTO);
+
+    public function findByEmail(string $email);
+
+    public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user);
 }

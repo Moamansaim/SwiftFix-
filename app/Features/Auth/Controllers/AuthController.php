@@ -3,22 +3,24 @@
 namespace App\Features\Auth\Controllers;
 
 use App\Features\Auth\DTOs\LoginUserDTO;
-use App\Features\Auth\DTOs\PasswordVerifyEmailUserDTO;
 use App\Features\Auth\DTOs\RegisterUserDTO;
-use App\Features\Auth\DTOs\RestPasswordDTO;
+use App\Features\Auth\DTOs\ResetPasswordDTO;
+use App\Features\Auth\DTOs\SendPasswordResetCodeDTO;
+use App\Features\Auth\DTOs\SendVerificationEmailDTO;
 use App\Features\Auth\Requests\LoginRequest;
-use App\Features\Auth\Requests\PasswordVerifyEmailRequest;
 use App\Features\Auth\Requests\RegisterRequest;
-use App\Features\Auth\Requests\RestPasswordRequest;
+use App\Features\Auth\Requests\ResetPasswordRequest;
+use App\Features\Auth\Requests\SendPasswordResetCodeRequest;
+use App\Features\Auth\Requests\SendVerificationEmailRequest;
+use App\Features\Auth\Requests\VerifyEmailRequest;
 use App\Features\Auth\Resources\UserResource;
 use App\Features\Auth\UseCases\LoginUser;
 use App\Features\Auth\UseCases\LogOutUser;
-use App\Features\Auth\UseCases\PasswordVerifyEmail;
 use App\Features\Auth\UseCases\RegisterUser;
-use App\Features\Auth\UseCases\RestPasswordUser;
+use App\Features\Auth\UseCases\ResetPasswordUser;
+use App\Features\Auth\UseCases\SendPasswordResetCode;
+use App\Features\Auth\UseCases\SendVerificationEmail;
 use App\Http\Controllers\Controller;
-
-
 
 class AuthController extends Controller
 {
@@ -26,11 +28,11 @@ class AuthController extends Controller
         public RegisterUser $registerUser,
         public LoginUser $loginUser,
         public LogOutUser $logOutUser,
-        public PasswordVerifyEmail $passwordVerifyEmail,
-        public RestPasswordUser $restPasswordUser
+        public SendPasswordResetCode $sendPasswordResetCode,
+        public ResetPasswordUser $resetPasswordUser,
+        public SendVerificationEmail $sendVerificationEmail,
     ) {}
 
-    // تسجيل المستخدم
     public function register(RegisterRequest $registerRequest)
     {
         $request = new RegisterUserDTO(
@@ -44,11 +46,10 @@ class AuthController extends Controller
         $this->registerUser->register($request);
 
         return response()->json([
-            'message' => 'تم تسجيل المستخدم بنجاح'
+            'message' => 'تم تسجيل المستخدم بنجاح',
         ], 200);
     }
 
-    // تسجيل دخول المستخدم
     public function login(LoginRequest $loginRequest)
     {
         $request = new LoginUserDTO(
@@ -71,10 +72,9 @@ class AuthController extends Controller
         ], 200);
     }
 
-    // تسجيل خروج المستخدم
     public function logout()
     {
-        $user =  $this->logOutUser->logout();
+        $user = $this->logOutUser->logout();
 
         if (isset($user['error']) && $user['error'] === true) {
             return response()->json([
@@ -87,51 +87,61 @@ class AuthController extends Controller
         ], 200);
     }
 
-    // التحقق من الايميل   
-    public function passwordVerifyEmail(PasswordVerifyEmailRequest $passwordVerifyEmailRequest)
+    public function sendPasswordResetCode(SendPasswordResetCodeRequest $sendPasswordResetCodeRequest)
     {
-        $request = new PasswordVerifyEmailUserDTO(
-            $passwordVerifyEmailRequest->email
+        $dto = new SendPasswordResetCodeDTO(
+            $sendPasswordResetCodeRequest->email
         );
 
-        $user = $this->passwordVerifyEmail->passwordVerifyEmail($request);
+        $result = $this->sendPasswordResetCode->handle($dto);
 
-        if (isset($user['error']) && $user['error'] === true) {
+        return response()->json([
+            'message' => $result['message'],
+        ], 200);
+    }
 
+    public function resetPassword(ResetPasswordRequest $resetPasswordRequest)
+    {
+        $dto = new ResetPasswordDTO(
+            $resetPasswordRequest->email,
+            $resetPasswordRequest->code,
+            $resetPasswordRequest->password,
+        );
+
+        $result = $this->resetPasswordUser->handle($dto);
+
+        if (isset($result['error']) && $result['error'] === true) {
             return response()->json([
-                'message' => $user['message']
+                'message' => $result['message'],
             ], 422);
         }
 
         return response()->json([
-            'message' => 'تم إرسال الكود بنجاح'
+            'message' => $result['message'],
         ], 200);
     }
 
-    // إعادة تعيين كلمة المرور
-    public function restPassword(RestPasswordRequest $restPasswordRequest)
+    public function sendVerificationEmail(SendVerificationEmailRequest $request)
     {
-        $request = new RestPasswordDTO(
-            $restPasswordRequest->email,
-            $restPasswordRequest->code,
-            $restPasswordRequest->password,
-        );
-
-        $user = $this->restPasswordUser->restPassword($request);
-
-        if (isset($user['error']) && $user['error'] === true) {
-
-            return response()->json([
-                'message' => $user['message']
-            ], 422);
-        }
+        $dto = new SendVerificationEmailDTO($request->email);
+        $result = $this->sendVerificationEmail->handle($dto);
 
         return response()->json([
-            'message' => 'تم إعادة تعيين كلمة المرور بنجاح'
+            'message' => $result['message'],
         ], 200);
     }
 
+    public function verifyEmail(VerifyEmailRequest $request)
+    {
+        $request->fulfill();
 
-    // التحقق من ايميل المستخدم
-    public function verifyEmail() {}
+        return response()->json([
+            'message' => 'تم تفعيل البريد الإلكتروني بنجاح',
+        ], 200);
+    }
+
+    public function resendVerificationEmail(SendVerificationEmailRequest $request)
+    {
+        return $this->sendVerificationEmail($request);
+    }
 }

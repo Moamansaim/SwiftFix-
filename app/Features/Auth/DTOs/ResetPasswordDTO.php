@@ -2,7 +2,7 @@
 
 namespace App\Features\Auth\DTOs;
 
-class RestPasswordDTO
+class ResetPasswordDTO
 {
     public function __construct(
         public string $email,

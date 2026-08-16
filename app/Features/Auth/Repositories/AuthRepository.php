@@ -3,15 +3,15 @@
 namespace App\Features\Auth\Repositories;
 
 use App\Features\Auth\DTOs\LoginUserDTO;
-use App\Features\Auth\DTOs\PasswordVerifyEmailUserDTO;
 use App\Features\Auth\DTOs\RegisterUserDTO;
-use App\Features\Auth\DTOs\RestPasswordDTO;
-use App\Features\Auth\InterFaces\AuthRepositoryInterFace;
+use App\Features\Auth\DTOs\ResetPasswordDTO;
+use App\Features\Auth\DTOs\SendPasswordResetCodeDTO;
+use App\Features\Auth\Interfaces\AuthRepositoryInterface;
 use App\Features\Auth\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class AuthRepository implements AuthRepositoryInterFace
+class AuthRepository implements AuthRepositoryInterface
 {
     public function create(RegisterUserDTO $registerUserDTO)
     {
@@ -22,6 +22,10 @@ class AuthRepository implements AuthRepositoryInterFace
         $user->phone_number = $registerUserDTO->phone_number;
         $user->password = Hash::make($registerUserDTO->password);
         $user->save();
+
+        $user->sendEmailVerificationNotification();
+
+        return $user;
     }
 
     public function login(LoginUserDTO $loginUserDTO)
@@ -33,7 +37,7 @@ class AuthRepository implements AuthRepositoryInterFace
     {
         $user = Auth::guard('sanctum')->user();
 
-        if (!$user) {
+        if (! $user) {
             return [
                 'error' => true,
                 'message' => 'المستخدم غير موجود',
@@ -43,19 +47,19 @@ class AuthRepository implements AuthRepositoryInterFace
         $user->currentAccessToken()->delete();
     }
 
-    public function checkEmailToSendCode(PasswordVerifyEmailUserDTO $passwordVerifyEmailUserDTO)
+    public function findUserByEmailForResetCode(SendPasswordResetCodeDTO $sendPasswordResetCodeDTO)
     {
-        return User::where('email', $passwordVerifyEmailUserDTO->email)->first();
+        return User::where('email', $sendPasswordResetCodeDTO->email)->first();
     }
 
-    public function findEmail(RestPasswordDTO $restPasswordDTO)
+    public function findByEmail(string $email)
     {
-        return User::where('email', $restPasswordDTO->email)->first();
+        return User::where('email', $email)->first();
     }
 
-    public function restPassword(RestPasswordDTO $restPasswordDTO, User $user)
+    public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user)
     {
-        $user->password = Hash::make($restPasswordDTO->password);
+        $user->password = Hash::make($resetPasswordDTO->password);
         $user->code = null;
         $user->code_expires_at = null;
         $user->save();

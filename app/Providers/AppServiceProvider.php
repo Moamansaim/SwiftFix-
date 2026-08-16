@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Features\Auth\InterFaces\AuthRepositoryInterFace;
-use App\Features\Auth\InterFaces\SendEamilInterFace;
+use App\Features\Auth\Interfaces\AuthRepositoryInterface;
+use App\Features\Auth\Interfaces\SendEmailInterface;
 use App\Features\Auth\Repositories\AuthRepository;
-use App\Features\Auth\Repositories\SendEamilRepository;
+use App\Features\Auth\Repositories\SendEmailRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,8 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(AuthRepositoryInterFace::class, AuthRepository::class);
-        $this->app->bind(SendEamilInterFace::class, SendEamilRepository::class);
+        $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
+        $this->app->bind(SendEmailInterface::class, SendEmailRepository::class);
     }
 
     /**

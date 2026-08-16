@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Features\Auth\Mail;
 
 use App\Features\Auth\Models\User;
 use Illuminate\Bus\Queueable;
