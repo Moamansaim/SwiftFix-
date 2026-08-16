@@ -5,35 +5,17 @@ namespace App\Features\Auth\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class RegisterRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'first_name' => [
-                'required',
-                'string',
-                'max:30',
-                'min:2'
-            ],
-            'last_name' => [
-                'required',
-                'string',
-                'max:40',
-                'min:2'
-            ],
             'email' => [
                 'required',
-                'string',
                 'email',
-                'regex:/^[\x00-\x7F]+$/',
-                'unique:users,email',
             ],
-            'phone_number' => [
-                'string',
+            'code' => [
                 'required',
-                'phone:INTERNATIONAL',
-                'unique:users,phone_number',
             ],
             'password' => [
                 'required',

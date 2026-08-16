@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique(); // الايميل
             $table->string('phone_number', 16)->unique();
             $table->string('code')->nullable(); // كود التحقق من نسيان كلمة المرور
+            $table->timestamp('code_expires_at')->nullable(); // تاريخ انتهاء صلاحية كود التحقق من نسيان كلمة المرور     
             $table->timestamp('email_verified_at')->nullable(); // حقل التحقق من تأكيد الايميل
             $table->string('password'); // كلمة المرور
             $table->enum('status', ['active', 'bloked'])->default('active'); // حالة الحساب :   فعال, مغلق 
@@ -25,7 +26,6 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-       
     }
 
     /**

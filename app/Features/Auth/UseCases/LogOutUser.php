@@ -2,17 +2,16 @@
 
 namespace App\Features\Auth\UseCases;
 
-use App\Features\Auth\DTOs\RegisterUserDTO;
 use App\Features\Auth\Interfaces\AuthRepositoryInterface;
 
-class RegisterUser
+class LogOutUser
 {
     public function __construct(
         private AuthRepositoryInterface $authRepository,
     ) {}
 
-    public function register(RegisterUserDTO $registerUserDTO)
+    public function logout()
     {
-        $this->authRepository->create($registerUserDTO);
+        return $this->authRepository->logout();
     }
 }
