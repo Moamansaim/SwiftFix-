@@ -32,7 +32,7 @@ class VerifyEmailRequest extends FormRequest
         return [];
     }
 
-    public function fulfill(): void
+    public function fulfill()
     {
         $user = User::findOrFail($this->route('id'));
 
@@ -40,6 +40,12 @@ class VerifyEmailRequest extends FormRequest
             $user->markEmailAsVerified();
 
             event(new Verified($user));
+        } else {
+
+            return [
+                'error' => true,
+                'message' => 'البريد الإلكتروني مفعل من قبل',
+            ];
         }
     }
 }
