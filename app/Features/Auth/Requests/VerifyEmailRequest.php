@@ -42,10 +42,9 @@ class VerifyEmailRequest extends FormRequest
             event(new Verified($user));
         } else {
 
-            return [
-                'error' => true,
-                'message' => 'البريد الإلكتروني مفعل من قبل',
-            ];
+            return redirect()->away(
+                config('app.frontend_url') . '/login'
+            );
         }
     }
 }

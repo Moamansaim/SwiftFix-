@@ -12,6 +12,7 @@ class SendVerificationEmailRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
+                'exists:users,email',
             ],
         ];
     }

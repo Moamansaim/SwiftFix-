@@ -1,6 +1,7 @@
 <?php
 
 use App\Features\Auth\Controllers\AuthController;
+use App\Features\ShopOwner\Controllers\ShopOwnerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -8,10 +9,17 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Route Auth Users
 Route::group([
     'prefix' => 'auth',
     'controller' => AuthController::class,
 ], function () {
+
+    Route::post('/register', 'register')
+        ->middleware(['guest.sanctum', 'throttle:5,1']);
+
+    Route::post('/login', 'login')
+        ->middleware(['guest.sanctum', 'throttle:5,1']);
 
     Route::post('/password/send-code', 'sendPasswordResetCode')
         ->middleware(['guest.sanctum', 'throttle:5,1']);
@@ -19,17 +27,11 @@ Route::group([
     Route::post('/password/reset', 'resetPassword')
         ->middleware(['guest.sanctum', 'throttle:5,1']);
 
-    Route::post('/register', 'register')
-        ->middleware('guest.sanctum');
-
-    Route::post('/login', 'login')
-        ->middleware('guest.sanctum');
-
     Route::post('/email/send-verification', 'sendVerificationEmail')
         ->middleware(['guest.sanctum', 'throttle:5,1']);
 
     Route::get('/email/verify/{id}/{hash}', 'verifyEmail')
-        ->middleware(['signed', 'throttle:6,1'])
+        ->middleware(['signed'])
         ->name('verification.verify');
 
     Route::post('/email/resend-verification', 'resendVerificationEmail')
@@ -37,4 +39,16 @@ Route::group([
 
     Route::post('/logout', 'logout')
         ->middleware('auth:sanctum');
+});
+
+
+// Route ShopOwner
+Route::group([
+    'prefix' => 'shop-owner',
+    'controller' => ShopOwnerController::class,
+], function () {
+
+    Route::post('/store', 'store');
+    Route::get('/get-all-countrys', 'getAllCountries');
+    Route::get('/get-all-services', 'getAllServices');
 });

@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Features\ShopOwner\Models;
+
+use App\Features\ShopOwner\Models\Country;
+use App\Features\ShopOwner\Models\Service;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class ShopOwnerVerification extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'first_name',
+        'last_name',
+        'email',
+        'phone_number',
+        'national_id_image',
+        'country_id',
+        'service_ids',
+        'notes',
+    ];
+
+    public function services()
+    {
+        return $this->belongsToMany(
+            Service::class,
+            'shop_owner_verification_service',
+            'shop_owner_verification_id',
+            'service_id',
+        );
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(
+            Country::class,
+            'country_id',
+            'id'
+        );
+    }
+}
