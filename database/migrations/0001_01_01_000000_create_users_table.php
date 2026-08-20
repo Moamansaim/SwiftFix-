@@ -21,7 +21,8 @@ return new class extends Migration
             $table->timestamp('code_expires_at')->nullable(); // تاريخ انتهاء صلاحية كود التحقق من نسيان كلمة المرور     
             $table->timestamp('email_verified_at')->nullable(); // حقل التحقق من تأكيد الايميل
             $table->string('password'); // كلمة المرور
-            $table->enum('status', ['active', 'bloked'])->default('active'); // حالة الحساب :   فعال, مغلق 
+            $table->string('city', 100)->nullable();
+            $table->enum('status', ['active', 'suspended'])->default('active'); // حالة الحساب :   فعال, مغلق 
             $table->rememberToken();  // تذكرني
             $table->timestamps();
             $table->softDeletes();
@@ -34,7 +35,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
     }
 };
