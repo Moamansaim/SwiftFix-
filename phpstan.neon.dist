@@ -1,0 +1,15 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 6
+    paths:
+        - app/
+
+    # ADR-009 (Technical Debt Freeze) - TODO Sprint 5: remove
+    ignoreErrors:
+        - identifier: missingType.return
+        - identifier: missingType.parameter
+        - identifier: missingType.generics
+        - identifier: property.phpDocType

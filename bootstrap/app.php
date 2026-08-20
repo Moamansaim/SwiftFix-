@@ -31,4 +31,14 @@ return Application::configure(basePath: dirname(__DIR__))
         //         ], 401);
         //     }
         // });
+
+        $exceptions->render(function (ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+        });
+        $exceptions->render(function (AuthenticationException $e) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        });
+        $exceptions->render(function (ModelNotFoundException $e) {
+            return response()->json(['success' => false, 'message' => 'Resource not found.'], 404);
+    });
     })->create();
