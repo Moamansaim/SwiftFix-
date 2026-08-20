@@ -4,9 +4,13 @@ use App\Features\Auth\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::get('/health', function () {
+    return response()->json([
+        'success' => true,
+        'message' => 'SwiftFix API is alive.',
+        'data' => ['status' => 'ok', 'time' => now()->toDateTimeString()],
+    ]);
+});
 
 Route::group([
     'prefix' => 'auth',
