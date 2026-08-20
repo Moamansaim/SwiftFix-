@@ -24,7 +24,7 @@ class ShopOwnerController extends Controller
             $shopOwnerVerificationRequest->first_name,
             $shopOwnerVerificationRequest->last_name,
             $shopOwnerVerificationRequest->email,
-            $shopOwnerVerificationRequest->phone_number,    
+            $shopOwnerVerificationRequest->phone_number,
             $shopOwnerVerificationRequest->national_id_image,
             $shopOwnerVerificationRequest->country_id,
             $shopOwnerVerificationRequest->service_ids,
@@ -40,7 +40,7 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-               // 'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                // 'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -68,5 +68,34 @@ class ShopOwnerController extends Controller
         return response()->json([
             'services' => $services,
         ]);
+    }
+
+    /**
+     * جلب جميع المدن المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
+     */
+    public function getAllCity($id)
+    {
+        $cities = $this->shopOwnerVerifications->getAllCity($id);
+
+        return response()->json([
+            'cities' => $cities,
+        ]);
+    }
+
+    /**
+     * جلب جميع الأحياء المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
+     */
+    public function getAllDistrict($id)
+    {
+        $districts = $this->shopOwnerVerifications->getAllDistrict($id);
+
+        return response()->json([
+            'districts' => $districts,
+        ]);
+    }
+
+    public function saveProfile()
+    {
+        
     }
 }

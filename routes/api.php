@@ -51,4 +51,6 @@ Route::group([
     Route::post('/store', 'store');
     Route::get('/get-all-countrys', 'getAllCountries');
     Route::get('/get-all-services', 'getAllServices');
+    Route::get('/get-all-city/{id}', 'getAllCity');
+    Route::get('/get-all-district/{id}', 'getAllDistrict');
 });

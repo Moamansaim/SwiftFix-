@@ -26,4 +26,14 @@ class ShopOwnerVerifications
     {
         return $this->shopOwnerVerificationsInterface->getAllServices();
     }
+
+    public function getAllCity($id)
+    {
+        return $this->shopOwnerVerificationsInterface->getAllCity($id);
+    }
+
+    public function getAllDistrict($id)
+    {
+        return $this->shopOwnerVerificationsInterface->getAllDistrict($id);
+    }
 }

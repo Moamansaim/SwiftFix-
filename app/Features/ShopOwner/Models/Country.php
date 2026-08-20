@@ -2,6 +2,7 @@
 
 namespace App\Features\ShopOwner\Models;
 
+use App\Features\ShopOwner\Models\City;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +16,15 @@ class Country extends Model
     {
         return $this->hasMany(
             ShopOwnerVerification::class,
+            'country_id',
+            'id'
+        );
+    }
+
+    public function cities()
+    {
+        return $this->hasMany(
+            City::class,
             'country_id',
             'id'
         );

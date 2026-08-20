@@ -4,7 +4,9 @@ namespace App\Features\ShopOwner\Repositories;
 
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
+use App\Features\ShopOwner\Models\City;
 use App\Features\ShopOwner\Models\Country;
+use App\Features\ShopOwner\Models\Districts;
 use App\Features\ShopOwner\Models\Service;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use Illuminate\Support\Facades\DB;
@@ -56,5 +58,19 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     public function getAllServices()
     {
         return Service::all();
+    }
+
+    public function getAllCity($id)
+    {
+        return  City::where('country_id', $id)
+            ->select('id', 'name')
+            ->get();
+    }
+
+    public function getAllDistrict($id)
+    {
+        return  Districts::where('city_id', $id)
+            ->select('id', 'name')
+            ->get();
     }
 }
