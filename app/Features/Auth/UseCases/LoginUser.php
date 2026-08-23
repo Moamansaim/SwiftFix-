@@ -52,7 +52,7 @@ class LoginUser
             ];
         }
 
-        // 4) حساب موقوف → 403 (FR-23: الإيقاف يجب أن يمنع الدخول فعلياً)
+        // 4) حساب موقوف → 403 (أماننا)
         if ($user->isSuspended()) {
             return [
                 'error'   => true,
@@ -61,10 +61,18 @@ class LoginUser
             ];
         }
 
-        // 5) نجاح → نصفر العداد ونصدر التوكن
+        // 5) نجاح → نصفر العداد ونصدر التوكن مع صلاحية حسب remember_me (ميزة مؤمن)
         RateLimiter::clear($throttleKey);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $expiresAt = ($loginUserDTO->remember_me ?? false)
+            ? now()->addDays(30)
+            : now()->addHours(2);
+
+        $token = $user->createToken(
+            'auth-token',
+            [],
+            $expiresAt
+        )->plainTextToken;
 
         return [
             'user'  => $user,

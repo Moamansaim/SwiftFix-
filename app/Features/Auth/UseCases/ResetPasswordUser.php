@@ -19,7 +19,7 @@ class ResetPasswordUser
         if (! $user) {
             return [
                 'error' => true,
-                'message' => 'الكود غير صالح',
+                'message' => 'عذرا , البريد الإلكتروني غير موجود',
             ];
         }
 

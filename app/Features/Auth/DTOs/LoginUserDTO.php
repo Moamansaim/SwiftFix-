@@ -6,6 +6,7 @@ class LoginUserDTO
 {
     public function __construct(
         public string $email,
-        public string $password
+        public string $password,
+        public ?bool $remember_me = false
     ) {}
 }

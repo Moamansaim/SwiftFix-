@@ -12,6 +12,7 @@ class SendPasswordResetCodeRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
+                'exists:users,email',
             ],
         ];
     }

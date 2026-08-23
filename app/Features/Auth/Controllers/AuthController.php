@@ -47,7 +47,8 @@ public function register(RegisterRequest $registerRequest)
 
     return response()->json([
         'success' => true,
-        'message' => 'تم تسجيل المستخدم بنجاح',
+        // ✨ رسالة مؤمن الأفضل (تذكير بتفعيل الإيميل)
+        'message' => 'تم إنشاء الحساب بنجاح، يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب',
     ], 201);
 }
 
@@ -55,7 +56,8 @@ public function login(LoginRequest $loginRequest)
 {
     $request = new LoginUserDTO(
         $loginRequest->email,
-        $loginRequest->password
+        $loginRequest->password,
+        $loginRequest->remember_me,   // ✨ ميزة مؤمن الجديدة
     );
 
     $result = $this->loginUser->login($request);
@@ -64,7 +66,7 @@ public function login(LoginRequest $loginRequest)
         return response()->json([
             'success' => false,
             'message' => $result['message'],
-        ], $result['status'] ?? 401);   // ✨ الكود يقرر من الـ UseCase (429/403/401)
+        ], $result['status'] ?? 401);   // ✨ status ديناميكي (أماننا)
     }
 
     return response()->json([
@@ -74,6 +76,7 @@ public function login(LoginRequest $loginRequest)
         'token' => $result['token'],
     ], 200);
 }
+
 
     public function logout()
     {
@@ -97,6 +100,12 @@ public function login(LoginRequest $loginRequest)
         );
 
         $result = $this->sendPasswordResetCode->handle($dto);
+
+        if (isset($result['error']) && $result['error'] === true) {
+            return response()->json([
+                'message' => $result['message'],
+            ], 422);
+        }
 
         return response()->json([
             'message' => $result['message'],
@@ -129,6 +138,12 @@ public function login(LoginRequest $loginRequest)
         $dto = new SendVerificationEmailDTO($request->email);
         $result = $this->sendVerificationEmail->handle($dto);
 
+        if (isset($result['error']) && $result['error'] === true) {
+            return response()->json([
+                'message' => $result['message']
+            ], 422);
+        }
+
         return response()->json([
             'message' => $result['message'],
         ], 200);
@@ -136,11 +151,17 @@ public function login(LoginRequest $loginRequest)
 
     public function verifyEmail(VerifyEmailRequest $request)
     {
-        $request->fulfill();
+        $result = $request->fulfill();
 
-        return response()->json([
-            'message' => 'تم تفعيل البريد الإلكتروني بنجاح',
-        ], 200);
+        // if (isset($result['error']) && $result['error'] === true) {
+        //     return response()->json([
+        //         'message' => $result['message']
+        //     ], 422);
+        // }
+
+        return redirect()->away(
+            config('app.frontend_url') . '/login'
+        );
     }
 
     public function resendVerificationEmail(SendVerificationEmailRequest $request)

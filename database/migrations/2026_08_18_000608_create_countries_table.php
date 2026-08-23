@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('services', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('workshop_id')->constrained()->cascadeOnDelete();
-        $table->string('name');
-        $table->text('description')->nullable();
-        $table->decimal('price', 10, 2);
-        $table->timestamps();
+        Schema::create('countries', function (Blueprint $table) {
+            $table->id();
+            $table->string('name'); //  اسم الدولة
         });
     }
 
@@ -26,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('countries');
     }
 };

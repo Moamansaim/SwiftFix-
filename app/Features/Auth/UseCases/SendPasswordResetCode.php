@@ -17,6 +17,13 @@ class SendPasswordResetCode
     {
         $user = $this->authRepository->findUserByEmailForResetCode($sendPasswordResetCodeDTO);
 
+        if (!$user) {
+            return [
+                'error' => true,
+                'message' => 'عذراً , البريد الإلكتروني غير موجود',
+            ];
+        }
+
         if ($user) {
             $this->sendEmailRepository->sendResetCodeToEmail($user);
         }

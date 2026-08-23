@@ -15,6 +15,13 @@ class SendVerificationEmail
     {
         $user = $this->authRepository->findByEmail($sendVerificationEmailDTO->email);
 
+        if (! $user) {
+            return [
+                'error' => true,
+                'message' => 'عذراً , البريد الإلكتروني غير موجود',
+            ];
+        }
+
         if ($user && ! $user->hasVerifiedEmail()) {
             $user->sendEmailVerificationNotification();
         }
