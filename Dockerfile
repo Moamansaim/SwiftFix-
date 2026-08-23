@@ -1,18 +1,44 @@
-FROM richarvey/nginx-php-fpm:3.1.6
+FROM php:8.4-fpm
 
+# تثبيت Nginx وامتدادات PHP المطلوبة
+RUN apt-get update && apt-get install -y \
+    nginx \
+    git \
+    unzip \
+    libsqlite3-dev \
+    libzip-dev \
+    && docker-php-ext-install \
+    pdo_sqlite \
+    bcmath \
+    zip \
+    && rm -rf /var/lib/apt/lists/*
+
+# تثبيت Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# نسخ المشروع
 COPY . .
 
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+# تثبيت مكتبات Laravel
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction
 
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
+# صلاحيات Laravel
+RUN chown -R www-data:www-data \
+    storage \
+    bootstrap/cache
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# إعداد Nginx
+COPY docker/nginx.conf /etc/nginx/sites-available/default
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# سكربت التشغيل
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+EXPOSE 80
 
 CMD ["/start.sh"]
