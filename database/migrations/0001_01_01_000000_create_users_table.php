@@ -21,26 +21,12 @@ return new class extends Migration
             $table->timestamp('code_expires_at')->nullable(); // تاريخ انتهاء صلاحية كود التحقق من نسيان كلمة المرور     
             $table->timestamp('email_verified_at')->nullable(); // حقل التحقق من تأكيد الايميل
             $table->string('password'); // كلمة المرور
-            $table->string('city', 100)->nullable();
             $table->enum('status', ['active', 'suspended'])->default('active'); // حالة الحساب :   فعال, مغلق 
-            $table->rememberToken();  // تذكرني
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
-
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
-        });
+       
+      
     }
 
     /**
