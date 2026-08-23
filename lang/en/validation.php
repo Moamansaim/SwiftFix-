@@ -203,7 +203,11 @@ return [
         'password' => 'كلمة المرور',
         'phone_number' => 'رقم الهاتف',
         'last_name' => 'الاسم الثاني',
-        'first_name' => 'الاسم الأول'
+        'first_name' => 'الاسم الأول',
+        'country_id' => 'الدولة',
+        'service_ids' => 'الخدمات',
+        'national_id_image' => 'صورة الهوية الوطنية',
+        'notes' => 'ملاحظات',
     ],
 
 ];

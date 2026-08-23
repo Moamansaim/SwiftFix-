@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Features\ShopOwner\Models;
+
+use App\Features\ShopOwner\Models\ShopOwnerVerification;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+
+class Country extends Model
+{
+    use HasFactory;
+
+    public function shopOwnerVerifications()
+    {
+        return $this->hasMany(
+            ShopOwnerVerification::class,
+            'country_id',
+            'id'
+        );
+    }
+}

@@ -30,7 +30,15 @@ class LoginUser
             ];
         }
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $expiresAt = $loginUserDTO->remember_me
+            ? now()->addDays(30)
+            : now()->addHours(2);
+
+        $token = $user->createToken(
+            'auth-token',
+            [],
+            $expiresAt
+        )->plainTextToken;
 
         return [
             'user' => $user,

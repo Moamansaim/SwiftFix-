@@ -46,7 +46,7 @@ class AuthController extends Controller
         $this->registerUser->register($request);
 
         return response()->json([
-            'message' => 'تم تسجيل المستخدم بنجاح',
+            'message' => 'تم إنشاء الحساب بنجاح، يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب',
         ], 201);
     }
 
@@ -54,7 +54,8 @@ class AuthController extends Controller
     {
         $request = new LoginUserDTO(
             $loginRequest->email,
-            $loginRequest->password
+            $loginRequest->password,
+            $loginRequest->remember_me
         );
 
         $result = $this->loginUser->login($request);
@@ -95,6 +96,12 @@ class AuthController extends Controller
 
         $result = $this->sendPasswordResetCode->handle($dto);
 
+        if (isset($result['error']) && $result['error'] === true) {
+            return response()->json([
+                'message' => $result['message'],
+            ], 422);
+        }
+
         return response()->json([
             'message' => $result['message'],
         ], 200);
@@ -126,6 +133,12 @@ class AuthController extends Controller
         $dto = new SendVerificationEmailDTO($request->email);
         $result = $this->sendVerificationEmail->handle($dto);
 
+        if (isset($result['error']) && $result['error'] === true) {
+            return response()->json([
+                'message' => $result['message']
+            ], 422);
+        }
+
         return response()->json([
             'message' => $result['message'],
         ], 200);
@@ -133,11 +146,17 @@ class AuthController extends Controller
 
     public function verifyEmail(VerifyEmailRequest $request)
     {
-        $request->fulfill();
+        $result = $request->fulfill();
 
-        return response()->json([
-            'message' => 'تم تفعيل البريد الإلكتروني بنجاح',
-        ], 200);
+        // if (isset($result['error']) && $result['error'] === true) {
+        //     return response()->json([
+        //         'message' => $result['message']
+        //     ], 422);
+        // }
+
+        return redirect()->away(
+            config('app.frontend_url') . '/login'
+        );
     }
 
     public function resendVerificationEmail(SendVerificationEmailRequest $request)
