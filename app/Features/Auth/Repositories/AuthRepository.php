@@ -2,6 +2,7 @@
 
 namespace App\Features\Auth\Repositories;
 
+
 use App\Features\Auth\DTOs\LoginUserDTO;
 use App\Features\Auth\DTOs\RegisterUserDTO;
 use App\Features\Auth\DTOs\ResetPasswordDTO;
@@ -10,11 +11,13 @@ use App\Features\Auth\Interfaces\AuthRepositoryInterface;
 use App\Features\Auth\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthRepository implements AuthRepositoryInterface
 {
-    public function create(RegisterUserDTO $registerUserDTO)
-    {
+public function create(RegisterUserDTO $registerUserDTO)
+{
+    return DB::transaction(function () use ($registerUserDTO) {
         $user = new User;
         $user->first_name = $registerUserDTO->first_name;
         $user->last_name = $registerUserDTO->last_name;
@@ -23,10 +26,14 @@ class AuthRepository implements AuthRepositoryInterface
         $user->password = Hash::make($registerUserDTO->password);
         $user->save();
 
+        // ADR-008: كل حساب جديد يبدأ customer — لا أحد يولد بدور أعلى
+        $user->assignRole('customer');
+
         $user->sendEmailVerificationNotification();
 
         return $user;
-    }
+    });
+}
 
     public function login(LoginUserDTO $loginUserDTO)
     {

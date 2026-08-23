@@ -33,44 +33,47 @@ class AuthController extends Controller
         public SendVerificationEmail $sendVerificationEmail,
     ) {}
 
-    public function register(RegisterRequest $registerRequest)
-    {
-        $request = new RegisterUserDTO(
-            $registerRequest->first_name,
-            $registerRequest->last_name,
-            $registerRequest->email,
-            $registerRequest->phone_number,
-            $registerRequest->password,
-        );
+public function register(RegisterRequest $registerRequest)
+{
+    $request = new RegisterUserDTO(
+        $registerRequest->first_name,
+        $registerRequest->last_name,
+        $registerRequest->email,
+        $registerRequest->phone_number,
+        $registerRequest->password,
+    );
 
-        $this->registerUser->register($request);
+    $this->registerUser->register($request);
 
+    return response()->json([
+        'success' => true,
+        'message' => 'تم تسجيل المستخدم بنجاح',
+    ], 201);
+}
+
+public function login(LoginRequest $loginRequest)
+{
+    $request = new LoginUserDTO(
+        $loginRequest->email,
+        $loginRequest->password
+    );
+
+    $result = $this->loginUser->login($request);
+
+    if (isset($result['error']) && $result['error'] === true) {
         return response()->json([
-            'message' => 'تم تسجيل المستخدم بنجاح',
-        ], 201);
+            'success' => false,
+            'message' => $result['message'],
+        ], $result['status'] ?? 401);   // ✨ الكود يقرر من الـ UseCase (429/403/401)
     }
 
-    public function login(LoginRequest $loginRequest)
-    {
-        $request = new LoginUserDTO(
-            $loginRequest->email,
-            $loginRequest->password
-        );
-
-        $result = $this->loginUser->login($request);
-
-        if (isset($result['error']) && $result['error'] === true) {
-            return response()->json([
-                'message' => $result['message'],
-            ], 401);
-        }
-
-        return response()->json([
-            'message' => 'تم تسجيل الدخول بنجاح',
-            'data' => new UserResource($result['user']),
-            'token' => $result['token'],
-        ], 200);
-    }
+    return response()->json([
+        'success' => true,
+        'message' => 'تم تسجيل الدخول بنجاح',
+        'data' => new UserResource($result['user']),
+        'token' => $result['token'],
+    ], 200);
+}
 
     public function logout()
     {
