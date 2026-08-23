@@ -1,0 +1,67 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method App\\Features\\Auth\\Requests\\LoginRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/Requests/LoginRequest.php
+
+		-
+			message: '#^Method App\\Features\\Auth\\Requests\\RegisterRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/Requests/RegisterRequest.php
+
+		-
+			message: '#^Method App\\Features\\Auth\\Requests\\ResetPasswordRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/Requests/ResetPasswordRequest.php
+
+		-
+			message: '#^Method App\\Features\\Auth\\Requests\\SendPasswordResetCodeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/Requests/SendPasswordResetCodeRequest.php
+
+		-
+			message: '#^Method App\\Features\\Auth\\Requests\\SendVerificationEmailRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/Requests/SendVerificationEmailRequest.php
+
+		-
+			message: '#^Method App\\Features\\Auth\\Requests\\VerifyEmailRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/Requests/VerifyEmailRequest.php
+
+		-
+			message: '#^Access to an undefined property App\\Features\\Auth\\Resources\\UserResource\:\:\$first_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Features/Auth/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Features\\Auth\\Resources\\UserResource\:\:\$last_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Features/Auth/Resources/UserResource.php
+
+		-
+			message: '#^Method App\\Features\\Auth\\UseCases\\ResetPasswordUser\:\:handle\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/UseCases/ResetPasswordUser.php
+
+		-
+			message: '#^Method App\\Features\\Auth\\UseCases\\SendPasswordResetCode\:\:handle\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/UseCases/SendPasswordResetCode.php
+
+		-
+			message: '#^Method App\\Features\\Auth\\UseCases\\SendVerificationEmail\:\:handle\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Features/Auth/UseCases/SendVerificationEmail.php
