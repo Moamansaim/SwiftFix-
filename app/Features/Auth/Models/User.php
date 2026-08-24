@@ -37,8 +37,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone_number',
         'email',
         'password',
-        'city',   // ✨ تعديل 2: إضافة المدينة
-        'status', // ✨ تعديل 3: إضافة الحالة (active/suspended)
+        'city',     
+        'status',      
     ];
 
     /**
@@ -80,23 +80,4 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => $this->freshTimestamp(),
         ])->save();
     }
-
-    // --- ✨ إضافات SwiftFix (Helper Methods & Relationships) ---
-
-    // دوال مساعدة للتحقق من الأدوار والحالة
-    public function isAdmin(): bool     { return $this->hasRole('admin'); }
-    public function isOwner(): bool     { return $this->hasRole('workshop_owner'); }
-    public function isCustomer(): bool  { return $this->hasRole('customer'); }
-    public function isSuspended(): bool { return $this->status === 'suspended'; }
-
-    // العلاقات مع نماذج الأعمال
-    public function workshop(): HasOne       { return $this->hasOne(Workshop::class); }
-    public function bookings(): HasMany      { return $this->hasMany(Booking::class, 'customer_id'); }
-    public function reviews(): HasMany       { return $this->hasMany(Review::class, 'customer_id'); }
-    
-    // المحادثات التي بدأها الزبون
-    public function conversations(): HasMany { return $this->hasMany(Conversation::class, 'customer_id'); }
-    
-    // المحادثات التي يشارك فيها كصاحب ورشة
-    public function ownerConversations(): HasMany { return $this->hasMany(Conversation::class, 'workshop_owner_id'); }
 }

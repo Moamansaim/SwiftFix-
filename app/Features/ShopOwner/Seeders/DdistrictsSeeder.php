@@ -5,7 +5,7 @@ namespace App\Features\ShopOwner\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class DdistrictSeeder extends Seeder
+class DdistrictsSeeder extends Seeder
 {
     public function run(): void
     {

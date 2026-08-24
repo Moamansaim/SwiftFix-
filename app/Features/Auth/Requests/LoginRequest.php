@@ -17,7 +17,6 @@ class LoginRequest extends FormRequest
             ],
             'password' => [
                 'required',
-                
             ],
             'remember_me' => [
                 'nullable',

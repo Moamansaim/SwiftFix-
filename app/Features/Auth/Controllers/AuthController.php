@@ -148,12 +148,6 @@ class AuthController extends Controller
     {
         $result = $request->fulfill();
 
-        // if (isset($result['error']) && $result['error'] === true) {
-        //     return response()->json([
-        //         'message' => $result['message']
-        //     ], 422);
-        // }
-
         return redirect()->away(
             config('app.frontend_url') . '/login'
         );
