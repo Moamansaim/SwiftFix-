@@ -2,19 +2,9 @@
 
 namespace App\Features\Auth\Models;
 
-// استيرادات النماذج الأخرى (للعلاقات)
-use App\Models\Workshop;
-use App\Models\Booking;
-use App\Models\Review;
-use App\Models\Conversation;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Permission\Traits\HasRoles; // ✨ إضافة جديدة: لدعم الأدوار (Spatie)
 
-// استيرادات صاحبك الأصلية
 use App\Features\Auth\Notifications\VerifyEmailNotification;
-use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,8 +13,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    // ✨ تعديل 1: إضافة SoftDeletes و HasRoles
-    use HasFactory, Notifiable, HasApiTokens, SoftDeletes, HasRoles;
+    use HasFactory, Notifiable, HasApiTokens, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -37,8 +26,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone_number',
         'email',
         'password',
-        'city',     
-        'status',      
+        'city',
+        'status',
     ];
 
     /**
@@ -64,10 +53,6 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    protected static function newFactory()
-    {
-        return UserFactory::new();
-    }
 
     public function sendEmailVerificationNotification(): void
     {
