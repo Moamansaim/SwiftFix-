@@ -8,7 +8,7 @@ use App\Features\Auth\DTOs\ResetPasswordDTO;
 use App\Features\Auth\DTOs\SendPasswordResetCodeDTO;
 use App\Features\Auth\Models\User;
 
-interface AuthRepositoryInterface
+interface AuthRepositoryinterface
 {
     public function create(RegisterUserDTO $registerUserDTO);
 
