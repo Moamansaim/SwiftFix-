@@ -74,8 +74,8 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             ->get();
     }
 
-    public function storeOrUpdateProfile()
-    {
+    // public function storeOrUpdateProfile()
+    // {
         
-    } 
+    // } 
 }
