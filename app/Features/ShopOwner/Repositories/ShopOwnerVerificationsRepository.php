@@ -52,12 +52,12 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 
     public function getAllCountries()
     {
-        return Country::all();
+        return Country::select('id', 'name')->get();
     }
 
     public function getAllServices()
     {
-        return Service::all();
+        return Service::select('id', 'name')->get();
     }
 
     public function getAllCity($id)
