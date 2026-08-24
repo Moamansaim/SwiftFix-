@@ -2,7 +2,6 @@
 
 use App\Features\Auth\Controllers\AuthController;
 use App\Features\ShopOwner\Controllers\ShopOwnerController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {

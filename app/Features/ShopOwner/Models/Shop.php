@@ -2,14 +2,14 @@
 
 namespace App\Features\ShopOwner\Models;
 
-use App\Features\ShopOwner\Models\Country;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
-class City extends Model
+class Shop extends Model
 {
-    use HasFactory;
+    protected $casts = [
+        'working_hours' => 'array',
+    ];
+
 
     public function country()
     {
@@ -20,20 +20,20 @@ class City extends Model
         );
     }
 
-    public function districts()
+    public function city()
     {
-        return $this->hasMany(
-            Districts::class,
+        return $this->belongsTo(
+            City::class,
             'city_id',
             'id'
         );
     }
 
-    public function shops()
+    public function districts()
     {
-        return $this->hasMany(
-            Shop::class,
-            'city_id',
+        return $this->belongsTo(
+            Districts::class,
+            'district_id',
             'id'
         );
     }
