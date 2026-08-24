@@ -73,4 +73,9 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             ->select('id', 'name')
             ->get();
     }
+
+    public function storeOrUpdateProfile()
+    {
+        
+    } 
 }
