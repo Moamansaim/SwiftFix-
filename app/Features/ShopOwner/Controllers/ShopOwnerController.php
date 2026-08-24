@@ -5,6 +5,7 @@ namespace App\Features\ShopOwner\Controllers;
 
 
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
+use App\Features\ShopOwner\Requests\ProfileShopOwnerRequest;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
 use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
 use App\Http\Controllers\Controller;
@@ -94,7 +95,7 @@ class ShopOwnerController extends Controller
         ]);
     }
 
-    public function saveProfile()
+    public function saveProfile(ProfileShopOwnerRequest $profileShopOwnerRequest) 
     {
         
     }

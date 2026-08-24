@@ -5,10 +5,9 @@ RUN apt-get update && apt-get install -y \
     nginx \
     git \
     unzip \
-    libsqlite3-dev \
     libzip-dev \
     && docker-php-ext-install \
-    pdo_sqlite \
+    pdo_mysql \
     bcmath \
     zip \
     && rm -rf /var/lib/apt/lists/*
@@ -37,6 +36,7 @@ COPY docker/nginx.conf /etc/nginx/sites-available/default
 
 # سكربت التشغيل
 COPY docker/start.sh /start.sh
+
 RUN chmod +x /start.sh
 
 EXPOSE 80
