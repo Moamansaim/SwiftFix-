@@ -95,8 +95,8 @@ class ShopOwnerController extends Controller
         ]);
     }
 
-    public function saveProfile(ProfileShopOwnerRequest $profileShopOwnerRequest) 
-    {
+    // public function saveProfile(ProfileShopOwnerRequest $profileShopOwnerRequest) 
+    // {
         
-    }
+    // }
 }
