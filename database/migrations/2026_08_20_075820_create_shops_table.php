@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('street');
             $table->decimal('latitude', 10, 8)->comment('خط العرض');
             $table->decimal('longitude', 11, 8)->comment('خط الطول');
-            $table->string('working_hours');
+            $table->json('working_hours');
             $table->decimal('rating_average')
                 ->nullable()
                 ->default(0);

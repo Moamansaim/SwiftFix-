@@ -4,16 +4,18 @@ namespace App\Features\ShopOwner\DTOs;
 
 use Illuminate\Http\UploadedFile;
 
-class profileShopOwnerDTO
+class ProfileShopOwnerDTO
 {
     public function __construct(
-        public string $first_name,
-        public string $last_name,
-        public string $email,
-        public string $phone_number,
-        public UploadedFile $national_id_image,
+        public string $shop_name,
+        public string $description,
+        public UploadedFile $cover_image,
         public int $country_id,
-        public array $service_ids,
-        public string|null $notes,
+        public int $city_id,
+        public int $district_id,
+        public string $street,
+        public float $latitude,
+        public float $longitude,
+        public array $working_hours,
     ) {}
 }

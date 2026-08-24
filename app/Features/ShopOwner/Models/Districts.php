@@ -20,4 +20,13 @@ class Districts extends Model
             'id'
         );
     }
+
+    public function shops()
+    {
+        return $this->hasMany(
+            Shop::class,
+            'district_id',
+            'id'
+        );
+    }
 }
