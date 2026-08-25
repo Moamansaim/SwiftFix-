@@ -2,11 +2,14 @@
 
 namespace App\Features\ShopOwner\Models;
 
+use App\Features\Auth\Models\User;
 use App\Features\ShopOwner\Models\Country;
 use App\Features\ShopOwner\Models\Service;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class ShopOwnerVerification extends Model
 {
@@ -19,8 +22,10 @@ class ShopOwnerVerification extends Model
         'phone_number',
         'national_id_image',
         'country_id',
-        'service_ids',
         'notes',
+        'status',
+        'reviewed_by',
+        'reviewed_at',
     ];
 
     public function services()
@@ -40,5 +45,20 @@ class ShopOwnerVerification extends Model
             'country_id',
             'id'
         );
+    }
+
+    protected function casts(): array
+    {
+        return ['reviewed_at' => 'datetime'];
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 }

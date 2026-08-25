@@ -17,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'guest.sanctum' => GuestSanctum::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,        // 👈 أضف هذا
+
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

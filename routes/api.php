@@ -58,3 +58,7 @@ Route::group([
     Route::get('/get-all-city/{id}', 'getAllCity');
     Route::get('/get-all-district/{id}', 'getAllDistrict');
 });
+// Route Admin - Shop Owner Verification Approval
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+    Route::post('/shop-owner-verifications/approve', [ShopOwnerController::class, 'approveVerification']);
+});

@@ -2,6 +2,7 @@
 
 namespace App\Features\ShopOwner\Repositories;
 
+use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;   // 👈 الجديد
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
 use App\Features\ShopOwner\Models\City;
@@ -73,4 +74,27 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             ->select('id', 'name')
             ->get();
     }
+
+    public function approve(ApproveShopOwnerVerificationDTO $dto)
+{
+    return DB::transaction(function () use ($dto) {
+        $verification = ShopOwnerVerification::findOrFail($dto->verification_id);
+
+        if (! $verification->isPending()) {
+            return [
+                'error'   => true,
+                'message' => 'هذا الطلب تمت مراجعته مسبقاً.',
+            ];
+        }
+
+        $verification->update([
+            'status'      => $dto->status,
+            'notes'       => $dto->notes,
+            'reviewed_by' => $dto->reviewed_by,
+            'reviewed_at' => now(),
+        ]);
+
+        return $verification;
+    });
+}
 }

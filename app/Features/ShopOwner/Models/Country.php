@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\Model;
 class Country extends Model
 {
     use HasFactory;
+    public $timestamps = false;   // 👈 الجدول ما فيه أعمدة تواريخ
+
+
+    protected $fillable = ['name'];
 
     public function shopOwnerVerifications()
     {

@@ -3,17 +3,20 @@
 namespace App\Features\ShopOwner\Controllers;
 
 
-
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
 use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
 use App\Http\Controllers\Controller;
 
+use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;
+use App\Features\ShopOwner\Requests\ApproveShopOwnerVerificationRequest;
+use App\Features\ShopOwner\UseCases\ApproveShopOwnerVerification;
 class ShopOwnerController extends Controller
 {
-    public function __construct(
-        private ShopOwnerVerifications $shopOwnerVerifications
-    ) {}
+public function __construct(
+    public ShopOwnerVerifications $shopOwnerVerifications,
+    public ApproveShopOwnerVerification $approveShopOwnerVerification,
+) {}
 
     /**
      * استقبال طلب التحقق من صاحب المتجر وإرساله إلى Use Case لمعالجته.
@@ -98,4 +101,28 @@ class ShopOwnerController extends Controller
     {
         
     }
+
+    // بالـ constructor:
+
+// الدالة:
+public function approveVerification(ApproveShopOwnerVerificationRequest $request)
+{
+    $dto = new ApproveShopOwnerVerificationDTO(
+        (int) $request->verification_id,
+        $request->status,
+        $request->notes,
+        (int) $request->user()->id,
+    );
+
+    $result = $this->approveShopOwnerVerification->handle($dto);
+
+    if (is_array($result) && ($result['error'] ?? false) === true) {
+        return response()->json(['success' => false, 'message' => $result['message']], 422);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => $result->status === 'approved' ? 'تمت الموافقة على الطلب.' : 'تم رفض الطلب.',
+    ], 200);
+}
 }

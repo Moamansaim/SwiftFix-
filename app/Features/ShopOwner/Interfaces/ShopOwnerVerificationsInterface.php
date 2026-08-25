@@ -2,6 +2,8 @@
 
 namespace App\Features\ShopOwner\Interfaces;
 
+use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;
+
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 
 
@@ -12,5 +14,5 @@ interface ShopOwnerVerificationsInterface
     public function getAllServices();
     public function getAllCity($id);
     public function getAllDistrict($id);
-    public function saveProfile();
+    public function approve(ApproveShopOwnerVerificationDTO $dto);
 }
