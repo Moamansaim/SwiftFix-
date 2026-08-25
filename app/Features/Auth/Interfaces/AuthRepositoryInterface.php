@@ -23,5 +23,5 @@ interface AuthRepositoryInterface
 
     public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user);
 
-    public function updatePassword(UpdatePasswordDTO $updatePasswordDTO);
+    //public function updatePassword(UpdatePasswordDTO $updatePasswordDTO);
 }
