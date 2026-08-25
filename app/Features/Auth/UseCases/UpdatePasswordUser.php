@@ -7,12 +7,12 @@ use App\Features\Auth\Interfaces\AuthRepositoryInterface;
 
 class UpdatePasswordUser
 {
-    public function __construct(
-        private AuthRepositoryInterface $authRepository,
-    ) {}
+    // public function __construct(
+    //     private AuthRepositoryInterface $authRepository,
+    // ) {}
 
-    public function updatePassword(UpdatePasswordDTO $updatePasswordDTO)
-    {
-        $this->authRepository->updatePassword($updatePasswordDTO);
-    }
+    // public function updatePassword(UpdatePasswordDTO $updatePasswordDTO)
+    // {
+    //     $this->authRepository->updatePassword($updatePasswordDTO);
+    // }
 }
