@@ -102,29 +102,28 @@ class ShopOwnerController extends Controller
         $data = $shopOwnerVerificationRequest->validated();
 
         $dto = new ProfileShopOwnerDTO(
-            $data->shop_name,
-            $data->description,
-            $data->cover_image,
-            $data->country_id,
-            $data->city_id,
-            $data->district_id,
-            $data->street,
-            $data->latitude,
-            $data->longitude,
-            $data->working_hours,
-            $data->service_ids
+            $data['shop_name'],
+            $data['description'],
+            $data['cover_image'],
+            $data['country_id'],
+            $data['city_id'],
+            $data['district_id'],
+            $data['street'],
+            $data['latitude'],
+            $data['longitude'],
+            $data['working_hours'],
+            $data['service_ids'],
         );
 
         try {
             $this->shopOwnerVerifications->saveOrUpdateProfile($dto);
 
             return response()->json([
-                'message' => 'تم إرسال طلبك ينجاح ! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة . ',
+                'message' => 'تم إرسال طلبك بنجاح! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة.',
             ], 201);
         } catch (\Throwable $e) {
-
             return response()->json([
-                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => 'فشل إرسال الطلب، يرجى المحاولة لاحقاً.',
             ], 500);
         }
     }
