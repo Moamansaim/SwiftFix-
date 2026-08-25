@@ -4,6 +4,7 @@ namespace App\Features\ShopOwner\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class CitySeeder extends Seeder
 {
@@ -13,7 +14,6 @@ class CitySeeder extends Seeder
             ->pluck('id', 'name');
 
         $cities = [
-
             'الأردن' => [
                 'عمّان',
                 'الزرقاء',
@@ -32,9 +32,7 @@ class CitySeeder extends Seeder
                 'وادي السير',
                 'سحاب',
                 'الهاشمية',
-                'الرمثا',
                 'الحصن',
-                'الطفيلة',
             ],
 
             'الإمارات العربية المتحدة' => [
@@ -258,7 +256,6 @@ class CitySeeder extends Seeder
                 'خصب',
                 'السيب',
                 'بركاء',
-                'صحار',
                 'بهلاء',
                 'إبراء',
                 'جعلان بني بو علي',
@@ -290,7 +287,6 @@ class CitySeeder extends Seeder
                 'الظاهرية',
                 'يطا',
                 'قلنديا',
-                'البيرة',
             ],
 
             'قطر' => [
@@ -313,7 +309,6 @@ class CitySeeder extends Seeder
                 'فومبوني',
                 'دوموني',
                 'ميتساميولي',
-                'فومبوني',
                 'باماندزي',
             ],
 
@@ -328,11 +323,9 @@ class CitySeeder extends Seeder
                 'مبارك الكبير',
                 'صباح السالم',
                 'الرميثية',
-                'الفروانية',
                 'خيطان',
                 'الجابرية',
                 'العارضية',
-                'الفحيحيل',
                 'المنقف',
                 'أبو حليفة',
             ],
@@ -377,7 +370,6 @@ class CitySeeder extends Seeder
                 'مرزق',
                 'ترهونة',
                 'بني وليد',
-                'سبها',
             ],
 
             'مصر' => [
@@ -503,23 +495,22 @@ class CitySeeder extends Seeder
         ];
 
         foreach ($cities as $countryName => $countryCities) {
-
-            if (!isset($countries[$countryName])) {
-                throw new \RuntimeException(
+            if (! $countries->has($countryName)) {
+                throw new RuntimeException(
                     "Country '{$countryName}' not found in countries table."
                 );
             }
 
-            $countryId = $countries[$countryName];
+            $countryId = $countries->get($countryName);
 
-            $rows = [];
-
-            foreach (array_unique($countryCities) as $cityName) {
-                $rows[] = [
+            $rows = collect($countryCities)
+                ->unique()
+                ->map(fn ($cityName) => [
                     'name' => $cityName,
                     'country_id' => $countryId,
-                ];
-            }
+                ])
+                ->values()
+                ->all();
 
             DB::table('cities')->upsert(
                 $rows,

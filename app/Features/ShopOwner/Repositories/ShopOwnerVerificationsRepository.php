@@ -125,11 +125,12 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     $profileShopOwnerDTO->service_ids
                 );
 
+                $this->deleteImage($oldImagePath);
+
                 return $shop;
             });
         } catch (\Throwable $e) {
 
-            // في حالة فشل الـtransaction احذف الصورة الجديدة
             $this->deleteImage($imagePath);
 
             throw $e;
