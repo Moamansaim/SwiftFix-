@@ -13,5 +13,5 @@ interface ShopOwnerVerificationsInterface
     public function getAllServices();
     public function getAllCity($id);
     public function getAllDistrict($id);
-    //public function saveProfile(ProfileShopOwnerDTO $profileShopOwnerDTO);
+    public function createShopProfile(ProfileShopOwnerDTO $profileShopOwnerDTO);
 }

@@ -17,5 +17,10 @@ class ProfileShopOwnerDTO
         public float $latitude,
         public float $longitude,
         public array $working_hours,
+        public array $service_ids
     ) {}
 }
+
+
+
+         

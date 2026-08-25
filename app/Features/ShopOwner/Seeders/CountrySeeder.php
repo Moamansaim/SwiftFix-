@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class CountrySeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $countries = [
@@ -37,6 +34,10 @@ class CountrySeeder extends Seeder
             ['name' => 'تونس'],
         ];
 
-        DB::table('countries')->insert($countries);
+        DB::table('countries')->upsert(
+            $countries,
+            ['name'],
+            []
+        );
     }
 }

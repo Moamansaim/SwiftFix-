@@ -521,7 +521,11 @@ class CitySeeder extends Seeder
                 ];
             }
 
-            DB::table('cities')->insert($rows);
+            DB::table('cities')->upsert(
+                $rows,
+                ['country_id', 'name'],
+                []
+            );
         }
     }
 }

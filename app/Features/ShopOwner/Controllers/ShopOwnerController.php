@@ -4,6 +4,7 @@ namespace App\Features\ShopOwner\Controllers;
 
 
 
+use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Requests\ProfileShopOwnerRequest;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
@@ -21,7 +22,7 @@ class ShopOwnerController extends Controller
      */
     public function store(ShopOwnerVerificationRequest $shopOwnerVerificationRequest)
     {
-        $request = new ShopOwnerVerificationsDTO(
+        $dto = new ShopOwnerVerificationsDTO(
             $shopOwnerVerificationRequest->first_name,
             $shopOwnerVerificationRequest->last_name,
             $shopOwnerVerificationRequest->email,
@@ -33,7 +34,7 @@ class ShopOwnerController extends Controller
         );
 
         try {
-            $this->shopOwnerVerifications->create($request);
+            $this->shopOwnerVerifications->create($dto);
 
             return response()->json([
                 'message' => 'تم إرسال طلبك ينجاح ! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة . ',
@@ -41,8 +42,8 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-                // 'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
-                'message' => $e->getMessage(),
+                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                // 'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -95,8 +96,36 @@ class ShopOwnerController extends Controller
         ]);
     }
 
-    // public function saveProfile(ProfileShopOwnerRequest $profileShopOwnerRequest) 
-    // {
-        
-    // }
+    // استقبال طلب حفظ أو تحديث بيانات ملف صاحب المحل بعد التحقق من صحة البيانات.
+    public function saveOrUpdateProfile(ProfileShopOwnerRequest $shopOwnerVerificationRequest)
+    {
+        $data = $shopOwnerVerificationRequest->validated();
+
+        $dto = new ProfileShopOwnerDTO(
+            $data->shop_name,
+            $data->description,
+            $data->cover_image,
+            $data->country_id,
+            $data->city_id,
+            $data->district_id,
+            $data->street,
+            $data->latitude,
+            $data->longitude,
+            $data->working_hours,
+            $data->service_ids
+        );
+
+        try {
+            $this->shopOwnerVerifications->saveOrUpdateProfile($dto);
+
+            return response()->json([
+                'message' => 'تم إرسال طلبك ينجاح ! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة . ',
+            ], 201);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+            ], 500);
+        }
+    }
 }
