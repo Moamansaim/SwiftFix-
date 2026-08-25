@@ -2,8 +2,8 @@
 
 namespace App\Features\Auth\UseCases;
 
-use App\Features\Auth\DTOs\UpdatePasswordDTO;
-use App\Features\Auth\Interfaces\AuthRepositoryInterface;
+// use App\Features\Auth\DTOs\UpdatePasswordDTO;
+// use App\Features\Auth\Interfaces\AuthRepositoryInterface;
 
 class UpdatePasswordUser
 {
@@ -16,3 +16,6 @@ class UpdatePasswordUser
     //     $this->authRepository->updatePassword($updatePasswordDTO);
     // }
 }
+
+
+

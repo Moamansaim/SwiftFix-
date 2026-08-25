@@ -6,10 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Shop extends Model
 {
+
+    protected $fillable = [
+        'shop_name',
+        'description',
+        'cover_image',
+        'country_id',
+        'city_id',
+        'district_id',
+        'street',
+        'latitude',
+        'longitude',
+        'working_hours',
+    ];
+
     protected $casts = [
         'working_hours' => 'array',
     ];
-
 
     public function country()
     {
