@@ -123,6 +123,7 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
+                'message' => $e->getMessage(),    
                 'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
