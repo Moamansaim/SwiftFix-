@@ -2,6 +2,7 @@
 
 namespace  App\Features\ShopOwner\UseCases;
 
+use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
 
@@ -35,5 +36,10 @@ class ShopOwnerVerifications
     public function getAllDistrict($id)
     {
         return $this->shopOwnerVerificationsInterface->getAllDistrict($id);
+    }
+
+    public function saveOrUpdateProfile(ProfileShopOwnerDTO $profileShopOwnerDTO)
+    {
+        return $this->shopOwnerVerificationsInterface->createShopProfile($profileShopOwnerDTO);
     }
 }

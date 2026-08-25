@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('country_id')
                 ->constrained('countries', 'id')
                 ->cascadeOnDelete();
+            $table->unique(['country_id', 'name']);
             $table->timestamps();
         });
     }

@@ -7,28 +7,37 @@ echo "DB_PORT=$DB_PORT"
 echo "PORT=$PORT"
 
 echo "Clearing Laravel config cache..."
+
 php /var/www/html/artisan config:clear
 
-echo "Running migrations..."
-php /var/www/html/artisan migrate --force
+echo "Refreshing database..."
+
+php /var/www/html/artisan migrate:fresh --force
 
 echo "Running CountrySeeder..."
+
 php /var/www/html/artisan db:seed --class="App\Features\ShopOwner\Seeders\CountrySeeder" --force
 
 echo "Running CitySeeder..."
+
 php /var/www/html/artisan db:seed --class="App\Features\ShopOwner\Seeders\CitySeeder" --force
 
 echo "Running ServiceSeeder..."
+
 php /var/www/html/artisan db:seed --class="App\Features\ShopOwner\Seeders\ServiceSeeder" --force
 
 echo "Running DistrictsSeeder..."
+
 php /var/www/html/artisan db:seed --class="App\Features\ShopOwner\Seeders\DistrictsSeeder" --force
 
 echo "Starting PHP-FPM..."
+
 php-fpm -D
 
 echo "Configuring Nginx port..."
+
 sed -i "s/listen 80;/listen $PORT;/" /etc/nginx/sites-available/default
 
 echo "Starting Nginx on port $PORT..."
+
 nginx -g "daemon off;"

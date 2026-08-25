@@ -70,6 +70,17 @@ class ProfileShopOwnerRequest extends FormRequest
                 'required',
                 'array',
             ],
+
+            'service_ids' => [
+                'required',
+                'array',
+            ],
+            
+            'service_ids.*' => [
+                'required',
+                'integer',
+                'exists:services,id',
+            ],
         ];
     }
 }
