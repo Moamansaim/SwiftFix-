@@ -7,11 +7,13 @@ use App\Features\Auth\DTOs\RegisterUserDTO;
 use App\Features\Auth\DTOs\ResetPasswordDTO;
 use App\Features\Auth\DTOs\SendPasswordResetCodeDTO;
 use App\Features\Auth\DTOs\SendVerificationEmailDTO;
+use App\Features\Auth\DTOs\UpdatePasswordDTO;
 use App\Features\Auth\Requests\LoginRequest;
 use App\Features\Auth\Requests\RegisterRequest;
 use App\Features\Auth\Requests\ResetPasswordRequest;
 use App\Features\Auth\Requests\SendPasswordResetCodeRequest;
 use App\Features\Auth\Requests\SendVerificationEmailRequest;
+use App\Features\Auth\Requests\UpdatePasswordRequest;
 use App\Features\Auth\Requests\VerifyEmailRequest;
 use App\Features\Auth\Resources\UserResource;
 use App\Features\Auth\UseCases\LoginUser;
@@ -20,6 +22,7 @@ use App\Features\Auth\UseCases\RegisterUser;
 use App\Features\Auth\UseCases\ResetPasswordUser;
 use App\Features\Auth\UseCases\SendPasswordResetCode;
 use App\Features\Auth\UseCases\SendVerificationEmail;
+use App\Features\Auth\UseCases\UpdatePasswordUser;
 use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
@@ -31,6 +34,7 @@ class AuthController extends Controller
         public SendPasswordResetCode $sendPasswordResetCode,
         public ResetPasswordUser $resetPasswordUser,
         public SendVerificationEmail $sendVerificationEmail,
+        public UpdatePasswordUser $updatePasswordUser
     ) {}
 
     public function register(RegisterRequest $registerRequest)
@@ -156,5 +160,19 @@ class AuthController extends Controller
     public function resendVerificationEmail(SendVerificationEmailRequest $request)
     {
         return $this->sendVerificationEmail($request);
+    }
+
+    public function updatePassword(UpdatePasswordRequest $updatePasswordRequest)
+    {
+        $dto = new UpdatePasswordDTO(
+            $updatePasswordRequest->current_password,
+            $updatePasswordRequest->password,
+        );
+
+        $this->updatePasswordUser->updatePassword($dto);
+
+        return response()->json([
+            'message' => 'تم تحديث كلمة المرور بنجاح',
+        ], 200);
     }
 }

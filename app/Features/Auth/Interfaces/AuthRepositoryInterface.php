@@ -6,6 +6,7 @@ use App\Features\Auth\DTOs\LoginUserDTO;
 use App\Features\Auth\DTOs\RegisterUserDTO;
 use App\Features\Auth\DTOs\ResetPasswordDTO;
 use App\Features\Auth\DTOs\SendPasswordResetCodeDTO;
+use App\Features\Auth\DTOs\UpdatePasswordDTO;
 use App\Features\Auth\Models\User;
 
 interface AuthRepositoryInterface
@@ -21,4 +22,6 @@ interface AuthRepositoryInterface
     public function findByEmail(string $email);
 
     public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user);
+
+    public function updatePassword(UpdatePasswordDTO $updatePasswordDTO);
 }

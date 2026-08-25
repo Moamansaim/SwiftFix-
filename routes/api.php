@@ -56,4 +56,5 @@ Route::group([
     Route::get('/get-all-services', 'getAllServices');
     Route::get('/get-all-city/{id}', 'getAllCity');
     Route::get('/get-all-district/{id}', 'getAllDistrict');
+    Route::post('/shop-profile/save-or-update', 'saveOrUpdateProfile');
 });
