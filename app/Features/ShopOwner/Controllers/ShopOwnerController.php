@@ -99,31 +99,31 @@ class ShopOwnerController extends Controller
     // استقبال طلب حفظ أو تحديث بيانات ملف صاحب المحل بعد التحقق من صحة البيانات.
     public function saveOrUpdateProfile(ProfileShopOwnerRequest $shopOwnerVerificationRequest)
     {
-        $data = $shopOwnerVerificationRequest->validated();
 
         $dto = new ProfileShopOwnerDTO(
-            $data['shop_name'],
-            $data['description'],
-            $data['cover_image'],
-            $data['country_id'],
-            $data['city_id'],
-            $data['district_id'],
-            $data['street'],
-            $data['latitude'],
-            $data['longitude'],
-            $data['working_hours'],
-            $data['service_ids'],
+            $shopOwnerVerificationRequest->shop_name,
+            $shopOwnerVerificationRequest->description,
+            $shopOwnerVerificationRequest->cover_image,
+            $shopOwnerVerificationRequest->country_id,
+            $shopOwnerVerificationRequest->city_id,
+            $shopOwnerVerificationRequest->district_id,
+            $shopOwnerVerificationRequest->street,
+            $shopOwnerVerificationRequest->latitude,
+            $shopOwnerVerificationRequest->longitude,
+            $shopOwnerVerificationRequest->working_hours,
+            $shopOwnerVerificationRequest->service_ids
         );
 
         try {
             $this->shopOwnerVerifications->saveOrUpdateProfile($dto);
 
             return response()->json([
-                'message' => 'تم إرسال طلبك بنجاح! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة.',
+                'message' => 'تم إرسال طلبك ينجاح ! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة . ',
             ], 201);
         } catch (\Throwable $e) {
+
             return response()->json([
-                'message' => 'فشل إرسال الطلب، يرجى المحاولة لاحقاً.',
+                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
     }
