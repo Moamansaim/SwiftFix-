@@ -162,17 +162,17 @@ class AuthController extends Controller
         return $this->sendVerificationEmail($request);
     }
 
-    public function updatePassword(UpdatePasswordRequest $updatePasswordRequest)
-    {
-        $dto = new UpdatePasswordDTO(
-            $updatePasswordRequest->current_password,
-            $updatePasswordRequest->password,
-        );
+    // public function updatePassword(UpdatePasswordRequest $updatePasswordRequest)
+    // {
+    //     $dto = new UpdatePasswordDTO(
+    //         $updatePasswordRequest->current_password,
+    //         $updatePasswordRequest->password,
+    //     );
 
-        $this->updatePasswordUser->updatePassword($dto);
+    //     $this->updatePasswordUser->updatePassword($dto);
 
-        return response()->json([
-            'message' => 'تم تحديث كلمة المرور بنجاح',
-        ], 200);
-    }
+    //     return response()->json([
+    //         'message' => 'تم تحديث كلمة المرور بنجاح',
+    //     ], 200);
+    // }
 }
