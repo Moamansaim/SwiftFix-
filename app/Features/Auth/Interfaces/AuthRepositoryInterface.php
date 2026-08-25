@@ -21,4 +21,8 @@ interface AuthRepositoryInterface
     public function findByEmail(string $email);
 
     public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user);
+
+
+    //public function updatePassword(UpdatePasswordDTO $updatePasswordDTO);
 }
+

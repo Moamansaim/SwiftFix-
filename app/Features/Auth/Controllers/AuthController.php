@@ -175,4 +175,6 @@ class AuthController extends Controller
     //         'message' => 'تم تحديث كلمة المرور بنجاح',
     //     ], 200);
     // }
+
 }
+
