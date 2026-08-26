@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Features\ShopOwner\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ShopProfileResource  extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'shop_name' => $this->shop_name,
+            'description' => $this->description,
+            'cover_image' => $this->cover_image,
+
+            'country_id' => $this->country_id,
+            'city_id' => $this->city_id,
+            'district_id' => $this->district_id,
+
+            'street' => $this->street,
+
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+
+            'working_hours' => $this->working_hours,
+
+            'service_ids' => $this->services
+                ->pluck('id')
+                ->values(),
+        ];
+    }
+}

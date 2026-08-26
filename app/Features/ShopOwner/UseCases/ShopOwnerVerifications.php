@@ -18,13 +18,10 @@ class ShopOwnerVerifications
         return $this->shopOwnerVerificationsInterface->create($shopOwnerVerificationsDTO);
     }
 
-    public function getAllServices()
-    {
-        return $this->shopOwnerVerificationsInterface->getAllServices();
-    }
-
     public function saveOrUpdateProfile(ProfileShopOwnerDTO $profileShopOwnerDTO)
     {
         return $this->shopOwnerVerificationsInterface->createShopProfile($profileShopOwnerDTO);
     }
+
+    
 }

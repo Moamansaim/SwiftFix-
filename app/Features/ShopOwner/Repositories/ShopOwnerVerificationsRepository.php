@@ -112,16 +112,5 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         }
     }
 
-    public function getShopProfile()
-    {
-        $userId = Auth::guard('sanctum')->id();
-
-        $shop = Shop::with('services')
-            ->where('user_id', $userId)
-            ->firstOrFail();
-
-        return response()->json([
-            'shop' => $shop,
-        ], 200);
-    }
+  
 }

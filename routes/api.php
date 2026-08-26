@@ -57,6 +57,8 @@ Route::group([
     Route::post('/store/shop-owner-verifications', 'storeShopOwnerVerifications');
     Route::post('/shop-profile/save-or-update', 'saveOrUpdateProfile')
         ->middleware('auth:sanctum');
+    Route::get('/get/shop-profile', 'getShopProfile')
+        ->middleware('auth:sanctum');
 });
 
 

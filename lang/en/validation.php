@@ -205,21 +205,27 @@ return [
         'phone_number' => 'رقم الهاتف',
         'last_name' => 'الاسم الثاني',
         'first_name' => 'الاسم الأول',
+
         'service_ids' => 'الخدمات',
         'national_id_image' => 'صورة الهوية الوطنية',
         'notes' => 'ملاحظات',
+
         'country_id' => 'الدولة',
+        'city_id' => 'المدينة',
+        'district_id' => 'الحي',
+        'street' => 'الشارع',
+
         'shop_name' => 'اسم المتجر',
         'description' => 'الوصف',
         'cover_image' => 'الغلاف',
 
-        // الحقول الناقصة
-        'city_id' => 'المدينة',
-        'district_id' => 'الحي',
-        'street' => 'الشارع',
         'latitude' => 'خط العرض',
         'longitude' => 'خط الطول',
+
         'working_hours' => 'ساعات العمل',
+        'working_hours.*.day' => 'يوم العمل',
+        'working_hours.*.from' => 'وقت بداية العمل',
+        'working_hours.*.to' => 'وقت نهاية العمل',
     ],
 
 ];
