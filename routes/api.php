@@ -65,8 +65,7 @@ Route::group([
     'prefix' => 'countries',
     'controller' => CountryController::class,
 ], function () {
-    Route::get('/get-all-countries', 'getAllCountries')
-        ->middleware('auth:sanctum');
+    Route::get('/get-all-countries', 'getAllCountries');
 });
 
 // Route cities
