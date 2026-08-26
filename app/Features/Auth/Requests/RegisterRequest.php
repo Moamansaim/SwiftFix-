@@ -16,12 +16,14 @@ class RegisterRequest extends FormRequest
                 'max:30',
                 'min:2'
             ],
+
             'last_name' => [
                 'required',
                 'string',
                 'max:40',
                 'min:2'
             ],
+
             'email' => [
                 'required',
                 'string',
@@ -29,16 +31,23 @@ class RegisterRequest extends FormRequest
                 'regex:/^[\x00-\x7F]+$/',
                 'unique:users,email',
             ],
+
             'phone_number' => [
                 'string',
                 'required',
                 'phone:INTERNATIONAL',
                 'unique:users,phone_number',
             ],
+
             'password' => [
                 'required',
                 'string',
-                Password::defaults(),
+                Password::min(8)
+                    ->max(20)
+                    ->numbers()
+                    ->letters()
+                    ->mixedCase()
+                    ->symbols(),
                 'confirmed',
             ],
         ];

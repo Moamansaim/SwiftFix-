@@ -24,11 +24,16 @@ class SendVerificationEmail
 
         if ($user && ! $user->hasVerifiedEmail()) {
             $user->sendEmailVerificationNotification();
+
+            return [
+                'success' => true,
+                'message' => 'إذا كان البريد الإلكتروني مسجلاً وغير مفعّل، ستصلك رسالة تحتوي على رابط التفعيل',
+            ];
         }
 
         return [
-            'success' => true,
-            'message' => 'إذا كان البريد الإلكتروني مسجلاً وغير مفعّل، ستصلك رسالة تحتوي على رابط التفعيل',
+            'error' => true,
+            'message' => 'بريدك الإلكتروني مفعل من قبل؟',
         ];
     }
 }

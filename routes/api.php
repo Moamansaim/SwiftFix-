@@ -1,6 +1,10 @@
 <?php
 
 use App\Features\Auth\Controllers\AuthController;
+use App\Features\City\Controllers\CityController;
+use App\Features\Country\Controllers\CountryController;
+use App\Features\Districts\Controllers\DistrictsController;
+use App\Features\Services\Controllers\ServiceController;
 use App\Features\ShopOwner\Controllers\ShopOwnerController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,11 +54,43 @@ Route::group([
     'prefix' => 'shop-owner',
     'controller' => ShopOwnerController::class,
 ], function () {
+    Route::post('/store/shop-owner-verifications', 'storeShopOwnerVerifications');
+    Route::post('/shop-profile/save-or-update', 'saveOrUpdateProfile')
+        ->middleware('auth:sanctum');
+});
 
-    Route::post('/store', 'store');
-    Route::get('/get-all-countrys', 'getAllCountries');
+
+// Route countries
+Route::group([
+    'prefix' => 'countries',
+    'controller' => CountryController::class,
+], function () {
+    Route::get('/get-all-countries', 'getAllCountries')
+        ->middleware('auth:sanctum');
+});
+
+// Route cities
+Route::group([
+    'prefix' => 'cities',
+    'controller' => CityController::class,
+], function () {
+    Route::get('/get-all-cities/{id}', 'getAllCities')
+        ->middleware('auth:sanctum');
+});
+
+// Route districts
+Route::group([
+    'prefix' => 'districts',
+    'controller' => DistrictsController::class,
+], function () {
+    Route::get('/get-all-districts/{id}', 'getAllDistricts')
+        ->middleware('auth:sanctum');
+});
+
+// Route services
+Route::group([
+    'prefix' => 'services',
+    'controller' => ServiceController::class,
+], function () {
     Route::get('/get-all-services', 'getAllServices');
-    Route::get('/get-all-city/{id}', 'getAllCity');
-    Route::get('/get-all-district/{id}', 'getAllDistrict');
-    Route::post('/shop-profile/save-or-update', 'saveOrUpdateProfile');
 });

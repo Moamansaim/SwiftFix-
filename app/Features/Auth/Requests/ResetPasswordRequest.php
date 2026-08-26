@@ -14,16 +14,19 @@ class ResetPasswordRequest extends FormRequest
                 'required',
                 'email',
             ],
+
             'code' => [
                 'required',
             ],
+
             'password' => [
                 'required',
                 'string',
                 Password::min(8)
+                    ->max(20)
+                    ->numbers()
                     ->letters()
                     ->mixedCase()
-                    ->numbers()
                     ->symbols(),
                 'confirmed',
             ],

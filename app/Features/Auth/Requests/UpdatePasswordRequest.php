@@ -18,7 +18,12 @@ class UpdatePasswordRequest extends FormRequest
             'password' => [
                 'required',
                 'confirmed',
-                Password::defaults(),
+                 Password::min(8)
+                    ->max(20)
+                    ->numbers()
+                    ->letters()
+                    ->mixedCase()
+                    ->symbols(),
             ],
         ];
     }

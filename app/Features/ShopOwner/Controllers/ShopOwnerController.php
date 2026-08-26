@@ -20,7 +20,7 @@ class ShopOwnerController extends Controller
     /**
      * استقبال طلب التحقق من صاحب المتجر وإرساله إلى Use Case لمعالجته.
      */
-    public function store(ShopOwnerVerificationRequest $shopOwnerVerificationRequest)
+    public function storeShopOwnerVerifications(ShopOwnerVerificationRequest $shopOwnerVerificationRequest)
     {
         $dto = new ShopOwnerVerificationsDTO(
             $shopOwnerVerificationRequest->first_name,
@@ -43,63 +43,14 @@ class ShopOwnerController extends Controller
 
             return response()->json([
                 'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
-                // 'message' => $e->getMessage(),
             ], 500);
         }
     }
 
-    /**
-     * جلب جميع الدول المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
-     */
-    public function getAllCountries()
-    {
-        $countries = $this->shopOwnerVerifications->getAllCountries();
-
-        return response()->json([
-            'countries' => $countries,
-        ]);
-    }
-
-    /**
-     * جلب جميع الخدمات المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
-     */
-    public function getAllServices()
-    {
-        $services = $this->shopOwnerVerifications->getAllServices();
-
-        return response()->json([
-            'services' => $services,
-        ]);
-    }
-
-    /**
-     * جلب جميع المدن المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
-     */
-    public function getAllCity($id)
-    {
-        $cities = $this->shopOwnerVerifications->getAllCity($id);
-
-        return response()->json([
-            'cities' => $cities,
-        ]);
-    }
-
-    /**
-     * جلب جميع الأحياء المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
-     */
-    public function getAllDistrict($id)
-    {
-        $districts = $this->shopOwnerVerifications->getAllDistrict($id);
-
-        return response()->json([
-            'districts' => $districts,
-        ]);
-    }
 
     // استقبال طلب حفظ أو تحديث بيانات ملف صاحب المحل بعد التحقق من صحة البيانات.
     public function saveOrUpdateProfile(ProfileShopOwnerRequest $shopOwnerVerificationRequest)
     {
-
         $dto = new ProfileShopOwnerDTO(
             $shopOwnerVerificationRequest->shop_name,
             $shopOwnerVerificationRequest->description,
@@ -118,12 +69,12 @@ class ShopOwnerController extends Controller
             $this->shopOwnerVerifications->saveOrUpdateProfile($dto);
 
             return response()->json([
-                'message' => 'تم إرسال طلبك ينجاح ! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة . ',
+                'message' => 'تم حفظ التغييرات بنجاح.',
             ], 201);
         } catch (\Throwable $e) {
 
             return response()->json([
-                'message' => $e->getMessage(),    
+                'message' => $e->getMessage(),
                 //'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
