@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Features\ShopOwner\Seeders;
+namespace App\Features\Country\Seeder;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;

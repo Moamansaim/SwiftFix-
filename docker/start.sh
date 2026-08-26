@@ -16,19 +16,19 @@ php /var/www/html/artisan migrate:fresh --force
 
 echo "Running CountrySeeder..."
 
-php /var/www/html/artisan db:seed --class="App\Features\ShopOwner\Seeders\CountrySeeder" --force
+php /var/www/html/artisan db:seed --class="App\Features\Country\Seeders\CountrySeeder" --force
 
 echo "Running CitySeeder..."
 
-php /var/www/html/artisan db:seed --class="App\Features\ShopOwner\Seeders\CitySeeder" --force
+php /var/www/html/artisan db:seed --class="App\Features\City\Seeders\CitySeeder" --force
 
 echo "Running ServiceSeeder..."
 
-php /var/www/html/artisan db:seed --class="App\Features\ShopOwner\Seeders\ServiceSeeder" --force
+php /var/www/html/artisan db:seed --class="App\Features\Services\Seeders\ServiceSeeder" --force
 
 echo "Running DistrictsSeeder..."
 
-php /var/www/html/artisan db:seed --class="App\Features\ShopOwner\Seeders\DistrictsSeeder" --force
+php /var/www/html/artisan db:seed --class="App\Features\Districts\Seeders\DistrictsSeeder" --force
 
 echo "Starting PHP-FPM..."
 

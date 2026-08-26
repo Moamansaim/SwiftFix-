@@ -7,13 +7,11 @@ use App\Features\Auth\DTOs\RegisterUserDTO;
 use App\Features\Auth\DTOs\ResetPasswordDTO;
 use App\Features\Auth\DTOs\SendPasswordResetCodeDTO;
 use App\Features\Auth\DTOs\SendVerificationEmailDTO;
-use App\Features\Auth\DTOs\UpdatePasswordDTO;
 use App\Features\Auth\Requests\LoginRequest;
 use App\Features\Auth\Requests\RegisterRequest;
 use App\Features\Auth\Requests\ResetPasswordRequest;
 use App\Features\Auth\Requests\SendPasswordResetCodeRequest;
 use App\Features\Auth\Requests\SendVerificationEmailRequest;
-use App\Features\Auth\Requests\UpdatePasswordRequest;
 use App\Features\Auth\Requests\VerifyEmailRequest;
 use App\Features\Auth\Resources\UserResource;
 use App\Features\Auth\UseCases\LoginUser;
@@ -135,6 +133,7 @@ class AuthController extends Controller
     public function sendVerificationEmail(SendVerificationEmailRequest $request)
     {
         $dto = new SendVerificationEmailDTO($request->email);
+
         $result = $this->sendVerificationEmail->handle($dto);
 
         if (isset($result['error']) && $result['error'] === true) {
@@ -150,11 +149,19 @@ class AuthController extends Controller
 
     public function verifyEmail(VerifyEmailRequest $request)
     {
-        $result = $request->fulfill();
+        $verified = $request->fulfill();
 
-        return redirect()->away(
-            config('app.frontend_url') . '/login'
-        );
+        if ($verified) {
+            return response()->json([
+                'error' => false,
+                'message' => 'تم تفعيل البريد الإلكتروني بنجاح!',
+            ], 200);
+        }
+
+        return response()->json([
+            'error' => true,
+            'message' => 'بريدك الإلكتروني مفعل من قبل.',
+        ], 422);
     }
 
     public function resendVerificationEmail(SendVerificationEmailRequest $request)
@@ -177,4 +184,3 @@ class AuthController extends Controller
     // }
 
 }
-

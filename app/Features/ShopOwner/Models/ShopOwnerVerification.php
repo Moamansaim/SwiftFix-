@@ -2,8 +2,8 @@
 
 namespace App\Features\ShopOwner\Models;
 
-use App\Features\ShopOwner\Models\Country;
-use App\Features\ShopOwner\Models\Service;
+use App\Features\Country\Models\Country;
+use App\Features\Services\Models\Service;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

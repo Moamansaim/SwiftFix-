@@ -32,19 +32,18 @@ class VerifyEmailRequest extends FormRequest
         return [];
     }
 
-    public function fulfill()
+    public function fulfill(): bool
     {
         $user = User::findOrFail($this->route('id'));
 
-        if (! $user->hasVerifiedEmail()) {
-            $user->markEmailAsVerified();
-
-            event(new Verified($user));
-        } else {
-
-            return redirect()->away(
-                config('app.frontend_url') . '/login'
-            );
+        if ($user->hasVerifiedEmail()) {
+            return false;
         }
+
+        $user->markEmailAsVerified();
+
+        event(new Verified($user));
+
+        return true;
     }
 }

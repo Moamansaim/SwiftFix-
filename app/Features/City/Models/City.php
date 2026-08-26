@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Features\ShopOwner\Models;
+namespace App\Features\City\Models;
 
-use App\Features\ShopOwner\Models\Country;
+use App\Features\Country\Models\Country;
+use App\Features\Districts\Models\Districts;
+use App\Features\ShopOwner\Models\Shop;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Features\ShopOwner\Models;
+namespace App\Features\Districts\Models; 
 
-
-use App\Features\ShopOwner\Models\City;
+use App\Features\City\Models\City;
+use App\Features\ShopOwner\Models\Shop;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

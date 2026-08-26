@@ -15,9 +15,11 @@ class LoginRequest extends FormRequest
                 'email',
                 'exists:users,email',
             ],
+
             'password' => [
                 'required',
             ],
+            
             'remember_me' => [
                 'nullable',
                 'boolean',

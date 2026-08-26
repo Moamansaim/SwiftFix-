@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Features\ShopOwner\Seeders;
+namespace App\Features\City\Seeder;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -505,7 +505,7 @@ class CitySeeder extends Seeder
 
             $rows = collect($countryCities)
                 ->unique()
-                ->map(fn ($cityName) => [
+                ->map(fn($cityName) => [
                     'name' => $cityName,
                     'country_id' => $countryId,
                 ])

@@ -2,12 +2,17 @@
 
 namespace App\Features\ShopOwner\Models;
 
+use App\Features\City\Models\City;
+use App\Features\Country\Models\Country;
+use App\Features\Districts\Models\Districts;
+use App\Features\Services\Models\Service;
 use Illuminate\Database\Eloquent\Model;
 
 class Shop extends Model
 {
 
     protected $fillable = [
+        'user_id',
         'shop_name',
         'description',
         'cover_image',
@@ -48,6 +53,16 @@ class Shop extends Model
             Districts::class,
             'district_id',
             'id'
+        );
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(
+            Service::class,
+            'service_shop',
+            'shop_id',
+            'service_id',
         );
     }
 }
