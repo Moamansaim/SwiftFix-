@@ -2,7 +2,7 @@
 
 namespace App\Features\Services\Controllers;
 
-use App\Features\ShopOwner\Models\Service;
+use App\Features\Services\Models\Service;
 use App\Http\Controllers\Controller;
 
 class ServiceController extends Controller
