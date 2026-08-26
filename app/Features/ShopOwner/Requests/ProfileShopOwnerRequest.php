@@ -2,6 +2,8 @@
 
 namespace App\Features\ShopOwner\Requests;
 
+
+use App\Features\ShopOwner\Rules\TimeAfter;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProfileShopOwnerRequest extends FormRequest
@@ -69,11 +71,30 @@ class ProfileShopOwnerRequest extends FormRequest
             'working_hours' => [
                 'required',
                 'array',
+                'min:1',
+            ],
+
+            'working_hours.*.day' => [
+                'required',
+                'string',
+                'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            ],
+
+            'working_hours.*.from' => [
+                'required',
+                'date_format:H:i',
+            ],
+
+            'working_hours.*.to' => [
+                'required',
+                'date_format:H:i',
+                new TimeAfter(),
             ],
 
             'service_ids' => [
                 'required',
                 'array',
+                'min:1',
             ],
 
             'service_ids.*' => [

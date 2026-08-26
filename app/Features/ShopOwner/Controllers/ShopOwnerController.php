@@ -6,10 +6,13 @@ namespace App\Features\ShopOwner\Controllers;
 
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
+use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Requests\ProfileShopOwnerRequest;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
+use App\Features\ShopOwner\Resources\ShopProfileResource;
 use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ShopOwnerController extends Controller
 {
@@ -74,9 +77,23 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-                'message' => $e->getMessage(),    
+                'message' => $e->getMessage(),
                 //'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
+    }
+
+    public function getShopProfile()
+    {
+
+        $userId = Auth::guard('sanctum')->id();
+
+        $shop = Shop::with('services')
+            ->where('user_id', $userId)
+            ->firstOrFail();
+
+        return response()->json([
+            'data' => new ShopProfileResource($shop),
+        ], 200);
     }
 }
