@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Features\Districts\Seeder;
+namespace App\Features\Districts\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
