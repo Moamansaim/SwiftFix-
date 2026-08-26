@@ -5,7 +5,7 @@ namespace App\Features\Auth\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class UpdatePasswordRequest extends FormRequest
+class ChangePasswordRequest extends FormRequest
 {
     public function rules(): array
     {
@@ -18,7 +18,7 @@ class UpdatePasswordRequest extends FormRequest
             'password' => [
                 'required',
                 'confirmed',
-                 Password::min(8)
+                Password::min(8)
                     ->max(20)
                     ->numbers()
                     ->letters()

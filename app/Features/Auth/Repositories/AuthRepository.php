@@ -2,6 +2,7 @@
 
 namespace App\Features\Auth\Repositories;
 
+use App\Features\Auth\DTOs\ChangePasswordDTO;
 use App\Features\Auth\DTOs\LoginUserDTO;
 use App\Features\Auth\DTOs\RegisterUserDTO;
 use App\Features\Auth\DTOs\ResetPasswordDTO;
@@ -62,6 +63,12 @@ class AuthRepository implements AuthRepositoryInterface
         $user->password = Hash::make($resetPasswordDTO->password);
         $user->code = null;
         $user->code_expires_at = null;
+        $user->save();
+    }
+
+    public function changePassword(ChangePasswordDTO $changePasswordDTO, User $user)
+    {
+        $user->password = Hash::make($changePasswordDTO->password);
         $user->save();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Features\Auth\Controllers\AuthController;
+use App\Features\Brand\Controllers\BrandController;
 use App\Features\City\Controllers\CityController;
 use App\Features\Country\Controllers\CountryController;
 use App\Features\Districts\Controllers\DistrictsController;
@@ -45,6 +46,9 @@ Route::group([
         ->middleware(['guest.sanctum', 'throttle:5,1']);
 
     Route::post('/logout', 'logout')
+        ->middleware('auth:sanctum');
+
+    Route::post('/change-password', 'changePassword')
         ->middleware('auth:sanctum');
 });
 
@@ -94,4 +98,17 @@ Route::group([
     'controller' => ServiceController::class,
 ], function () {
     Route::get('/get-all-services', 'getAllServices');
+});
+
+
+Route::group([
+    'prefix' => 'brands',
+    'controller' => BrandController::class,
+    'middleware' => 'auth:sanctum'
+], function () {
+
+    Route::get('/get-all-brands', 'getAllBrands');
+    Route::post('/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
 });

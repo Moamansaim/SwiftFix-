@@ -226,6 +226,8 @@ return [
         'working_hours.*.day' => 'يوم العمل',
         'working_hours.*.from' => 'وقت بداية العمل',
         'working_hours.*.to' => 'وقت نهاية العمل',
+
+        'brand_name' => 'اسم الشركة'
     ],
 
 ];

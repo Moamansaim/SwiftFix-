@@ -2,7 +2,7 @@
 
 namespace App\Features\Auth\DTOs;
 
-class UpdatePasswordDTO
+class ChangePasswordDTO
 {
     public function __construct(
         public string $current_password,
