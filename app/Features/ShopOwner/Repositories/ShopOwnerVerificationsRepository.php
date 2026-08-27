@@ -76,25 +76,34 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     }
 
     public function approve(ApproveShopOwnerVerificationDTO $dto)
-{
-    return DB::transaction(function () use ($dto) {
-        $verification = ShopOwnerVerification::findOrFail($dto->verification_id);
+    {
+        return DB::transaction(function () use ($dto) {
+            $verification = ShopOwnerVerification::findOrFail($dto->verification_id);
 
-        if (! $verification->isPending()) {
-            return [
-                'error'   => true,
-                'message' => 'هذا الطلب تمت مراجعته مسبقاً.',
-            ];
-        }
+            if (! $verification->isPending()) {
+                return [
+                    'error'   => true,
+                    'message' => 'هذا الطلب تمت مراجعته مسبقاً.',
+                ];
+            }
 
-        $verification->update([
-            'status'      => $dto->status,
-            'notes'       => $dto->notes,
-            'reviewed_by' => $dto->reviewed_by,
-            'reviewed_at' => now(),
-        ]);
+            $verification->update([
+                'status'      => $dto->status,
+                'notes'       => $dto->notes,
+                'reviewed_by' => $dto->reviewed_by,
+                'reviewed_at' => now(),
+            ]);
 
-        return $verification;
-    });
-}
+            return $verification;
+        });
+    }
+
+    public function getVerifications(?string $status = null)
+    {
+        return ShopOwnerVerification::query()
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->with('country')
+            ->latest()
+            ->get();
+    }
 }

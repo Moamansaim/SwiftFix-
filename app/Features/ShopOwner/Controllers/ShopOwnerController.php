@@ -2,6 +2,8 @@
 
 namespace App\Features\ShopOwner\Controllers;
 
+use App\Features\ShopOwner\UseCases\ListShopOwnerVerifications;
+use Illuminate\Http\Request;
 
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
@@ -16,6 +18,7 @@ class ShopOwnerController extends Controller
 public function __construct(
     public ShopOwnerVerifications $shopOwnerVerifications,
     public ApproveShopOwnerVerification $approveShopOwnerVerification,
+    public ListShopOwnerVerifications $listShopOwnerVerifications,
 ) {}
 
     /**
@@ -104,25 +107,41 @@ public function __construct(
 
     // بالـ constructor:
 
-// الدالة:
-public function approveVerification(ApproveShopOwnerVerificationRequest $request)
-{
-    $dto = new ApproveShopOwnerVerificationDTO(
-        (int) $request->verification_id,
-        $request->status,
-        $request->notes,
-        (int) $request->user()->id,
-    );
+    // الدالة:
+    public function approveVerification(ApproveShopOwnerVerificationRequest $request)
+    {
+        $dto = new ApproveShopOwnerVerificationDTO(
+            (int) $request->verification_id,
+            $request->status,
+            $request->notes,
+            (int) $request->user()->id,
+        );
 
-    $result = $this->approveShopOwnerVerification->handle($dto);
+        $result = $this->approveShopOwnerVerification->handle($dto);
 
-    if (is_array($result) && ($result['error'] ?? false) === true) {
-        return response()->json(['success' => false, 'message' => $result['message']], 422);
+        if (is_array($result) && ($result['error'] ?? false) === true) {
+            return response()->json(['success' => false, 'message' => $result['message']], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $result->status === 'approved' ? 'تمت الموافقة على الطلب.' : 'تم رفض الطلب.',
+        ], 200);
     }
+    public function getVerifications(Request $request)
+    {
+        $request->validate([
+            'status' => ['nullable', 'in:pending,approved,rejected'],
+        ]);
 
-    return response()->json([
-        'success' => true,
-        'message' => $result->status === 'approved' ? 'تمت الموافقة على الطلب.' : 'تم رفض الطلب.',
-    ], 200);
-}
+        $verifications = $this->listShopOwnerVerifications->handle(
+            $request->query('status')
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم جلب الطلبات بنجاح.',
+            'data' => $verifications,
+        ], 200);
+    }
 }

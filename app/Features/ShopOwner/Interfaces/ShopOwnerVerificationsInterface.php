@@ -15,4 +15,5 @@ interface ShopOwnerVerificationsInterface
     public function getAllCity($id);
     public function getAllDistrict($id);
     public function approve(ApproveShopOwnerVerificationDTO $dto);
+    public function getVerifications(?string $status = null);
 }
