@@ -16,6 +16,7 @@ class ProfileShopOwnerRequest extends FormRequest
                 'string',
                 'min:2',
                 'max:100',
+                'unique:shops,shop_name'
             ],
 
             'description' => [

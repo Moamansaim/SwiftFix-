@@ -111,6 +111,4 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             throw $e;
         }
     }
-
-  
 }

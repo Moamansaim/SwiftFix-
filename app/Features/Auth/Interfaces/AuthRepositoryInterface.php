@@ -2,6 +2,7 @@
 
 namespace App\Features\Auth\Interfaces;
 
+use App\Features\Auth\DTOs\ChangePasswordDTO;
 use App\Features\Auth\DTOs\LoginUserDTO;
 use App\Features\Auth\DTOs\RegisterUserDTO;
 use App\Features\Auth\DTOs\ResetPasswordDTO;
@@ -22,7 +23,5 @@ interface AuthRepositoryInterface
 
     public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user);
 
-
-    //public function updatePassword(UpdatePasswordDTO $updatePasswordDTO);
+    public function changePassword(ChangePasswordDTO $changePasswordDTO, User $user);
 }
-

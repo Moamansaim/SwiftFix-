@@ -30,6 +30,14 @@ echo "Running DistrictsSeeder..."
 
 php /var/www/html/artisan db:seed --class="App\Features\Districts\Seeders\DistrictsSeeder" --force
 
+echo "Running BrandSeeder..."
+
+php /var/www/html/artisan db:seed --class="App\Features\Brand\Seeders\BrandSeeder" --force
+
+echo "Running DeviceModel..."
+
+php /var/www/html/artisan db:seed --class="App\Features\DeviceModel\Seeders\DeviceModelSeeder" --force
+
 echo "Starting PHP-FPM..."
 
 php-fpm -D
