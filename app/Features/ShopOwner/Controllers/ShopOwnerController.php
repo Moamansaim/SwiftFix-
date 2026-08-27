@@ -2,8 +2,6 @@
 
 namespace App\Features\ShopOwner\Controllers;
 
-
-
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Models\Shop;
@@ -12,6 +10,7 @@ use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
 use App\Features\ShopOwner\Resources\ShopProfileResource;
 use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class ShopOwnerController extends Controller
@@ -21,9 +20,9 @@ class ShopOwnerController extends Controller
     ) {}
 
     /**
-     * استقبال طلب التحقق من صاحب المتجر وإرساله إلى Use Case لمعالجته.
+     * Store shop owner verification data  .
      */
-    public function storeShopOwnerVerifications(ShopOwnerVerificationRequest $shopOwnerVerificationRequest)
+    public function storeShopOwnerVerifications(ShopOwnerVerificationRequest $shopOwnerVerificationRequest): JsonResponse
     {
         $dto = new ShopOwnerVerificationsDTO(
             $shopOwnerVerificationRequest->first_name,
@@ -50,9 +49,8 @@ class ShopOwnerController extends Controller
         }
     }
 
-
-    // استقبال طلب حفظ أو تحديث بيانات ملف صاحب المحل بعد التحقق من صحة البيانات.
-    public function saveOrUpdateProfile(ProfileShopOwnerRequest $shopOwnerVerificationRequest)
+    // Store and update shop profile data .
+    public function saveOrUpdateProfile(ProfileShopOwnerRequest $shopOwnerVerificationRequest): JsonResponse
     {
         $dto = new ProfileShopOwnerDTO(
             $shopOwnerVerificationRequest->shop_name,
@@ -77,13 +75,13 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-                'message' => $e->getMessage(),
-                //'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
     }
 
-    public function getShopProfile()
+    // Get shop profile data.
+    public function getShopProfile(): JsonResponse
     {
 
         $userId = Auth::guard('sanctum')->id();

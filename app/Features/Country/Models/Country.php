@@ -7,13 +7,13 @@ use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Country extends Model
 {
     use HasFactory;
 
-    public function shopOwnerVerifications()
+    public function shopOwnerVerifications(): HasMany
     {
         return $this->hasMany(
             ShopOwnerVerification::class,
@@ -22,7 +22,7 @@ class Country extends Model
         );
     }
 
-    public function cities()
+    public function cities(): HasMany
     {
         return $this->hasMany(
             City::class,
@@ -31,7 +31,7 @@ class Country extends Model
         );
     }
 
-    public function shops()
+    public function shops(): HasMany
     {
         return $this->hasMany(
             Shop::class,

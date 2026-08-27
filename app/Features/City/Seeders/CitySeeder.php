@@ -2,6 +2,7 @@
 
 namespace App\Features\City\Seeders;
 
+use App\Features\City\Models\City;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -505,7 +506,7 @@ class CitySeeder extends Seeder
 
             $rows = collect($countryCities)
                 ->unique()
-                ->map(fn($cityName) => [
+                ->map(fn ($cityName) => [
                     'name' => $cityName,
                     'country_id' => $countryId,
                 ])
@@ -517,6 +518,12 @@ class CitySeeder extends Seeder
                 ['country_id', 'name'],
                 []
             );
+
+            // City::upsert([
+            //     $rows,
+            //     ['country_id', 'name'],
+            //     []
+            // ]);
         }
     }
 }

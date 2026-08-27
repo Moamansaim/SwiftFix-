@@ -11,20 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spare_parts', function (Blueprint $table) {
+        Schema::create('shop_products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('shop_id')
                 ->constrained('shops', 'id')
                 ->cascadeOnDelete();
+            $table->foreignId('product_id')
+                ->constrained('products', 'id')
+                ->cascadeOnDelete();
             $table->foreignId('device_model_id')
+                ->nullable()
                 ->constrained('device_models', 'id')
-                ->cascadeOnDelete();
-            $table->foreignId('part_type_id')
-                ->constrained('part_types', 'id')
-                ->cascadeOnDelete();
+                ->nullOnDelete();
             $table->bigInteger('quantity')->unsigned();
             $table->decimal('price', 10, 2)->unsigned();
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->enum('status', ['available', 'out_of_stock'])
                 ->default('available');
@@ -38,6 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spare_parts');
+        Schema::dropIfExists('shop_products');
     }
 };

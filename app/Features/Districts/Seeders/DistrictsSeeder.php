@@ -703,7 +703,6 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | الجزائر 4
@@ -5195,7 +5194,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //13
+            // 13
             'قطر' => [
 
                 'الدوحة' => [
@@ -5452,7 +5451,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //14
+            // 14
             'جزر القمر' => [
 
                 'موروني' => [
@@ -5594,7 +5593,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //15
+            // 15
             'الكويت' => [
 
                 'مدينة الكويت' => [
@@ -5943,7 +5942,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //16
+            // 16
             'لبنان' => [
 
                 'بيروت' => [
@@ -6363,7 +6362,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //17
+            // 17
             'ليبيا' => [
 
                 'طرابلس' => [
@@ -6574,7 +6573,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //18
+            // 18
             'مصر' => [
 
                 'القاهرة' => [
@@ -6942,7 +6941,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //19
+            // 19
             'المغرب' => [
 
                 'الرباط' => [
@@ -7210,7 +7209,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //20
+            // 20
             'موريتانيا' => [
 
                 'نواكشوط' => [
@@ -7313,7 +7312,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //21
+            // 21
             'اليمن' => [
 
                 'صنعاء' => [
@@ -7505,7 +7504,7 @@ class DistrictsSeeder extends Seeder
                 ],
             ],
 
-            //22
+            // 22
             'تونس' => [
 
                 'تونس' => [
@@ -7713,9 +7712,7 @@ class DistrictsSeeder extends Seeder
             ],
         ];
 
-
         foreach ($districts as $countryName => $countryCities) {
-
             $country = DB::table('countries')
                 ->where('name', $countryName)
                 ->first();
@@ -7727,7 +7724,6 @@ class DistrictsSeeder extends Seeder
             }
 
             foreach ($countryCities as $cityName => $cityDistricts) {
-
                 $city = DB::table('cities')
                     ->where('country_id', $country->id)
                     ->where('name', $cityName)
@@ -7739,14 +7735,25 @@ class DistrictsSeeder extends Seeder
                     );
                 }
 
-                $rows = collect($cityDistricts)
-                    ->unique()
-                    ->map(fn($districtName) => [
+                $rows = [];
+                $existingDistricts = [];
+
+                foreach ($cityDistricts as $districtName) {
+                    if (! is_string($districtName)) {
+                        continue;
+                    }
+
+                    if (isset($existingDistricts[$districtName])) {
+                        continue;
+                    }
+
+                    $existingDistricts[$districtName] = true;
+
+                    $rows[] = [
                         'name' => $districtName,
-                        'city_id' => $city->id,
-                    ])
-                    ->values()
-                    ->all();
+                        'city_id' => (int) $city->id,
+                    ];
+                }
 
                 DB::table('districts')->upsert(
                     $rows,

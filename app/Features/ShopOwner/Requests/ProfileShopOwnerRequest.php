@@ -2,12 +2,14 @@
 
 namespace App\Features\ShopOwner\Requests;
 
-
 use App\Features\ShopOwner\Rules\TimeAfter;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProfileShopOwnerRequest extends FormRequest
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -16,7 +18,7 @@ class ProfileShopOwnerRequest extends FormRequest
                 'string',
                 'min:2',
                 'max:100',
-                'unique:shops,shop_name'
+                'unique:shops,shop_name',
             ],
 
             'description' => [
@@ -89,7 +91,7 @@ class ProfileShopOwnerRequest extends FormRequest
             'working_hours.*.to' => [
                 'required',
                 'date_format:H:i',
-                new TimeAfter(),
+                new TimeAfter,
             ],
 
             'service_ids' => [

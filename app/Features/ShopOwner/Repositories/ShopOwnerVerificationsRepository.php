@@ -2,7 +2,7 @@
 
 namespace App\Features\ShopOwner\Repositories;
 
-
+use App\Features\Auth\Models\User;
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
@@ -23,18 +23,17 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 
         try {
             return DB::transaction(function () use ($registerUserDTO, &$imagePath) {
-
                 $imagePath = $registerUserDTO->national_id_image
                     ->store('shop-owner/national-ids', 'public');
 
                 $verification = ShopOwnerVerification::create([
-                    'first_name'       => $registerUserDTO->first_name,
-                    'last_name'        => $registerUserDTO->last_name,
-                    'email'            => $registerUserDTO->email,
-                    'phone_number'     => $registerUserDTO->phone_number,
+                    'first_name' => $registerUserDTO->first_name,
+                    'last_name' => $registerUserDTO->last_name,
+                    'email' => $registerUserDTO->email,
+                    'phone_number' => $registerUserDTO->phone_number,
                     'national_id_image' => $imagePath,
-                    'country_id'       => $registerUserDTO->country_id,
-                    'notes'            => $registerUserDTO->notes,
+                    'country_id' => $registerUserDTO->country_id,
+                    'notes' => $registerUserDTO->notes,
                 ]);
 
                 $verification->services()->attach(
@@ -44,7 +43,6 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 return $verification;
             });
         } catch (\Throwable $e) {
-
             if ($imagePath) {
                 Storage::disk('public')->delete($imagePath);
             }
@@ -52,7 +50,6 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             throw $e;
         }
     }
-
 
     public function createShopProfile(ProfileShopOwnerDTO $profileShopOwnerDTO)
     {
@@ -65,11 +62,19 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 &$imagePath,
                 &$oldImagePath,
             ) {
-                $userId = Auth::guard('sanctum')->user()->id;
+                $user = Auth::guard('sanctum')->user();
 
-                $shop = Shop::where('user_id', $userId)->first();
+                if (! $user instanceof User) {
+                    throw new \RuntimeException(
+                        'لم يتم العثور على المستخدم المسجّل دخوله.'
+                    );
+                }
+
+                $userId = $user->id;
 
                 // حفظ مسار الصورة القديمة
+                $shop = Shop::where('user_id', $userId)->first();
+
                 $oldImagePath = $shop?->cover_image;
 
                 // رفع الصورة الجديدة
@@ -83,15 +88,15 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                         'user_id' => $userId,
                     ],
                     [
-                        'shop_name'     => $profileShopOwnerDTO->shop_name,
-                        'description'   => $profileShopOwnerDTO->description,
-                        'cover_image'   => $imagePath,
-                        'country_id'    => $profileShopOwnerDTO->country_id,
-                        'city_id'       => $profileShopOwnerDTO->city_id,
-                        'district_id'   => $profileShopOwnerDTO->district_id,
-                        'street'        => $profileShopOwnerDTO->street,
-                        'latitude'      => $profileShopOwnerDTO->latitude,
-                        'longitude'     => $profileShopOwnerDTO->longitude,
+                        'shop_name' => $profileShopOwnerDTO->shop_name,
+                        'description' => $profileShopOwnerDTO->description,
+                        'cover_image' => $imagePath,
+                        'country_id' => $profileShopOwnerDTO->country_id,
+                        'city_id' => $profileShopOwnerDTO->city_id,
+                        'district_id' => $profileShopOwnerDTO->district_id,
+                        'street' => $profileShopOwnerDTO->street,
+                        'latitude' => $profileShopOwnerDTO->latitude,
+                        'longitude' => $profileShopOwnerDTO->longitude,
                         'working_hours' => $profileShopOwnerDTO->working_hours,
                     ]
                 );
@@ -105,7 +110,6 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 return $shop;
             });
         } catch (\Throwable $e) {
-
             $this->deleteImage($imagePath);
 
             throw $e;

@@ -2,11 +2,15 @@
 
 use App\Features\Auth\Controllers\AuthController;
 use App\Features\Brand\Controllers\BrandController;
+use App\Features\Category\Controllers\CategoryController;
 use App\Features\City\Controllers\CityController;
 use App\Features\Country\Controllers\CountryController;
+use App\Features\DeviceModel\Controllers\DeviceModelController;
 use App\Features\Districts\Controllers\DistrictsController;
+use App\Features\Product\Controllers\ProductController;
 use App\Features\Services\Controllers\ServiceController;
 use App\Features\ShopOwner\Controllers\ShopOwnerController;
+use App\Features\ShopProduct\Controllers\ShopProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
@@ -52,7 +56,6 @@ Route::group([
         ->middleware('auth:sanctum');
 });
 
-
 // Route ShopOwner
 Route::group([
     'prefix' => 'shop-owner',
@@ -64,7 +67,6 @@ Route::group([
     Route::get('/get/shop-profile', 'getShopProfile')
         ->middleware('auth:sanctum');
 });
-
 
 // Route countries
 Route::group([
@@ -100,14 +102,70 @@ Route::group([
     Route::get('/get-all-services', 'getAllServices');
 });
 
-
+// Route Brands
 Route::group([
     'prefix' => 'brands',
     'controller' => BrandController::class,
-    'middleware' => 'auth:sanctum'
+    'middleware' => 'auth:sanctum',
 ], function () {
 
-    Route::get('/get-all-brands', 'getAllBrands');
+    Route::get('/get-all', 'getAllBrands');
+    Route::get('/get-for-select', 'getBrandsForSelect');
+    Route::post('/store', 'store');
+    Route::get('/show/{id}', 'show');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
+});
+
+// Route Device Models
+Route::group([
+    'prefix' => 'device-models',
+    'controller' => DeviceModelController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+
+    Route::get('/get-all', 'getAllDeviceModels');
+    Route::post('/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
+});
+
+// Route Categories
+Route::group([
+    'prefix' => 'categories',
+    'controller' => CategoryController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+
+    Route::get('/get-all', 'getAllCategories');
+    Route::get('/get-for-select', 'getCategoriesForSelect');
+    Route::post('/store', 'store');
+    Route::get('/show/{id}', 'show');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
+});
+
+// Route Products
+Route::group([
+    'prefix' => 'products',
+    'controller' => ProductController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+
+    Route::get('/get-all', 'getAllProducts');
+    Route::post('/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
+});
+
+// Route Shop Products
+Route::group([
+    'prefix' => 'shop-products',
+    'controller' => ShopProductController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+
+    Route::get('/get-all', 'getAllShopProducts');
     Route::post('/store', 'store');
     Route::put('/update/{id}', 'update');
     Route::delete('/delete/{id}', 'destroy');

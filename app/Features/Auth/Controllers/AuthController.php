@@ -24,6 +24,7 @@ use App\Features\Auth\UseCases\ResetPasswordUser;
 use App\Features\Auth\UseCases\SendPasswordResetCode;
 use App\Features\Auth\UseCases\SendVerificationEmail;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -38,7 +39,7 @@ class AuthController extends Controller
     ) {}
 
     // register customer
-    public function register(RegisterRequest $registerRequest)
+    public function register(RegisterRequest $registerRequest): JsonResponse
     {
         $request = new RegisterUserDTO(
             $registerRequest->first_name,
@@ -55,8 +56,8 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // login 
-    public function login(LoginRequest $loginRequest)
+    // login
+    public function login(LoginRequest $loginRequest): JsonResponse
     {
         $request = new LoginUserDTO(
             $loginRequest->email,
@@ -68,7 +69,7 @@ class AuthController extends Controller
 
         if (isset($result['error']) && $result['error'] === true) {
             return response()->json([
-                'message' => $result['message']
+                'message' => $result['message'],
             ], 422);
         }
 
@@ -80,13 +81,13 @@ class AuthController extends Controller
     }
 
     // logout
-    public function logout()
+    public function logout(): JsonResponse
     {
         $result = $this->logOutUser->logout();
 
         if (isset($result['error']) && $result['error'] === true) {
             return response()->json([
-                'message' => $result['message']
+                'message' => $result['message'],
             ], 401);
         }
 
@@ -95,8 +96,8 @@ class AuthController extends Controller
         ], 200);
     }
 
-    // send a password reset code to your email 
-    public function sendPasswordResetCode(SendPasswordResetCodeRequest $sendPasswordResetCodeRequest)
+    // send a password reset code to your email
+    public function sendPasswordResetCode(SendPasswordResetCodeRequest $sendPasswordResetCodeRequest): JsonResponse
     {
         $dto = new SendPasswordResetCodeDTO(
             $sendPasswordResetCodeRequest->email
@@ -106,7 +107,7 @@ class AuthController extends Controller
 
         if (isset($result['error']) && $result['error'] === true) {
             return response()->json([
-                'message' => $result['message']
+                'message' => $result['message'],
             ], 422);
         }
 
@@ -116,7 +117,7 @@ class AuthController extends Controller
     }
 
     // reset Password
-    public function resetPassword(ResetPasswordRequest $resetPasswordRequest)
+    public function resetPassword(ResetPasswordRequest $resetPasswordRequest): JsonResponse
     {
         $dto = new ResetPasswordDTO(
             $resetPasswordRequest->email,
@@ -128,7 +129,7 @@ class AuthController extends Controller
 
         if (isset($result['error']) && $result['error'] === true) {
             return response()->json([
-                'message' => $result['message']
+                'message' => $result['message'],
             ], 422);
         }
 
@@ -138,7 +139,7 @@ class AuthController extends Controller
     }
 
     // send email to activate your email address
-    public function sendVerificationEmail(SendVerificationEmailRequest $request)
+    public function sendVerificationEmail(SendVerificationEmailRequest $request): JsonResponse
     {
         $dto = new SendVerificationEmailDTO($request->email);
 
@@ -146,7 +147,7 @@ class AuthController extends Controller
 
         if (isset($result['error']) && $result['error'] === true) {
             return response()->json([
-                'message' => $result['message']
+                'message' => $result['message'],
             ], 422);
         }
 
@@ -155,8 +156,8 @@ class AuthController extends Controller
         ], 200);
     }
 
-    // verify email 
-    public function verifyEmail(VerifyEmailRequest $request)
+    // verify email
+    public function verifyEmail(VerifyEmailRequest $request): JsonResponse
     {
         $verified = $request->fulfill();
 
@@ -172,13 +173,13 @@ class AuthController extends Controller
     }
 
     // resend email activation
-    public function resendVerificationEmail(SendVerificationEmailRequest $request)
+    public function resendVerificationEmail(SendVerificationEmailRequest $request): JsonResponse
     {
         return $this->sendVerificationEmail($request);
     }
 
     // change Password
-    public function changePassword(ChangePasswordRequest $changePasswordRequest)
+    public function changePassword(ChangePasswordRequest $changePasswordRequest): JsonResponse
     {
         $dto = new ChangePasswordDTO(
             $changePasswordRequest->current_password,
@@ -189,7 +190,7 @@ class AuthController extends Controller
 
         if (isset($result['error']) && $result['error'] === true) {
             return response()->json([
-                'message' => $result['message']
+                'message' => $result['message'],
             ], 401);
         }
 
@@ -197,6 +198,4 @@ class AuthController extends Controller
             'message' => 'تم تحديث كلمة المرور بنجاح',
         ], 200);
     }
-
-   
 }

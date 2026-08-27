@@ -8,9 +8,9 @@ use App\Http\Controllers\Controller;
 class DistrictsController extends Controller
 {
     /**
-     * جلب جميع الأحياء المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
+     * Get all districts  .
      */
-    public function getAllDistricts($id)
+    public function getAllDistricts(int $id)
     {
         $districts = Districts::where('city_id', $id)
             ->select(['id', 'name'])

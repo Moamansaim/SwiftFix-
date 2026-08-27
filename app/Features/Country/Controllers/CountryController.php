@@ -4,13 +4,14 @@ namespace App\Features\Country\Controllers;
 
 use App\Features\Country\Models\Country;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class CountryController extends Controller
 {
     /**
-     * جلب جميع الدول المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
+     * Get all countries.
      */
-    public function getAllCountries()
+    public function getAllCountries(): JsonResponse
     {
         $countries = Country::all();
 

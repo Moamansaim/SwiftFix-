@@ -4,13 +4,14 @@ namespace App\Features\City\Controllers;
 
 use App\Features\City\Models\City;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class CityController extends Controller
 {
     /**
-     * جلب جميع المدن المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
+     * Get all cities   .
      */
-    public function getAllCities($id)
+    public function getAllCities(int $id): JsonResponse
     {
         $cities = City::where('country_id', $id)
             ->select(['id', 'name'])
