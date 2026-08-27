@@ -5,6 +5,10 @@ namespace App\Features\ShopOwner\Controllers;
 use App\Features\ShopOwner\UseCases\ListShopOwnerVerifications;
 use Illuminate\Http\Request;
 
+use App\Features\ShopOwner\DTOs\CreateShopDTO;
+use App\Features\ShopOwner\Requests\CreateShopRequest;
+use App\Features\ShopOwner\UseCases\CreateShop;
+
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
 use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
@@ -19,6 +23,7 @@ public function __construct(
     public ShopOwnerVerifications $shopOwnerVerifications,
     public ApproveShopOwnerVerification $approveShopOwnerVerification,
     public ListShopOwnerVerifications $listShopOwnerVerifications,
+    public CreateShop $createShopUseCase,
 ) {}
 
     /**
@@ -143,5 +148,39 @@ public function __construct(
             'message' => 'تم جلب الطلبات بنجاح.',
             'data' => $verifications,
         ], 200);
+    }
+    
+
+    public function createShop(CreateShopRequest $request)
+    {
+        $dto = new CreateShopDTO(
+            (int) $request->user()->id,
+            $request->shop_name,
+            $request->description,
+            $request->file('cover_image'),
+            (int) $request->country_id,
+            (int) $request->city_id,
+            (int) $request->district_id,
+            $request->street,
+            $request->filled('latitude') ? (float) $request->latitude : null,
+            $request->filled('longitude') ? (float) $request->longitude : null,
+            $request->working_hours,
+            $request->service_ids,
+        );
+
+        $result = $this->createShopUseCase->handle($dto);
+
+        if (is_array($result) && ($result['error'] ?? false) === true) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], $result['status'] ?? 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم إنشاء الورشة بنجاح.',
+            'data'    => $result->load(['country', 'city', 'district', 'services']),
+        ], 201);
     }
 }

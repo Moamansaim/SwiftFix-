@@ -4,6 +4,8 @@ namespace App\Features\ShopOwner\Repositories;
 
 use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;   // 👈 الجديد
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
+use App\Features\ShopOwner\DTOs\CreateShopDTO;   // 👈 الجديد
+use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
 use App\Features\ShopOwner\Models\City;
 use App\Features\ShopOwner\Models\Country;
@@ -105,5 +107,54 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             ->with('country')
             ->latest()
             ->get();
+    }
+    public function createShop(CreateShopDTO $dto)
+    {
+        $imagePath = null;
+
+        try {
+            return DB::transaction(function () use ($dto, &$imagePath) {
+                if ($dto->cover_image) {
+                    $imagePath = $dto->cover_image->store('shops/covers', 'public');
+                }
+
+                $shop = Shop::create([
+                    'user_id'       => $dto->user_id,
+                    'shop_name'     => $dto->shop_name,
+                    'description'   => $dto->description,
+                    'cover_image'   => $imagePath,
+                    'country_id'    => $dto->country_id,
+                    'city_id'       => $dto->city_id,
+                    'district_id'   => $dto->district_id,
+                    'street'        => $dto->street,
+                    'latitude'      => $dto->latitude,
+                    'longitude'     => $dto->longitude,
+                    'working_hours' => $dto->working_hours,
+                ]);
+
+                $shop->services()->attach($dto->service_ids);
+
+                return $shop;
+            });
+        } catch (\Throwable $e) {
+            if ($imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            throw $e;
+        }
+    }
+    
+    public function findApprovedVerificationByEmail(string $email)
+    {
+        return ShopOwnerVerification::query()
+            ->where('email', $email)
+            ->where('status', 'approved')
+            ->first();
+    }
+
+    public function userAlreadyHasShop(int $userId): bool
+    {
+        return Shop::query()->where('user_id', $userId)->exists();
     }
 }

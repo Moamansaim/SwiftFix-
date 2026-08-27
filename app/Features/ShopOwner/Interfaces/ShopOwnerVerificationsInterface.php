@@ -6,7 +6,7 @@ use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;
 
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 
-
+use App\Features\ShopOwner\DTOs\CreateShopDTO;
 interface ShopOwnerVerificationsInterface
 {
     public function create(ShopOwnerVerificationsDTO $shopOwnerVerificationsDTO);
@@ -16,4 +16,7 @@ interface ShopOwnerVerificationsInterface
     public function getAllDistrict($id);
     public function approve(ApproveShopOwnerVerificationDTO $dto);
     public function getVerifications(?string $status = null);
+    public function findApprovedVerificationByEmail(string $email);
+    public function userAlreadyHasShop(int $userId): bool;
+    public function createShop(CreateShopDTO $dto);
 }
