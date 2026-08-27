@@ -12,6 +12,8 @@ class Service extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['service_name'];
+
     public function shopOwnerVerifications(): BelongsToMany
     {
         return $this->belongsToMany(

@@ -5,6 +5,7 @@ namespace App\Features\ShopProduct\Models;
 use App\Features\Brand\Models\Brand;
 use App\Features\Category\Models\Category;
 use App\Features\DeviceModel\Models\DeviceModel;
+use App\Features\Product\Models\Product;
 use App\Features\ShopOwner\Models\Shop;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,18 @@ class ShopProduct extends Model
         return $this->belongsTo(
             Shop::class,
             'shop_id',
+            'id'
+        );
+    }
+
+    /**
+     * The product related to this shop product.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(
+            Product::class,
+            'product_id',
             'id'
         );
     }

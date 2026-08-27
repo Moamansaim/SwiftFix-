@@ -5,6 +5,7 @@ namespace App\Features\ShopProduct\Controllers;
 use App\Features\ShopProduct\Models\ShopProduct;
 use App\Features\ShopProduct\Requests\ShopProductRequest;
 use App\Features\ShopProduct\Resources\ShopProductResource;
+use App\Features\ShopProduct\Services\ImageProduct;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -12,14 +13,26 @@ use Illuminate\Support\Facades\Auth;
 class ShopProductController extends Controller
 {
     /**
-     * Get all shop products.
+     * Get all shop products for the authenticated user's shop.
      */
     public function getAllShopProducts(): JsonResponse
     {
-        $products = ShopProduct::with([
-            'product.category',
-            'product.deviceModel',
-        ])->get();
+        $user = Auth::guard('sanctum')->user();
+
+        $shop = $user->shop;
+
+        if (! $shop) {
+            return response()->json([
+                'message' => 'لا توجد ورشة مرتبطة بهذا الحساب.',
+            ], 404);
+        }
+
+        $products = ShopProduct::where('shop_id', $shop->id)
+            ->with([
+                'product.category',
+                'product.deviceModel',
+            ])
+            ->get();
 
         return response()->json([
             'products' => ShopProductResource::collection($products),
@@ -29,21 +42,30 @@ class ShopProductController extends Controller
     /**
      * Store a new shop product.
      */
-    public function store(ShopProductRequest $shopProductRequest): JsonResponse
-    {
-
+    public function store(
+        ShopProductRequest $shopProductRequest,
+        ImageProduct $imageProduct
+    ): JsonResponse {
         $user = Auth::guard('sanctum')->user();
 
-        $shod_id = $user->shops->id;
+        $shop = $user->shop;
+
+        if (! $shop) {
+            return response()->json([
+                'message' => 'لا يوجد متجر مرتبط بهذا المستخدم.',
+            ], 404);
+        }
 
         $validated = $shopProductRequest->validated();
 
         if ($shopProductRequest->hasFile('image')) {
-            $validated['image'] = $shopProductRequest->file('image')
-                ->store('image-product', 'public');
+            $validated['image'] = $imageProduct->upload(
+                $shopProductRequest->file('image'),
+                'image-product'
+            );
         }
 
-        $validated['shop_id'] = $shod_id;
+        $validated['shop_id'] = $shop->id;
 
         ShopProduct::create($validated);
 
@@ -57,13 +79,34 @@ class ShopProductController extends Controller
      */
     public function update(
         ShopProductRequest $shopProductRequest,
-        int $id
+        int $id,
+        ImageProduct $imageProduct
     ): JsonResponse {
-        $product = ShopProduct::findOrFail($id);
+        $user = Auth::guard('sanctum')->user();
 
-        $product->update(
-            $shopProductRequest->validated()
-        );
+        $shop = $user->shop;
+
+        if (! $shop) {
+            return response()->json([
+                'message' => 'لا يوجد متجر مرتبط بهذا المستخدم.',
+            ], 404);
+        }
+
+        $product = ShopProduct::where('id', $id)
+            ->where('shop_id', $shop->id)
+            ->firstOrFail();
+
+        $validated = $shopProductRequest->validated();
+
+        if ($shopProductRequest->hasFile('image')) {
+            $validated['image'] = $imageProduct->replace(
+                $shopProductRequest->file('image'),
+                $product->image,
+                'image-product'
+            );
+        }
+
+        $product->update($validated);
 
         return response()->json([
             'message' => 'تم تعديل المنتج بنجاح.',
@@ -73,9 +116,19 @@ class ShopProductController extends Controller
     /**
      * Delete a shop product.
      */
-    public function destroy(int $id): JsonResponse
-    {
-        $product = ShopProduct::findOrFail($id);
+    public function destroy(
+        int $id,
+        ImageProduct $imageProduct
+    ): JsonResponse {
+        $user = Auth::guard('sanctum')->user();
+
+        $shop_id = $user->shops->id;
+
+        $product = ShopProduct::where('id', $id)
+            ->where('shop_id', $shop_id)
+            ->firstOrFail();
+
+        $imageProduct->delete($product->image);
 
         $product->delete();
 

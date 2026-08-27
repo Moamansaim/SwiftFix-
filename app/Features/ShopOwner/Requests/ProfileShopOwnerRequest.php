@@ -46,10 +46,11 @@ class ProfileShopOwnerRequest extends FormRequest
                 'exists:cities,id',
             ],
 
-            'district_id' => [
+            'district' => [
                 'required',
-                'integer',
-                'exists:districts,id',
+                'string',
+                'min:2',
+                'max:255',
             ],
 
             'street' => [

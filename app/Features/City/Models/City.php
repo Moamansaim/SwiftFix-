@@ -3,7 +3,6 @@
 namespace App\Features\City\Models;
 
 use App\Features\Country\Models\Country;
-use App\Features\Districts\Models\Districts;
 use App\Features\ShopOwner\Models\Shop;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,15 +18,6 @@ class City extends Model
         return $this->belongsTo(
             Country::class,
             'country_id',
-            'id'
-        );
-    }
-
-    public function districts(): HasMany
-    {
-        return $this->hasMany(
-            Districts::class,
-            'city_id',
             'id'
         );
     }

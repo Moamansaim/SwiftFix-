@@ -16,7 +16,7 @@ class ProfileShopOwnerDTO
         public UploadedFile $cover_image,
         public int $country_id,
         public int $city_id,
-        public int $district_id,
+        public string $district,
         public string $street,
         public float $latitude,
         public float $longitude,

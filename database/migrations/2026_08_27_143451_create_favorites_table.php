@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('districts', function (Blueprint $table) {
+        Schema::create('favorites', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('city_id')
-                ->constrained()
+            $table->foreignId('user_id')
+                ->constrained('users', 'id')
                 ->cascadeOnDelete();
+            $table->foreignId('shop_id')
+                ->constrained('shops', 'id')
+                ->cascadeOnDelete();
+            $table->unique(['user_id', 'shop_id']);
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('districts');
+        Schema::dropIfExists('favorites');
     }
 };

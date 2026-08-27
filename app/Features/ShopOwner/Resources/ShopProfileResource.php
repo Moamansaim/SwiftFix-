@@ -18,7 +18,7 @@ class ShopProfileResource extends JsonResource
 
             'country_id' => $this->country_id,
             'city_id' => $this->city_id,
-            'district_id' => $this->district_id,
+            'district' => $this->district,
 
             'street' => $this->street,
 

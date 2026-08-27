@@ -93,7 +93,7 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                         'cover_image' => $imagePath,
                         'country_id' => $profileShopOwnerDTO->country_id,
                         'city_id' => $profileShopOwnerDTO->city_id,
-                        'district_id' => $profileShopOwnerDTO->district_id,
+                        'district' => $profileShopOwnerDTO->district,
                         'street' => $profileShopOwnerDTO->street,
                         'latitude' => $profileShopOwnerDTO->latitude,
                         'longitude' => $profileShopOwnerDTO->longitude,

@@ -205,7 +205,7 @@ return [
         'first_name' => 'الاسم الأول',
 
         'service_ids' => 'الخدمات',
-        'national_id_image' => 'صورة الهوية الوطنية',
+        'national_id_image' => 'صورة الهوية ',
         'notes' => 'ملاحظات',
 
         'country_id' => 'الدولة',
@@ -226,6 +226,16 @@ return [
         'working_hours.*.to' => 'وقت نهاية العمل',
 
         'brand_name' => 'اسم الشركة',
+
+        // Shop Product
+        'shop_id' => 'المتجر',
+        'product_id' => 'المنتج',
+        'device_model_id' => 'الجهاز',
+        'quantity' => 'الكمية',
+        'price' => 'السعر',
+        'image' => 'الصورة',
+        'status' => 'الحالة',
+        'attributes' => 'الخصائص',
     ],
 
 ];

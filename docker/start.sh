@@ -26,10 +26,6 @@ echo "Running ServiceSeeder..."
 
 php /var/www/html/artisan db:seed --class="App\Features\Services\Seeders\ServiceSeeder" --force
 
-echo "Running DistrictsSeeder..."
-
-php /var/www/html/artisan db:seed --class="App\Features\Districts\Seeders\DistrictsSeeder" --force
-
 echo "Running BrandSeeder..."
 
 php /var/www/html/artisan db:seed --class="App\Features\Brand\Seeders\BrandSeeder" --force
