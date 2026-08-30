@@ -5,13 +5,14 @@ namespace App\Features\DeviceModel\Controllers;
 use App\Features\DeviceModel\Models\DeviceModel;
 use App\Features\DeviceModel\Requests\DeviceModelRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class DeviceModelController extends Controller
 {
     /**
      * Get all device models.
      */
-    public function getAllDeviceModels()
+    public function getAllDeviceModels(): JsonResponse
     {
         $deviceModels = DeviceModel::all();
 
@@ -23,7 +24,7 @@ class DeviceModelController extends Controller
     /**
      * Store a new device model.
      */
-    public function store(DeviceModelRequest $deviceModelRequest)
+    public function store(DeviceModelRequest $deviceModelRequest): JsonResponse
     {
         DeviceModel::create($deviceModelRequest->validated());
 
@@ -35,21 +36,21 @@ class DeviceModelController extends Controller
     /**
      * Update an existing device model.
      */
-    public function update(DeviceModelRequest $deviceModelRequest, $id)
+    public function update(DeviceModelRequest $deviceModelRequest, int $id): JsonResponse
     {
         $deviceModel = DeviceModel::findOrFail($id);
 
         $deviceModel->update($deviceModelRequest->validated());
 
         return response()->json([
-            'message' => 'تم تعديل  الجهاز بنجاح.',
+            'message' => 'تم تعديل بيانات الجهاز بنجاح.',
         ], 200);
     }
 
     /**
      * Delete a device model.
      */
-    public function destroy($id)
+    public function destroy(int $id): JsonResponse
     {
         $deviceModel = DeviceModel::findOrFail($id);
 

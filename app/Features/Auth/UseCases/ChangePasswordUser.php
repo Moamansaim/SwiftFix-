@@ -4,6 +4,7 @@ namespace App\Features\Auth\UseCases;
 
 use App\Features\Auth\DTOs\ChangePasswordDTO;
 use App\Features\Auth\Interfaces\AuthRepositoryInterface;
+use App\Features\Auth\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class ChangePasswordUser
@@ -16,13 +17,16 @@ class ChangePasswordUser
     {
         $user = Auth::guard('sanctum')->user();
 
-        if (! $user) {
+        if (! $user instanceof User) {
             return [
                 'error' => true,
                 'message' => 'غير مصرح لك بالوصول. يرجى تسجيل الدخول أولاً.',
             ];
         }
 
-        $this->authRepository->changePassword($changePasswordDTO, $user);
+        $this->authRepository->changePassword(
+            $changePasswordDTO,
+            $user
+        );
     }
 }

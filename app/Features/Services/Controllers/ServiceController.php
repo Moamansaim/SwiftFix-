@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 class ServiceController extends Controller
 {
     /**
-     * جلب جميع الخدمات المتاحة من قاعدة البيانات وإرجاعها بصيغة JSON.
+     * Get all services  .
      */
     public function getAllServices()
     {

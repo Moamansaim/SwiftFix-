@@ -38,6 +38,16 @@ echo "Running DeviceModel..."
 
 php /var/www/html/artisan db:seed --class="App\Features\DeviceModel\Seeders\DeviceModelSeeder" --force
 
+echo "Running Category..."
+
+php /var/www/html/artisan db:seed --class="App\Features\Category\Seeders\CategorySeeder" --force
+
+
+echo "Running Product..."
+
+php /var/www/html/artisan db:seed --class="App\Features\Product\Seeders\ProductSeeder" --force
+
+
 echo "Starting PHP-FPM..."
 
 php-fpm -D

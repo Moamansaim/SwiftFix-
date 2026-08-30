@@ -6,13 +6,13 @@ use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Service extends Model
 {
     use HasFactory;
 
-    public function shopOwnerVerifications()
+    public function shopOwnerVerifications(): BelongsToMany
     {
         return $this->belongsToMany(
             ShopOwnerVerification::class,
@@ -22,7 +22,7 @@ class Service extends Model
         );
     }
 
-    public function shops()
+    public function shops(): BelongsToMany
     {
         return $this->belongsToMany(
             Shop::class,

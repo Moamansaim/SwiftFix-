@@ -22,7 +22,7 @@ class SendVerificationEmail
             ];
         }
 
-        if ($user && ! $user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             $user->sendEmailVerificationNotification();
 
             return [

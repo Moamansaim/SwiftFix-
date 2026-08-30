@@ -6,6 +6,10 @@ use Illuminate\Http\UploadedFile;
 
 class ProfileShopOwnerDTO
 {
+    /**
+     * @param  array<string, array<string, string>>  $working_hours
+     * @param  array<int, int>  $service_ids
+     */
     public function __construct(
         public string $shop_name,
         public string $description,
@@ -20,7 +24,3 @@ class ProfileShopOwnerDTO
         public array $service_ids
     ) {}
 }
-
-
-
-         

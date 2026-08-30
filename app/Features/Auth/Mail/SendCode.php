@@ -4,8 +4,8 @@ namespace App\Features\Auth\Mail;
 
 use App\Features\Auth\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -15,7 +15,8 @@ class SendCode extends Mailable
     use Queueable, SerializesModels;
 
     public User $user;
-    public String $code;
+
+    public string $code;
 
     /**
      * Create a new message instance.
@@ -49,7 +50,7 @@ class SendCode extends Mailable
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {

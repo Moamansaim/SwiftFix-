@@ -7,13 +7,14 @@ use App\Features\Districts\Models\Districts;
 use App\Features\ShopOwner\Models\Shop;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class City extends Model
 {
     use HasFactory;
 
-    public function country()
+    public function country(): BelongsTo
     {
         return $this->belongsTo(
             Country::class,
@@ -22,7 +23,7 @@ class City extends Model
         );
     }
 
-    public function districts()
+    public function districts(): HasMany
     {
         return $this->hasMany(
             Districts::class,
@@ -31,7 +32,7 @@ class City extends Model
         );
     }
 
-    public function shops()
+    public function shops(): HasMany
     {
         return $this->hasMany(
             Shop::class,

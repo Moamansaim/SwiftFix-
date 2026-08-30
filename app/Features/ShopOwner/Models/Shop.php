@@ -2,15 +2,17 @@
 
 namespace App\Features\ShopOwner\Models;
 
+use App\Features\Auth\Models\User;
 use App\Features\City\Models\City;
 use App\Features\Country\Models\Country;
 use App\Features\Districts\Models\Districts;
 use App\Features\Services\Models\Service;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Shop extends Model
 {
-
     protected $fillable = [
         'user_id',
         'shop_name',
@@ -29,7 +31,17 @@ class Shop extends Model
         'working_hours' => 'array',
     ];
 
-    public function country()
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(
+            User::class,
+            'user_id',
+            'id'
+        );
+    }
+
+    public function country(): BelongsTo
     {
         return $this->belongsTo(
             Country::class,
@@ -38,7 +50,7 @@ class Shop extends Model
         );
     }
 
-    public function city()
+    public function city(): BelongsTo
     {
         return $this->belongsTo(
             City::class,
@@ -47,7 +59,7 @@ class Shop extends Model
         );
     }
 
-    public function districts()
+    public function districts(): BelongsTo
     {
         return $this->belongsTo(
             Districts::class,
@@ -56,7 +68,7 @@ class Shop extends Model
         );
     }
 
-    public function services()
+    public function services(): BelongsToMany
     {
         return $this->belongsToMany(
             Service::class,

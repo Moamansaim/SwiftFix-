@@ -18,15 +18,15 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('national_id_image');  // صورة  هوية صاحب المحل
             $table->string('phone_number', 16)->unique();
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending'); // حالة  الطلب : قيد الانتظار , موافق , رفض 
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending'); // حالة  الطلب : قيد الانتظار , موافق , رفض
             $table->foreignId('country_id')
                 ->constrained('countries', 'id');
-            $table->foreignId('reviewed_by') // تمت الموافقة من قبل 
+            $table->foreignId('reviewed_by') // تمت الموافقة من قبل
                 ->nullable()
                 ->constrained('users', 'id');
             $table->timestamp('reviewed_at')  // تاريخ الموافقة
                 ->nullable();
-            $table->text('notes')   // ملاحظة 
+            $table->text('notes')   // ملاحظة
                 ->nullable();
             $table->timestamps();
         });

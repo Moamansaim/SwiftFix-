@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthRepository implements AuthRepositoryInterface
 {
-    public function create(RegisterUserDTO $registerUserDTO)
+    public function create(RegisterUserDTO $registerUserDTO): User
     {
         $user = new User;
         $user->first_name = $registerUserDTO->first_name;
@@ -29,7 +29,7 @@ class AuthRepository implements AuthRepositoryInterface
         return $user;
     }
 
-    public function login(LoginUserDTO $loginUserDTO)
+    public function login(LoginUserDTO $loginUserDTO): ?User
     {
         return User::where('email', $loginUserDTO->email)->first();
     }
@@ -48,17 +48,17 @@ class AuthRepository implements AuthRepositoryInterface
         $user->currentAccessToken()->delete();
     }
 
-    public function findUserByEmailForResetCode(SendPasswordResetCodeDTO $sendPasswordResetCodeDTO)
+    public function findUserByEmailForResetCode(SendPasswordResetCodeDTO $sendPasswordResetCodeDTO): ?User
     {
         return User::where('email', $sendPasswordResetCodeDTO->email)->first();
     }
 
-    public function findByEmail(string $email)
+    public function findByEmail(string $email): ?User
     {
         return User::where('email', $email)->first();
     }
 
-    public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user)
+    public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user): void
     {
         $user->password = Hash::make($resetPasswordDTO->password);
         $user->code = null;
@@ -66,7 +66,7 @@ class AuthRepository implements AuthRepositoryInterface
         $user->save();
     }
 
-    public function changePassword(ChangePasswordDTO $changePasswordDTO, User $user)
+    public function changePassword(ChangePasswordDTO $changePasswordDTO, User $user): void
     {
         $user->password = Hash::make($changePasswordDTO->password);
         $user->save();

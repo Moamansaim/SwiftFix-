@@ -1,11 +1,10 @@
 <?php
 
-namespace  App\Features\ShopOwner\UseCases;
+namespace App\Features\ShopOwner\UseCases;
 
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
-
 
 class ShopOwnerVerifications
 {
@@ -22,6 +21,4 @@ class ShopOwnerVerifications
     {
         return $this->shopOwnerVerificationsInterface->createShopProfile($profileShopOwnerDTO);
     }
-
-    
 }

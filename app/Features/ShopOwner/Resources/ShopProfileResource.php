@@ -5,8 +5,10 @@ namespace App\Features\ShopOwner\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ShopProfileResource  extends JsonResource
+/** * @mixin Shop */
+class ShopProfileResource extends JsonResource
 {
+    /** * @return array<string, mixed> */
     public function toArray(Request $request): array
     {
         return [

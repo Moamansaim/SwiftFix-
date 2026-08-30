@@ -5,14 +5,14 @@ namespace App\Features\Brand\Controllers;
 use App\Features\Brand\Models\Brand;
 use App\Features\Brand\Requests\BrandRequest;
 use App\Http\Controllers\Controller;
-
+use Illuminate\Http\JsonResponse;
 
 class BrandController extends Controller
 {
     /**
-     * جلب جميع العلامات التجارية.
+     * Get all brands.
      */
-    public function getAllBrands()
+    public function getAllBrands(): JsonResponse
     {
         $brands = Brand::all();
 
@@ -22,9 +22,38 @@ class BrandController extends Controller
     }
 
     /**
-     * إضافة علامة تجارية جديدة.
+     * Get all brands for select.
      */
-    public function store(BrandRequest $brandRequest)
+    public function getBrandsForSelect(): JsonResponse
+    {
+        $brands = Brand::select('id', 'brand_name')
+            ->get();
+
+        return response()->json([
+            'brands' => $brands,
+        ], 200);
+    }
+
+    /**
+     * Get a brand with its devices.
+     */
+    public function show(int $id): JsonResponse
+    {
+        $brand = Brand::findOrFail($id);
+
+        $deviceModels = $brand->deviceModels()
+            ->select('id', 'device_model_name')
+            ->get();
+
+        return response()->json([
+            'deviceModels' => $deviceModels,
+        ], 200);
+    }
+
+    /**
+     * Store a new brand.
+     */
+    public function store(BrandRequest $brandRequest): JsonResponse
     {
         Brand::create($brandRequest->validated());
 
@@ -34,9 +63,9 @@ class BrandController extends Controller
     }
 
     /**
-     * تعديل علامة تجارية.
+     * Update an existing brand.
      */
-    public function update(BrandRequest $brandRequest, $id)
+    public function update(BrandRequest $brandRequest, int $id): JsonResponse
     {
         $brand = Brand::findOrFail($id);
 
@@ -48,9 +77,9 @@ class BrandController extends Controller
     }
 
     /**
-     * حذف علامة تجارية.
+     * Delete a brand.
      */
-    public function destroy($id)
+    public function destroy(int $id): JsonResponse
     {
         $brand = Brand::findOrFail($id);
 

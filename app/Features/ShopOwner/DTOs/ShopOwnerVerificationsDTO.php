@@ -6,6 +6,9 @@ use Illuminate\Http\UploadedFile;
 
 class ShopOwnerVerificationsDTO
 {
+    /**
+     * @param  array<int, int>  $service_ids
+     */
     public function __construct(
         public string $first_name,
         public string $last_name,
@@ -14,6 +17,6 @@ class ShopOwnerVerificationsDTO
         public UploadedFile $national_id_image,
         public int $country_id,
         public array $service_ids,
-        public string|null $notes,
+        public ?string $notes,
     ) {}
 }

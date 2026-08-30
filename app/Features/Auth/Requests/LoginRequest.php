@@ -4,7 +4,6 @@ namespace App\Features\Auth\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-
 class LoginRequest extends FormRequest
 {
     public function rules(): array
@@ -19,7 +18,7 @@ class LoginRequest extends FormRequest
             'password' => [
                 'required',
             ],
-            
+
             'remember_me' => [
                 'nullable',
                 'boolean',

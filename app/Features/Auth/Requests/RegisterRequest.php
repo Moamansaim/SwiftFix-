@@ -14,14 +14,14 @@ class RegisterRequest extends FormRequest
                 'required',
                 'string',
                 'max:30',
-                'min:2'
+                'min:2',
             ],
 
             'last_name' => [
                 'required',
                 'string',
                 'max:40',
-                'min:2'
+                'min:2',
             ],
 
             'email' => [

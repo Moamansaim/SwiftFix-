@@ -11,17 +11,17 @@ use App\Features\Auth\Models\User;
 
 interface AuthRepositoryInterface
 {
-    public function create(RegisterUserDTO $registerUserDTO);
+    public function create(RegisterUserDTO $registerUserDTO): User;
 
-    public function login(LoginUserDTO $loginUserDTO);
+    public function login(LoginUserDTO $loginUserDTO): ?User;
 
     public function logout();
 
-    public function findUserByEmailForResetCode(SendPasswordResetCodeDTO $sendPasswordResetCodeDTO);
+    public function findUserByEmailForResetCode(SendPasswordResetCodeDTO $sendPasswordResetCodeDTO): ?User;
 
-    public function findByEmail(string $email);
+    public function findByEmail(string $email): ?User;
 
-    public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user);
+    public function resetPassword(ResetPasswordDTO $resetPasswordDTO, User $user): void;
 
-    public function changePassword(ChangePasswordDTO $changePasswordDTO, User $user);
+    public function changePassword(ChangePasswordDTO $changePasswordDTO, User $user): void;
 }

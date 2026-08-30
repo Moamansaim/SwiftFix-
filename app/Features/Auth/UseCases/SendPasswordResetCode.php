@@ -13,20 +13,21 @@ class SendPasswordResetCode
         private SendEmailInterface $sendEmailRepository,
     ) {}
 
-    public function handle(SendPasswordResetCodeDTO $sendPasswordResetCodeDTO): array
-    {
-        $user = $this->authRepository->findUserByEmailForResetCode($sendPasswordResetCodeDTO);
+    public function handle(
+        SendPasswordResetCodeDTO $sendPasswordResetCodeDTO
+    ): array {
+        $user = $this->authRepository->findUserByEmailForResetCode(
+            $sendPasswordResetCodeDTO
+        );
 
-        if (!$user) {
+        if (! $user) {
             return [
                 'error' => true,
                 'message' => 'عذراً , البريد الإلكتروني غير موجود',
             ];
         }
 
-        if ($user) {
-            $this->sendEmailRepository->sendResetCodeToEmail($user);
-        }
+        $this->sendEmailRepository->sendResetCodeToEmail($user);
 
         return [
             'success' => true,
