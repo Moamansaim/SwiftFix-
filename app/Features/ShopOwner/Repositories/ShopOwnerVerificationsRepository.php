@@ -3,6 +3,7 @@
 namespace App\Features\ShopOwner\Repositories;
 
 use App\Features\Auth\Models\User;
+use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
@@ -114,5 +115,35 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 
             throw $e;
         }
+    }
+
+    public function approve(ApproveShopOwnerVerificationDTO $dto)
+    {
+        $verification = ShopOwnerVerification::findOrFail($dto->verification_id);
+
+        if ($verification->status !== 'pending') {
+            return [
+                'error'   => true,
+                'status'  => 422,
+                'message' => 'تمت مراجعة هذا الطلب مسبقاً.',
+            ];
+        }
+
+        $verification->status      = $dto->status;
+        $verification->notes       = $dto->notes;
+        $verification->reviewed_by = Auth::guard('sanctum')->id();
+        $verification->reviewed_at = now();
+        $verification->save();
+
+        return $verification;
+    }
+
+    public function getVerifications(?string $status = null)
+    {
+        return ShopOwnerVerification::query()
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->with('country')
+            ->latest()
+            ->get();
     }
 }

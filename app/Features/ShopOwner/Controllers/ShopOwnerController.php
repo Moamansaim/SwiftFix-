@@ -4,19 +4,29 @@ namespace App\Features\ShopOwner\Controllers;
 
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
+use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;
 use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Requests\ProfileShopOwnerRequest;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
+use App\Features\ShopOwner\Requests\ApproveShopOwnerVerificationRequest;
 use App\Features\ShopOwner\Resources\ShopProfileResource;
 use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
+use App\Features\ShopOwner\UseCases\ApproveShopOwnerVerification;
+use App\Features\ShopOwner\UseCases\ListShopOwnerVerifications;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
+
+
 
 class ShopOwnerController extends Controller
 {
     public function __construct(
-        private ShopOwnerVerifications $shopOwnerVerifications
+        public ShopOwnerVerifications $shopOwnerVerifications,
+        public ApproveShopOwnerVerification $approveShopOwnerVerification,
+        public ListShopOwnerVerifications $listShopOwnerVerifications,
     ) {}
 
     /**
@@ -92,6 +102,52 @@ class ShopOwnerController extends Controller
 
         return response()->json([
             'data' => new ShopProfileResource($shop),
+        ], 200);
+    }
+
+
+    // دالة الموافقة/الرفض:
+    public function approveVerification(ApproveShopOwnerVerificationRequest $request): JsonResponse
+    {
+        $dto = new ApproveShopOwnerVerificationDTO(
+            (int) $request->verification_id,
+            $request->status,
+            $request->notes,
+        );
+
+        $result = $this->approveShopOwnerVerification->handle($dto);
+
+        if (is_array($result) && ($result['error'] ?? false) === true) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], $result['status'] ?? 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $result->status === 'approved'
+                ? 'تمت الموافقة على الطلب بنجاح.'
+                : 'تم رفض الطلب بنجاح.',
+            'data'    => $result,
+        ], 200);
+    }
+
+    // دالة القائمة:
+    public function getVerifications(Request $request): JsonResponse
+    {
+        $request->validate([
+            'status' => ['nullable', 'in:pending,approved,rejected'],
+        ]);
+
+        $verifications = $this->listShopOwnerVerifications->handle(
+            $request->query('status')
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم جلب الطلبات بنجاح.',
+            'data'    => $verifications,
         ], 200);
     }
 }

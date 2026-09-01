@@ -170,3 +170,9 @@ Route::group([
     Route::put('/update/{id}', 'update');
     Route::delete('/delete/{id}', 'destroy');
 });
+
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(
+    function () {
+    Route::get('/shop-owner-verifications', [ShopOwnerController::class, 'getVerifications']);
+    Route::post('/shop-owner-verifications/approve', [ShopOwnerController::class, 'approveVerification']);
+});

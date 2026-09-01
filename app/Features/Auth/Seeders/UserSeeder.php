@@ -5,9 +5,11 @@ namespace App\Features\Auth\Seeders;
 use App\Features\Auth\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Traits\HasRoles;
 
 class UserSeeder extends Seeder
 {
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles;
     public function run(): void
     {
         User::create(
