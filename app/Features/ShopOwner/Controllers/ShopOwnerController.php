@@ -77,7 +77,7 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-               'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
     }
@@ -91,7 +91,7 @@ class ShopOwnerController extends Controller
             ->where('user_id', $userId)
             ->first();
 
-        if (!$shop) {
+        if (! $shop) {
             return response()->json([
                 'message' => 'لا توجد بيانات مسجلة للملف الشخصي. يرجى إكمال البيانات أولاً.',
             ], 404);
@@ -112,7 +112,7 @@ class ShopOwnerController extends Controller
         ])->get();
 
         return response()->json([
-            'data' => new ShopResource($shop),
+            'data' =>  ShopResource::collection($shop),
         ], 200);
     }
 

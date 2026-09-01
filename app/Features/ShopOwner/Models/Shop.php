@@ -7,7 +7,6 @@ use App\Features\City\Models\City;
 use App\Features\Country\Models\Country;
 use App\Features\Favorite\Models\Favorite;
 use App\Features\FeatureShop\Models\FeatureShop;
-use App\Features\Product\Models\Product;
 use App\Features\Services\Models\Service;
 use App\Features\ShopProduct\Models\ShopProduct;
 use Illuminate\Database\Eloquent\Model;
@@ -80,7 +79,7 @@ class Shop extends Model
             'id'
         );
     }
-    
+
     public function shopProducts(): HasMany
     {
         return $this->hasMany(

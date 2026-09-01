@@ -109,7 +109,7 @@ class ProfileShopOwnerRequest extends FormRequest
             'services.*.price' => [
                 'required',
                 'numeric',
-                'min:0'
+                'min:0',
             ],
         ];
     }

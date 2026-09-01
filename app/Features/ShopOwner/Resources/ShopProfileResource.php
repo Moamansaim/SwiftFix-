@@ -26,9 +26,9 @@ class ShopProfileResource extends JsonResource
                 return [
                     'id' => $service->id,
                     'service_name' => $service->service_name,
-                    'price' => $service->pivot->price
+                    'price' => $service->pivot->price,
                 ];
-            })
+            }),
         ];
     }
 }

@@ -178,8 +178,6 @@ Route::group([
     Route::delete('/delete/{id}', 'destroy');
 });
 
-
-
 // Route favorites
 Route::group([
     'prefix' => 'favorites',
@@ -192,7 +190,6 @@ Route::group([
     Route::delete('/remove/{shopId}', 'removeFromFavorites');
 });
 
-
 // Route customer  review
 Route::group([
     'prefix' => 'reviews',
@@ -203,7 +200,6 @@ Route::group([
     Route::put('/update/{id}', 'update');
     Route::delete('/delete/{id}', 'destroy');
 });
-
 
 // Route  get shop  review
 Route::group([
@@ -228,11 +224,10 @@ Route::group([
 Route::group([
     'prefix' => 'admin/reviews',
     'controller' => AdminReviewController::class,
-    'middleware' =>  'auth:sanctum',
+    'middleware' => 'auth:sanctum',
 ], function () {
     Route::delete('/delete/{id}', 'destroy');
 });
-
 
 // Route  admin review
 Route::group([

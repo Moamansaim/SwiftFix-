@@ -2,7 +2,6 @@
 
 namespace App\Features\FeatureShop\Controllers;
 
-
 use App\Features\FeatureShop\Models\FeatureShop;
 use App\Features\FeatureShop\Requests\FeatureShopRequest;
 use App\Http\Controllers\Controller;
