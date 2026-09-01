@@ -2,11 +2,12 @@
 
 namespace App\Features\ShopProduct\Resources;
 
+use App\Features\ShopProduct\Models\ShopProduct;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin \App\Features\ShopProduct\Models\ShopProduct
+ * @mixin ShopProduct
  */
 class ShopProductResource extends JsonResource
 {
@@ -20,7 +21,9 @@ class ShopProductResource extends JsonResource
 
             'product_name' => $this->product?->product_name,
 
-            'device_model_name' => $this->product?->deviceModel?->model_name,
+            'device_model_id' => $this->device_model_id,
+
+            'device_model_name' => $this->deviceModel?->device_model_name,
 
             'category_name' => $this->product?->category?->category_name,
 
@@ -34,7 +37,7 @@ class ShopProductResource extends JsonResource
 
             'status' => $this->status,
 
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
         ];
     }
 }

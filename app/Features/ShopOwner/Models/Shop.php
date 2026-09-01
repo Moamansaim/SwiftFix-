@@ -5,11 +5,15 @@ namespace App\Features\ShopOwner\Models;
 use App\Features\Auth\Models\User;
 use App\Features\City\Models\City;
 use App\Features\Country\Models\Country;
-use App\Features\Districts\Models\Districts;
+use App\Features\Favorite\Models\Favorite;
+use App\Features\FeatureShop\Models\FeatureShop;
+use App\Features\Product\Models\Product;
 use App\Features\Services\Models\Service;
+use App\Features\ShopProduct\Models\ShopProduct;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Shop extends Model
 {
@@ -20,7 +24,7 @@ class Shop extends Model
         'cover_image',
         'country_id',
         'city_id',
-        'district_id',
+        'district',
         'street',
         'latitude',
         'longitude',
@@ -30,7 +34,6 @@ class Shop extends Model
     protected $casts = [
         'working_hours' => 'array',
     ];
-
 
     public function user(): BelongsTo
     {
@@ -59,15 +62,6 @@ class Shop extends Model
         );
     }
 
-    public function districts(): BelongsTo
-    {
-        return $this->belongsTo(
-            Districts::class,
-            'district_id',
-            'id'
-        );
-    }
-
     public function services(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -75,6 +69,33 @@ class Shop extends Model
             'service_shop',
             'shop_id',
             'service_id',
+        )->withPivot('price');
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(
+            Favorite::class,
+            'shop_id',
+            'id'
+        );
+    }
+    
+    public function shopProducts(): HasMany
+    {
+        return $this->hasMany(
+            ShopProduct::class,
+            'shop_id',
+            'id'
+        );
+    }
+
+    public function featuresShop(): HasMany
+    {
+        return $this->hasMany(
+            FeatureShop::class,
+            'shop_id',
+            'id'
         );
     }
 }

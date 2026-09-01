@@ -15,21 +15,20 @@ class ShopProfileResource extends JsonResource
             'shop_name' => $this->shop_name,
             'description' => $this->description,
             'cover_image' => $this->cover_image,
-
             'country_id' => $this->country_id,
             'city_id' => $this->city_id,
-            'district_id' => $this->district_id,
-
+            'district' => $this->district,
             'street' => $this->street,
-
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
-
             'working_hours' => $this->working_hours,
-
-            'service_ids' => $this->services
-                ->pluck('id')
-                ->values(),
+            'services' => $this->services->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'service_name' => $service->service_name,
+                    'price' => $service->pivot->price
+                ];
+            })
         ];
     }
 }

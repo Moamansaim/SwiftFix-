@@ -46,10 +46,11 @@ class ProfileShopOwnerRequest extends FormRequest
                 'exists:cities,id',
             ],
 
-            'district_id' => [
+            'district' => [
                 'required',
-                'integer',
-                'exists:districts,id',
+                'string',
+                'min:2',
+                'max:255',
             ],
 
             'street' => [
@@ -94,16 +95,21 @@ class ProfileShopOwnerRequest extends FormRequest
                 new TimeAfter,
             ],
 
-            'service_ids' => [
+            'services' => [
                 'required',
                 'array',
                 'min:1',
             ],
 
-            'service_ids.*' => [
+            'services.*' => [
                 'required',
-                'integer',
-                'exists:services,id',
+                'array',
+            ],
+
+            'services.*.price' => [
+                'required',
+                'numeric',
+                'min:0'
             ],
         ];
     }

@@ -6,8 +6,12 @@ use App\Features\Category\Controllers\CategoryController;
 use App\Features\City\Controllers\CityController;
 use App\Features\Country\Controllers\CountryController;
 use App\Features\DeviceModel\Controllers\DeviceModelController;
-use App\Features\Districts\Controllers\DistrictsController;
+use App\Features\Favorite\Controller\FavoriteController;
 use App\Features\Product\Controllers\ProductController;
+use App\Features\Review\Controllers\AdminReviewController;
+use App\Features\Review\Controllers\CustomerReviewController;
+use App\Features\Review\Controllers\ShopOwnerReviewController;
+use App\Features\Review\Controllers\ShopReviewController;
 use App\Features\Services\Controllers\ServiceController;
 use App\Features\ShopOwner\Controllers\ShopOwnerController;
 use App\Features\ShopProduct\Controllers\ShopProductController;
@@ -73,25 +77,24 @@ Route::group([
     'prefix' => 'countries',
     'controller' => CountryController::class,
 ], function () {
-    Route::get('/get-all-countries', 'getAllCountries');
+    Route::get('/get-all', 'getAllCountries');
+    Route::get('/get-for-select', 'getCountriesForSelect');
+    Route::post('/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
 });
 
-// Route cities
+// Routes cities
 Route::group([
     'prefix' => 'cities',
     'controller' => CityController::class,
+    'middleware' => 'auth:sanctum',
 ], function () {
-    Route::get('/get-all-cities/{id}', 'getAllCities')
-        ->middleware('auth:sanctum');
-});
-
-// Route districts
-Route::group([
-    'prefix' => 'districts',
-    'controller' => DistrictsController::class,
-], function () {
-    Route::get('/get-all-districts/{id}', 'getAllDistricts')
-        ->middleware('auth:sanctum');
+    Route::get('/get-cities-by-country/{id}', 'getCitiesByCountry');
+    Route::get('/get-all', 'getAllCities');
+    Route::post('/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
 });
 
 // Route services
@@ -99,7 +102,11 @@ Route::group([
     'prefix' => 'services',
     'controller' => ServiceController::class,
 ], function () {
-    Route::get('/get-all-services', 'getAllServices');
+    Route::get('/get-all', 'getAllServices');
+    Route::get('/get-for-select', 'getServicesForSelect');
+    Route::post('/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
 });
 
 // Route Brands
@@ -169,4 +176,68 @@ Route::group([
     Route::post('/store', 'store');
     Route::put('/update/{id}', 'update');
     Route::delete('/delete/{id}', 'destroy');
+});
+
+
+
+// Route favorites
+Route::group([
+    'prefix' => 'favorites',
+    'controller' => FavoriteController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+
+    Route::post('/add/{shopId}', 'addToFavorites');
+    Route::get('/get-my-favorites', 'getMyFavorites');
+    Route::delete('/remove/{shopId}', 'removeFromFavorites');
+});
+
+
+// Route customer  review
+Route::group([
+    'prefix' => 'reviews',
+    'controller' => CustomerReviewController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+    Route::post('/{shopId}/reviews/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
+});
+
+
+// Route  get shop  review
+Route::group([
+    'prefix' => 'shops',
+    'controller' => ShopReviewController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+    Route::get('/{shopId}/reviews', 'index');
+});
+
+// Route  shop owner  review
+Route::group([
+    'prefix' => 'shop-owner/reviews',
+    'controller' => ShopOwnerReviewController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+    Route::get('/get-all', 'index');
+    Route::patch('/reply/{id}', 'reply');
+});
+
+// Route  admin review
+Route::group([
+    'prefix' => 'admin/reviews',
+    'controller' => AdminReviewController::class,
+    'middleware' =>  'auth:sanctum',
+], function () {
+    Route::delete('/delete/{id}', 'destroy');
+});
+
+
+// Route  admin review
+Route::group([
+    'prefix' => 'home',
+    'controller' => ShopOwnerController::class,
+], function () {
+    Route::get('/get-all-shop', 'getAllShop');
 });

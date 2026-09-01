@@ -54,13 +54,11 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     public function createShopProfile(ProfileShopOwnerDTO $profileShopOwnerDTO)
     {
         $imagePath = null;
-        $oldImagePath = null;
 
         try {
             return DB::transaction(function () use (
                 $profileShopOwnerDTO,
-                &$imagePath,
-                &$oldImagePath,
+                &$imagePath
             ) {
                 $user = Auth::guard('sanctum')->user();
 
@@ -72,9 +70,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 
                 $userId = $user->id;
 
-                // حفظ مسار الصورة القديمة
+                // الحصول على الورشة الحالية
                 $shop = Shop::where('user_id', $userId)->first();
 
+                // حفظ مسار الصورة القديمة
                 $oldImagePath = $shop?->cover_image;
 
                 // رفع الصورة الجديدة
@@ -83,6 +82,7 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     'shop-owner/cover-image-profile'
                 );
 
+                // إنشاء أو تحديث الورشة
                 $shop = Shop::updateOrCreate(
                     [
                         'user_id' => $userId,
@@ -93,7 +93,7 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                         'cover_image' => $imagePath,
                         'country_id' => $profileShopOwnerDTO->country_id,
                         'city_id' => $profileShopOwnerDTO->city_id,
-                        'district_id' => $profileShopOwnerDTO->district_id,
+                        'district' => $profileShopOwnerDTO->district,
                         'street' => $profileShopOwnerDTO->street,
                         'latitude' => $profileShopOwnerDTO->latitude,
                         'longitude' => $profileShopOwnerDTO->longitude,
@@ -101,16 +101,35 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     ]
                 );
 
-                $shop->services()->sync(
-                    $profileShopOwnerDTO->service_ids
-                );
+                // تجهيز الخدمات مع الأسعار
+                $services = collect($profileShopOwnerDTO->services)
+                    ->mapWithKeys(function ($service) {
+                        return [
+                            $service['service_id'] => [
+                                'price' => $service['price'],
+                            ],
+                        ];
+                    })
+                    ->toArray();
 
-                $this->deleteImage($oldImagePath);
+                // حفظ الخدمات
+                $shop->services()->sync($services);
+
+                // حذف الصورة القديمة بعد نجاح الـ Transaction
+                if ($oldImagePath) {
+                    DB::afterCommit(function () use ($oldImagePath) {
+                        $this->deleteImage($oldImagePath);
+                    });
+                }
 
                 return $shop;
             });
         } catch (\Throwable $e) {
-            $this->deleteImage($imagePath);
+
+            // حذف الصورة الجديدة إذا فشلت العملية
+            if ($imagePath) {
+                $this->deleteImage($imagePath);
+            }
 
             throw $e;
         }

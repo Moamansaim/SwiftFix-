@@ -3,10 +3,12 @@
 namespace App\Features\Auth\Models;
 
 use App\Features\Auth\Notifications\VerifyEmailNotification;
+use App\Features\Favorite\Models\Favorite;
 use App\Features\ShopOwner\Models\Shop;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -66,11 +68,19 @@ class User extends Authenticatable implements MustVerifyEmail
         ])->save();
     }
 
+    public function shop(): HasOne
+    {
+        return $this->hasOne(
+            Shop::class,
+            'user_id',
+            'id'
+        );
+    }
 
-    public function shops(): HasMany
+    public function favorites(): HasMany
     {
         return $this->hasMany(
-            Shop::class,
+            Favorite::class,
             'user_id',
             'id'
         );
