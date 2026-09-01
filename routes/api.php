@@ -232,3 +232,12 @@ Route::group([
 ], function () {
     Route::delete('/delete/{id}', 'destroy');
 });
+
+
+// Route  admin review
+Route::group([
+    'prefix' => 'home',
+    'controller' => ShopOwnerController::class,
+], function () {
+    Route::get('/get-all-shop', 'getAllShop');
+});

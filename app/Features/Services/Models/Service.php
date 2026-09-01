@@ -31,6 +31,6 @@ class Service extends Model
             'service_shop',
             'service_id',
             'shop_id',
-        );
+        )->withPivot('price');
     }
 }

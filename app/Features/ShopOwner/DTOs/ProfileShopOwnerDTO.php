@@ -8,7 +8,7 @@ class ProfileShopOwnerDTO
 {
     /**
      * @param  array<string, array<string, string>>  $working_hours
-     * @param  array<int, int>  $service_ids
+     * @param  array<int, int>  $services
      */
     public function __construct(
         public string $shop_name,
@@ -21,6 +21,6 @@ class ProfileShopOwnerDTO
         public float $latitude,
         public float $longitude,
         public array $working_hours,
-        public array $service_ids
+        public array $services
     ) {}
 }

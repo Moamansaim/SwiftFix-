@@ -21,7 +21,9 @@ class ShopProductResource extends JsonResource
 
             'product_name' => $this->product?->product_name,
 
-            'device_model_name' => $this->product?->deviceModel?->device_model_name,
+            'device_model_id' => $this->device_model_id,
+
+            'device_model_name' => $this->deviceModel?->device_model_name,
 
             'category_name' => $this->product?->category?->category_name,
 

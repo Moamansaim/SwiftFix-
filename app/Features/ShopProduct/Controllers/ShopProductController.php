@@ -30,7 +30,7 @@ class ShopProductController extends Controller
         $products = ShopProduct::where('shop_id', $shop->id)
             ->with([
                 'product.category',
-                'product.deviceModel',
+                'deviceModel',
             ])
             ->get();
 

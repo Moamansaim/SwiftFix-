@@ -27,7 +27,7 @@ class Product extends Model
         );
     }
 
-    public function DeviceModel(): BelongsTo
+    public function deviceModel(): BelongsTo
     {
         return $this->belongsTo(
             DeviceModel::class,

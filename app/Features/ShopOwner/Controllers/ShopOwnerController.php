@@ -7,7 +7,9 @@ use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Requests\ProfileShopOwnerRequest;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
+use App\Features\ShopOwner\Resources\ShopDetailsResource;
 use App\Features\ShopOwner\Resources\ShopProfileResource;
+use App\Features\ShopOwner\Resources\ShopResource;
 use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -58,12 +60,12 @@ class ShopOwnerController extends Controller
             $shopOwnerVerificationRequest->cover_image,
             $shopOwnerVerificationRequest->country_id,
             $shopOwnerVerificationRequest->city_id,
-            $shopOwnerVerificationRequest->district_id,
+            $shopOwnerVerificationRequest->district,
             $shopOwnerVerificationRequest->street,
             $shopOwnerVerificationRequest->latitude,
             $shopOwnerVerificationRequest->longitude,
             $shopOwnerVerificationRequest->working_hours,
-            $shopOwnerVerificationRequest->service_ids
+            $shopOwnerVerificationRequest->services
         );
 
         try {
@@ -75,7 +77,7 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+               'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
     }
@@ -83,15 +85,51 @@ class ShopOwnerController extends Controller
     // Get shop profile data.
     public function getShopProfile(): JsonResponse
     {
-
         $userId = Auth::guard('sanctum')->id();
 
         $shop = Shop::with('services')
             ->where('user_id', $userId)
-            ->firstOrFail();
+            ->first();
+
+        if (!$shop) {
+            return response()->json([
+                'message' => 'لا توجد بيانات مسجلة للملف الشخصي. يرجى إكمال البيانات أولاً.',
+            ], 404);
+        }
 
         return response()->json([
             'data' => new ShopProfileResource($shop),
+        ], 200);
+    }
+
+    // Get all shop  data.
+    public function getAllShop(): JsonResponse
+    {
+        $shop = Shop::with([
+            'services',
+            'country',
+            'city',
+        ])->get();
+
+        return response()->json([
+            'data' => new ShopResource($shop),
+        ], 200);
+    }
+
+    // Get all shops data.
+    public function shopDetails(): JsonResponse
+    {
+        $shops = Shop::with([
+            'services',
+            'country',
+            'city',
+            'favorites',
+            'shopProducts.product.category',
+            'shopProducts.product.deviceModel',
+        ])->get();
+
+        return response()->json([
+            'data' => ShopDetailsResource::collection($shops),
         ], 200);
     }
 }

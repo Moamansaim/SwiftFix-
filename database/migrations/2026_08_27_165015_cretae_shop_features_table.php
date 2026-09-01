@@ -18,7 +18,6 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('feature');
             $table->timestamps();
-            $table->unique(['shop_id', 'feature']);
         });
     }
 

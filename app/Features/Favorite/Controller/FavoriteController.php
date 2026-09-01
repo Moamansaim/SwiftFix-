@@ -37,7 +37,6 @@ class FavoriteController extends Controller
 
         return response()->json([
             'message' => 'تمت إضافة الورشة إلى المفضلة بنجاح.',
-            'favorite' => $favorite,
         ], 201);
     }
 
