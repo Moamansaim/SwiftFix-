@@ -5,21 +5,25 @@ namespace App\Features\ShopOwner\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** * @mixin Shop */
-class ShopResource extends JsonResource
+/** * @mixin ShopOwnerVerification */
+class ShopOwnerVerificationResource extends JsonResource
 {
     /** * @return array<string, mixed> */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'shop_name' => $this->shop_name,
-            'cover_image' => $this->cover_image,
+            'full_name' => $this->first_name.' '.$this->last_name,
+            'email' => $this->email,
+            'national_id_image' => $this->national_id_image,
+            'commercial_record_image' => $this->commercial_record_image,
+            'phone_number' => $this->phone_number,
             'country_name' => $this->country->name,
-            'city_name' => $this->city->name,
-            'district' => $this->district,
-            'street' => $this->street,
             'status' => $this->status,
+            'notes' => $this->notes,
+            'reviewed_by' => $this->reviewed_by,
+            'reviewed_at' => $this->reviewed_at,
+            'created_at' => $this->created_at,
             'services' => $this->services->map(function ($service) {
                 return [
                     'service_name' => $service->service_name,

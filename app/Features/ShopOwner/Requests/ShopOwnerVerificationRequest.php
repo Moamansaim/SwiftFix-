@@ -48,6 +48,13 @@ class ShopOwnerVerificationRequest extends FormRequest
                 'max:2048',
             ],
 
+            'commercial_record_image' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg',
+                'max:2048',
+            ],
+
             'country_id' => [
                 'required',
                 'exists:countries,id',

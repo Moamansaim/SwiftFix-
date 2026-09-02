@@ -228,7 +228,7 @@ return [
         'brand_name' => 'اسم الشركة',
 
         // Shop Product
-        'shop_id' => 'المتجر',
+        'shop_id' => 'الورشة',
         'product_id' => 'المنتج',
         'device_model_id' => 'الجهاز',
         'quantity' => 'الكمية',
@@ -236,6 +236,7 @@ return [
         'image' => 'الصورة',
         'status' => 'الحالة',
         'attributes' => 'الخصائص',
+        'commercial_record_image' => 'السجل التجاري أو صورة الترخيص',
     ],
 
 ];

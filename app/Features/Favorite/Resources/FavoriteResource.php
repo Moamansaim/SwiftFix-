@@ -17,25 +17,24 @@ class FavoriteResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'shop_name' => $this->shop->shop_name,
+            'id' => $this->id,
 
-            'description' => $this->shop->description,
+            'shop_name' => $this->shop?->shop_name,
 
-            'cover_image' => $this->shop->cover_image,
+            'cover_image' => $this->shop?->cover_image,
 
-            'country' => $this->shop->country?->country_name,
+            'country_name' => $this->shop?->country?->name,
 
-            'city' => $this->shop->city?->city_name,
+            'city_name' => $this->shop?->city?->name,
 
-            'district' => $this->shop->district,
+            'district' => $this->shop?->district,
 
-            'street' => $this->shop->street,
+            'street' => $this->shop?->street,
 
-            'working_hours' => $this->shop->working_hours,
+            'status' => $this->shop?->status,
 
-            'services' => $this->shop->services->map(function ($service) {
+            'services' => $this->shop?->services->map(function ($service) {
                 return [
-                    'id' => $service->id,
                     'service_name' => $service->service_name,
                 ];
             }),

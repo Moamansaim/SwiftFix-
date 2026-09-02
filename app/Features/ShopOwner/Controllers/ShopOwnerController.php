@@ -5,13 +5,17 @@ namespace App\Features\ShopOwner\Controllers;
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Models\Shop;
+use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use App\Features\ShopOwner\Requests\ProfileShopOwnerRequest;
 use App\Features\ShopOwner\Requests\ShopOwnerVerificationRequest;
+use App\Features\ShopOwner\Requests\ShopStatusRequest;
 use App\Features\ShopOwner\Resources\ShopDetailsResource;
+use App\Features\ShopOwner\Resources\ShopOwnerVerificationResource;
 use App\Features\ShopOwner\Resources\ShopProfileResource;
 use App\Features\ShopOwner\Resources\ShopResource;
 use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,6 +36,7 @@ class ShopOwnerController extends Controller
             $shopOwnerVerificationRequest->email,
             $shopOwnerVerificationRequest->phone_number,
             $shopOwnerVerificationRequest->national_id_image,
+            $shopOwnerVerificationRequest->commercial_record_image,
             $shopOwnerVerificationRequest->country_id,
             $shopOwnerVerificationRequest->service_ids,
             $shopOwnerVerificationRequest->notes,
@@ -46,7 +51,64 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => $e->getMessage(),
+                //'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+            ], 500);
+        }
+    }
+
+    /**
+     * Approve a shop owner verification request and create their account.
+     */
+    public function accountCreationApproval(int $id): JsonResponse
+    {
+        try {
+            $this->shopOwnerVerifications
+                ->accountCreationApproval($id);
+
+            return response()->json([
+                'message' => 'تم إنشاء حساب صاحب الورشة بنجاح.',
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'فشل إنشاء حساب صاحب الورشة، يرجى المحاولة لاحقاً.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Reject a shop owner verification request.
+     */
+    public function accountCreationRefused(int $id): JsonResponse
+    {
+        try {
+            $this->shopOwnerVerifications
+                ->accountCreationRefused($id);
+
+            return response()->json([
+                'message' => 'تم رفض طلب التحقق بنجاح.',
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'فشل رفض طلب التحقق، يرجى المحاولة لاحقاً.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete a shop owner verification request.
+     */
+    public function delete(int $id): JsonResponse
+    {
+        try {
+            $this->shopOwnerVerifications->delete($id);
+
+            return response()->json([
+                'message' => 'تم حذف طلب التحقق بنجاح.',
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'فشل حذف طلب التحقق، يرجى المحاولة لاحقاً.',
             ], 500);
         }
     }
@@ -112,7 +174,7 @@ class ShopOwnerController extends Controller
         ])->get();
 
         return response()->json([
-            'data' =>  ShopResource::collection($shop),
+            'data' => ShopResource::collection($shop),
         ], 200);
     }
 
@@ -131,5 +193,52 @@ class ShopOwnerController extends Controller
         return response()->json([
             'data' => ShopDetailsResource::collection($shops),
         ], 200);
+    }
+
+    /**
+     * Get all shop owner verification requests.
+     */
+    public function getAllShopOwnerVerificationData(): JsonResponse
+    {
+        $shopOwnerVerificationData = ShopOwnerVerification::with([
+            'services',
+            'country',
+        ])->get();
+
+        return response()->json([
+            'data' => ShopOwnerVerificationResource::collection(
+                $shopOwnerVerificationData
+            ),
+        ], 200);
+    }
+
+
+    /**
+     * Update shop status.
+     */
+    public function updateShopStatus(ShopStatusRequest $request, int $id): JsonResponse
+    {
+        try {
+
+            $userId = Auth::guard('sanctum')->id();
+
+            $shop = Shop::where('id', $id)
+                ->where('user_id', $userId)
+                ->firstOrFail();
+
+            $shop->update([
+                'status' => $request->status,
+            ]);
+
+            return response()->json([
+                'message' => 'تم تحديث حالة الورشة بنجاح.',
+                'status' => $shop->status,
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+
+            return response()->json([
+                'message' => 'الورشة غير موجودة أو لا تملك صلاحية تعديلها.',
+            ], 404);
+        }
     }
 }
