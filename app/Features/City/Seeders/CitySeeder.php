@@ -496,6 +496,7 @@ class CitySeeder extends Seeder
         ];
 
         foreach ($cities as $countryName => $countryCities) {
+
             if (! $countries->has($countryName)) {
                 throw new RuntimeException(
                     "Country '{$countryName}' not found in countries table."
@@ -504,26 +505,13 @@ class CitySeeder extends Seeder
 
             $countryId = $countries->get($countryName);
 
-            $rows = collect($countryCities)
-                ->unique()
-                ->map(fn ($cityName) => [
+            foreach (collect($countryCities)->unique() as $cityName) {
+
+                City::firstOrCreate([
                     'name' => $cityName,
                     'country_id' => $countryId,
-                ])
-                ->values()
-                ->all();
-
-            DB::table('cities')->upsert(
-                $rows,
-                ['country_id', 'name'],
-                []
-            );
-
-            // City::upsert([
-            //     $rows,
-            //     ['country_id', 'name'],
-            //     []
-            // ]);
+                ]);
+            }
         }
     }
 }

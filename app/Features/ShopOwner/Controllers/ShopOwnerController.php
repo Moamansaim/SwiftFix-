@@ -51,9 +51,37 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-                'message' => $e->getMessage(),
-                //'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
+        }
+    }
+
+    /**
+     * Retrieve all shop owner verification requests with their
+     * associated services and country information.
+     *
+     * @return JsonResponse
+     */
+    public function getShopOwnerVerificationData(): JsonResponse
+    {
+        try {
+            // Retrieve all verification requests with their related services and country.
+            $shopOwnerVerifications = ShopOwnerVerification::with([
+                'services',
+                'country',
+            ])->get();
+
+            // Transform the collection using the verification resource.
+            return response()->json([
+                'data' => ShopOwnerVerificationResource::collection(
+                    $shopOwnerVerifications
+                ),
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            // Return a 404 response if the verification data cannot be found.
+            return response()->json([
+                'message' => 'بيانات التحقق غير موجودة.',
+            ], 404);
         }
     }
 

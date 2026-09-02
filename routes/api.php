@@ -101,6 +101,9 @@ Route::group([
 
     Route::patch('{id}/status', 'updateShopStatus')
         ->middleware('auth:sanctum');
+
+    Route::get('/get-shop-owner-verification-data', 'getShopOwnerVerificationData')
+        ->middleware('auth:sanctum');
 });
 
 // Country routes
