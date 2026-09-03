@@ -2,8 +2,8 @@
 
 namespace App\Features\Country\Seeders;
 
+use App\Features\Country\Models\Country;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class CountrySeeder extends Seeder
 {
@@ -34,10 +34,10 @@ class CountrySeeder extends Seeder
             ['name' => 'تونس'],
         ];
 
-        DB::table('countries')->upsert(
-            $countries,
-            ['name'],
-            []
-        );
+        foreach ($countries as $country) {
+            Country::firstOrCreate([
+                'name' => $country['name'],
+            ]);
+        }
     }
 }

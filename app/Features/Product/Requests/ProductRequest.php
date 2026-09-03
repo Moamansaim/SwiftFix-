@@ -29,11 +29,6 @@ class ProductRequest extends FormRequest
                 'exists:categories,id',
             ],
 
-            'device_model_id' => [
-                'nullable',
-                'integer',
-                'exists:device_models,id',
-            ],
         ];
     }
 }

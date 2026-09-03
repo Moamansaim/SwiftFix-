@@ -4,6 +4,7 @@ namespace App\Features\DeviceModel\Controllers;
 
 use App\Features\DeviceModel\Models\DeviceModel;
 use App\Features\DeviceModel\Requests\DeviceModelRequest;
+use App\Features\DeviceModel\Resources\DeviceModelResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
@@ -14,10 +15,10 @@ class DeviceModelController extends Controller
      */
     public function getAllDeviceModels(): JsonResponse
     {
-        $deviceModels = DeviceModel::all();
+        $deviceModels = DeviceModel::with('brand')->get();
 
         return response()->json([
-            'device_models' => $deviceModels,
+            'device_models' => DeviceModelResource::collection($deviceModels),
         ], 200);
     }
 

@@ -4,7 +4,6 @@ namespace App\Features\FeatureShop\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-
 class FeatureShopRequest extends FormRequest
 {
     /**
@@ -17,14 +16,14 @@ class FeatureShopRequest extends FormRequest
                 'required',
                 'string',
                 'min:2',
-                'max:255'
+                'max:255',
             ],
 
             'shop_id' => [
                 'required',
                 'integer',
-                'exists:shops,id'
-            ]
+                'exists:shops,id',
+            ],
 
         ];
     }

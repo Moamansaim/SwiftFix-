@@ -15,7 +15,6 @@ class Product extends Model
     protected $fillable = [
         'product_name',
         'category_id',
-        'device_model_id',
     ];
 
     public function category(): BelongsTo
@@ -23,15 +22,6 @@ class Product extends Model
         return $this->belongsTo(
             Category::class,
             'category_id',
-            'id'
-        );
-    }
-
-    public function deviceModel(): BelongsTo
-    {
-        return $this->belongsTo(
-            DeviceModel::class,
-            'device_model_id',
             'id'
         );
     }

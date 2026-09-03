@@ -17,25 +17,59 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 {
     use UploadImage;
 
-    public function create(ShopOwnerVerificationsDTO $registerUserDTO)
-    {
-        $imagePath = null;
+    /**
+     * Create a shop owner verification request.
+     */
+    public function create(
+        ShopOwnerVerificationsDTO $registerUserDTO
+    ): ShopOwnerVerification {
+
+        $uploadedImages = [];
 
         try {
-            return DB::transaction(function () use ($registerUserDTO, &$imagePath) {
-                $imagePath = $registerUserDTO->national_id_image
-                    ->store('shop-owner/national-ids', 'public');
 
+            return DB::transaction(function () use (
+                $registerUserDTO,
+                &$uploadedImages
+            ) {
+
+                // Upload national ID image.
+                $uploadedImages['national_id_image'] =
+                    $registerUserDTO->national_id_image
+                    ->store(
+                        'shop-owner/national-ids',
+                        'public'
+                    );
+
+                // Upload commercial record image if provided.
+                if ($registerUserDTO->commercial_record_image) {
+
+                    $uploadedImages['commercial_record_image'] =
+                        $registerUserDTO->commercial_record_image
+                        ->store(
+                            'shop-owner/commercial-records',
+                            'public'
+                        );
+                }
+
+                // Create verification request.
                 $verification = ShopOwnerVerification::create([
                     'first_name' => $registerUserDTO->first_name,
                     'last_name' => $registerUserDTO->last_name,
                     'email' => $registerUserDTO->email,
                     'phone_number' => $registerUserDTO->phone_number,
-                    'national_id_image' => $imagePath,
+
+                    'national_id_image' =>
+                    $uploadedImages['national_id_image'],
+
+                    'commercial_record_image' =>
+                    $uploadedImages['commercial_record_image'] ?? null,
+
                     'country_id' => $registerUserDTO->country_id,
                     'notes' => $registerUserDTO->notes,
                 ]);
 
+                // Attach services.
                 $verification->services()->attach(
                     $registerUserDTO->service_ids
                 );
@@ -43,7 +77,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 return $verification;
             });
         } catch (\Throwable $e) {
-            if ($imagePath) {
+
+            // Delete uploaded images if the transaction fails.
+            foreach ($uploadedImages as $imagePath) {
+
                 Storage::disk('public')->delete($imagePath);
             }
 
@@ -51,8 +88,12 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         }
     }
 
-    public function createShopProfile(ProfileShopOwnerDTO $profileShopOwnerDTO)
-    {
+    /**
+     * Create a shop owner profile.
+     */
+    public function createShopProfile(
+        ProfileShopOwnerDTO $profileShopOwnerDTO
+    ): Shop {
         $imagePath = null;
 
         try {
@@ -70,19 +111,19 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 
                 $userId = $user->id;
 
-                // الحصول على الورشة الحالية
+                // Get the current shop.
                 $shop = Shop::where('user_id', $userId)->first();
 
-                // حفظ مسار الصورة القديمة
+                // Save the old image path.
                 $oldImagePath = $shop?->cover_image;
 
-                // رفع الصورة الجديدة
+                // Upload the new image.
                 $imagePath = $this->uploadImage(
                     $profileShopOwnerDTO->cover_image,
                     'shop-owner/cover-image-profile'
                 );
 
-                // إنشاء أو تحديث الورشة
+                // Create or update the shop.
                 $shop = Shop::updateOrCreate(
                     [
                         'user_id' => $userId,
@@ -101,7 +142,7 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     ]
                 );
 
-                // تجهيز الخدمات مع الأسعار
+                // Prepare services with prices.
                 $services = collect($profileShopOwnerDTO->services)
                     ->mapWithKeys(function ($service) {
                         return [
@@ -112,10 +153,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     })
                     ->toArray();
 
-                // حفظ الخدمات
+                // Sync shop services.
                 $shop->services()->sync($services);
 
-                // حذف الصورة القديمة بعد نجاح الـ Transaction
+                // Delete the old image after the transaction is committed.
                 if ($oldImagePath) {
                     DB::afterCommit(function () use ($oldImagePath) {
                         $this->deleteImage($oldImagePath);
@@ -126,12 +167,70 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             });
         } catch (\Throwable $e) {
 
-            // حذف الصورة الجديدة إذا فشلت العملية
+            // Delete the new image if the operation fails.
             if ($imagePath) {
                 $this->deleteImage($imagePath);
             }
 
             throw $e;
         }
+    }
+
+    /**
+     * Find a shop owner verification by ID.
+     */
+    public function findById(int $id): ShopOwnerVerification
+    {
+        return ShopOwnerVerification::findOrFail($id);
+    }
+
+    /**
+     * Update verification status.
+     */
+    public function updateStatus(
+        ShopOwnerVerification $verification,
+        string $status
+    ): void {
+        $verification->update([
+            'status' => $status,
+            'reviewed_by' => Auth::guard('sanctum')->id(),
+            'reviewed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Approve a shop owner verification request.
+     */
+    public function accountCreationApproval(int $id): void
+    {
+        $verification = $this->findById($id);
+
+        $this->updateStatus(
+            $verification,
+            'approved'
+        );
+    }
+
+    /**
+     * Reject a shop owner verification request.
+     */
+    public function accountCreationRefused(int $id): void
+    {
+        $verification = $this->findById($id);
+
+        $this->updateStatus(
+            $verification,
+            'rejected'
+        );
+    }
+
+    /**
+     * Delete a shop owner verification request.
+     */
+    public function delete(int $id): void
+    {
+        $verification = $this->findById($id);
+
+        $verification->delete();
     }
 }

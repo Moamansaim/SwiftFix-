@@ -18,9 +18,9 @@ class ShopDetailsResource extends JsonResource
 
             'cover_image' => $this->cover_image,
 
-            'country_name' => $this->country?->country_name,
+            'country_name' => $this->country?->name,
 
-            'city_name' => $this->city?->city_name,
+            'city_name' => $this->city?->name,
 
             'district' => $this->district,
 

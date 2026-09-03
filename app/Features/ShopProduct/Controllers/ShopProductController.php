@@ -120,20 +120,24 @@ class ShopProductController extends Controller
         int $id,
         ImageProduct $imageProduct
     ): JsonResponse {
-        $user = Auth::guard('sanctum')->user();
+        try {
+            $shopProduct = ShopProduct::findOrFail($id);
 
-        $shop_id = $user->shops->id;
+            $imagePath = $shopProduct->image;
 
-        $product = ShopProduct::where('id', $id)
-            ->where('shop_id', $shop_id)
-            ->firstOrFail();
+            $shopProduct->delete();
 
-        $imageProduct->delete($product->image);
+            if ($imagePath) {
+                $imageProduct->delete($imagePath);
+            }
 
-        $product->delete();
-
-        return response()->json([
-            'message' => 'تم حذف المنتج بنجاح.',
-        ], 200);
+            return response()->json([
+                'message' => 'تم حذف المنتج بنجاح.',
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'فشل حذف المنتج، يرجى المحاولة لاحقًا.',
+            ], 500);
+        }
     }
 }

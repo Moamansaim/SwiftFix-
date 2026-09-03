@@ -6,11 +6,11 @@ use App\Features\Country\Models\Country;
 use App\Features\Services\Models\Service;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class ShopOwnerVerification extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'first_name',
@@ -18,6 +18,7 @@ class ShopOwnerVerification extends Model
         'email',
         'phone_number',
         'national_id_image',
+        'commercial_record_image',
         'country_id',
         'service_ids',
         'notes',

@@ -35,8 +35,11 @@ return new class extends Migration
             $table->bigInteger('rating_count')
                 ->nullable()
                 ->default(0);
-            $table->enum('status', ['active', 'closed', 'bloked'])
-                ->default('active');
+            $table->enum('status', [
+                'blocked',
+                'open',
+                'closed',
+            ])->default('open');
             $table->softDeletes();
             $table->timestamps();
         });

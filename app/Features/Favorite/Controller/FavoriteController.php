@@ -30,13 +30,13 @@ class FavoriteController extends Controller
             ], 422);
         }
 
-        $favorite = Favorite::create([
+        Favorite::create([
             'user_id' => $user->id,
             'shop_id' => $shopId,
         ]);
 
         return response()->json([
-            'message' => 'تمت إضافة الورشة إلى المفضلة بنجاح.',
+            'success' => true,
         ], 201);
     }
 
@@ -82,7 +82,7 @@ class FavoriteController extends Controller
         $favorite->delete();
 
         return response()->json([
-            'message' => 'تم حذف الورشة من المفضلة بنجاح.',
+            'success' => true,
         ], 200);
     }
 }
