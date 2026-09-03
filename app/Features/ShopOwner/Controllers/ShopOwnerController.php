@@ -124,13 +124,7 @@ class ShopOwnerController extends Controller
             ], $result['status'] ?? 422);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => $result->status === 'approved'
-                ? 'تمت الموافقة على الطلب بنجاح.'
-                : 'تم رفض الطلب بنجاح.',
-            'data'    => $result,
-        ], 200);
+        return response()->json($result, 200);
     }
 
     // دالة القائمة:

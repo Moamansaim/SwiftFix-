@@ -13,6 +13,7 @@ use App\Features\ShopOwner\Services\UploadImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterface
 {
@@ -117,25 +118,63 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         }
     }
 
-    public function approve(ApproveShopOwnerVerificationDTO $dto)
+    // public function approve(ApproveShopOwnerVerificationDTO $dto)
+    // {
+    //     $verification = ShopOwnerVerification::findOrFail($dto->verification_id);
+
+    //     if ($verification->status !== 'pending') {
+    //         return [
+    //             'error'   => true,
+    //             'status'  => 422,
+    //             'message' => 'تمت مراجعة هذا الطلب مسبقاً.',
+    //         ];
+    //     }
+
+    //     $verification->status      = $dto->status;
+    //     $verification->notes       = $dto->notes;
+    //     $verification->reviewed_by = Auth::guard('sanctum')->id();
+    //     $verification->reviewed_at = now();
+    //     $verification->save();
+
+    //     return $verification;
+    // }
+
+    public function findVerificationById(int $id): ?ShopOwnerVerification
     {
-        $verification = ShopOwnerVerification::findOrFail($dto->verification_id);
+        return ShopOwnerVerification::find($id);
+    }
 
-        if ($verification->status !== 'pending') {
-            return [
-                'error'   => true,
-                'status'  => 422,
-                'message' => 'تمت مراجعة هذا الطلب مسبقاً.',
-            ];
-        }
+    public function userExistsByEmail(string $email): bool
+    {
+        return User::where('email', $email)->exists();
+    }
 
-        $verification->status      = $dto->status;
-        $verification->notes       = $dto->notes;
+    public function createOwnerAccount(ShopOwnerVerification $verification, string $password): User
+    {
+        $user = new User;
+        $user->first_name = $verification->first_name;
+        $user->last_name = $verification->last_name;
+        $user->email = $verification->email;
+        $user->phone_number = $verification->phone_number;
+        $user->password = Hash::make($password);
+        $user->email_verified_at = now();
+        $user->save();
+
+        return $user;
+    }
+
+    public function markReviewed(ShopOwnerVerification $verification, string $status, ?string $notes): void
+    {
+        $verification->status = $status;
+        $verification->notes = $notes ?? $verification->notes;
         $verification->reviewed_by = Auth::guard('sanctum')->id();
         $verification->reviewed_at = now();
         $verification->save();
+    }
 
-        return $verification;
+    public function deleteVerification(ShopOwnerVerification $verification): void
+    {
+        $verification->delete(); // SoftDeletes = حذف آمن قابل للاسترجاع
     }
 
     public function getVerifications(?string $status = null)

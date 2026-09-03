@@ -3,9 +3,12 @@
 namespace Tests\Feature\ShopOwner;
 
 use App\Features\Auth\Models\User;
+use App\Features\ShopOwner\Mail\ShopOwnerApprovedMail;
+use App\Features\ShopOwner\Mail\ShopOwnerRejectedMail;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -21,6 +24,7 @@ class ApproveVerificationTest extends TestCase
         parent::setUp();
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'customer']);
+        Role::create(['name' => 'workshop_owner']);
         $this->countryId = DB::table('countries')->insertGetId(['name' => 'Palestine']);
     }
 
@@ -59,6 +63,7 @@ class ApproveVerificationTest extends TestCase
 
     public function test_admin_can_approve_pending_verification(): void
     {
+        Mail::fake();
         $admin = $this->makeUser('admin');
         $verification = $this->makeVerification();
 
@@ -70,15 +75,22 @@ class ApproveVerificationTest extends TestCase
             ->assertOk()
             ->assertJson(['success' => true]);
 
+        $owner = User::where('email', $verification->email)->first();
+        $this->assertNotNull($owner);
+        $this->assertTrue($owner->hasRole('workshop_owner'));
+
         $this->assertDatabaseHas('shop_owner_verifications', [
             'id' => $verification->id,
             'status' => 'approved',
             'reviewed_by' => $admin->id,
         ]);
+
+        Mail::assertSent(ShopOwnerApprovedMail::class, fn ($mail) => $mail->hasTo($verification->email));
     }
 
     public function test_admin_can_reject_pending_verification(): void
     {
+        Mail::fake();
         $admin = $this->makeUser('admin');
         $verification = $this->makeVerification();
 
@@ -91,10 +103,31 @@ class ApproveVerificationTest extends TestCase
             ->assertOk()
             ->assertJson(['success' => true]);
 
-        $this->assertDatabaseHas('shop_owner_verifications', [
-            'id' => $verification->id,
-            'status' => 'rejected',
+        $this->assertSoftDeleted('shop_owner_verifications', ['id' => $verification->id]);
+
+        Mail::assertSent(ShopOwnerRejectedMail::class, fn ($mail) => $mail->hasTo($verification->email));
+    }
+
+    public function test_approval_fails_if_user_already_exists(): void
+    {
+        Mail::fake();
+        $admin = $this->makeUser('admin');
+        $verification = $this->makeVerification();
+
+        User::create([
+            'first_name' => 'Existing',
+            'last_name' => 'User',
+            'email' => $verification->email,
+            'phone_number' => '+970597777777',
+            'password' => 'Password123!',
         ]);
+
+        $this->actingAs($admin, 'sanctum')
+            ->postJson('/api/admin/shop-owner-verifications/approve', [
+                'verification_id' => $verification->id,
+                'status' => 'approved',
+            ])
+            ->assertStatus(422);
     }
 
     public function test_non_admin_cannot_approve_verification(): void
