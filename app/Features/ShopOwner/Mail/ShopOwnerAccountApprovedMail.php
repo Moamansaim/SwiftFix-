@@ -21,6 +21,6 @@ class ShopOwnerAccountApprovedMail extends Mailable
     {
         return $this
             ->subject('تمت الموافقة على طلب تسجيلك في SwiftFix')
-            ->view('emails.shop-owner.account-approved');
+            ->view('mail.shop-owner.account-approved');
     }
 }

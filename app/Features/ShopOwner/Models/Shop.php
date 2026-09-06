@@ -28,6 +28,7 @@ class Shop extends Model
         'street',
         'latitude',
         'longitude',
+        'status',
         'working_hours',
     ];
 

@@ -99,7 +99,8 @@ class ShopOwnerController extends Controller
             ], 200);
         } catch (\Throwable $e) {
             return response()->json([
-                'message' => 'فشل إنشاء حساب صاحب الورشة، يرجى المحاولة لاحقاً.',
+                'message' => $e->getMessage(),
+                // 'message' => 'فشل إنشاء حساب صاحب الورشة، يرجى المحاولة لاحقاً.',
             ], 500);
         }
     }
@@ -206,22 +207,25 @@ class ShopOwnerController extends Controller
         ], 200);
     }
 
-    // Get all shops data.
-    public function shopDetails(): JsonResponse
+    /**
+     * Get shop details.
+     */
+    public function shopDetails(int $id): JsonResponse
     {
-        $shops = Shop::with([
+        $shop = Shop::with([
             'services',
             'country',
             'city',
             'favorites',
             'shopProducts.product.category',
-            'shopProducts.product.deviceModel',
-        ])->get();
+            'shopProducts.deviceModel',
+        ])->findOrFail($id);
 
         return response()->json([
-            'data' => ShopDetailsResource::collection($shops),
+            'data' => new ShopDetailsResource($shop),
         ], 200);
     }
+
 
     /**
      * Get all shop owner verification requests.

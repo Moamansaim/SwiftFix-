@@ -19,6 +19,6 @@ class ShopOwnerAccountRejectedMail extends Mailable
     {
         return $this
             ->subject('نتيجة طلب التسجيل في SwiftFix')
-            ->view('emails.shop-owner.account-rejected');
+            ->view('mail.shop-owner.account-rejected');
     }
 }
