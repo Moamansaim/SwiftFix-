@@ -2,9 +2,12 @@
 
 namespace App\Features\Contact\Controllers;
 
+use App\Features\Contact\Mail\ContactReplyMail;
 use App\Features\Contact\Models\ContactMessage;
 use App\Features\Contact\Requests\ContactMessageRequest;
+use App\Features\Contact\Requests\ContactReplyRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController
 {
@@ -12,6 +15,7 @@ class ContactController
      * Store a new contact message.
      *
      * This method handles the submission of a contact form.
+     *
      * The incoming request is validated using ContactMessageRequest
      * before creating a new contact message in the database.
      *
@@ -22,7 +26,6 @@ class ContactController
      * - Message content.
      *
      * @param ContactMessageRequest $request
-     *        The validated request containing the contact message data.
      *
      * @return JsonResponse
      *         Returns a JSON response containing a success message
@@ -67,6 +70,42 @@ class ContactController
 
         return response()->json([
             'data' => $contactMessages,
+        ], 200);
+    }
+
+    /**
+     * Send a reply to a contact message via email.
+     *
+     * The recipient's email address is retrieved directly from
+     * the selected contact message in the database.
+     *
+     * The React frontend only needs to provide the contact message ID
+     * and the reply content.
+     *
+     * @param ContactReplyRequest $request
+     *        The validated request containing the reply content.
+     *
+     * @param int $id
+     *        The unique identifier of the contact message.
+     *
+     * @return JsonResponse
+     *         Returns a JSON response containing a success message
+     *         after the email has been sent.
+     */
+    public function reply(
+        ContactReplyRequest $request,
+        int $id
+    ): JsonResponse {
+        $contactMessage = ContactMessage::findOrFail($id);
+
+        Mail::to($contactMessage->email)->send(
+            new ContactReplyMail(
+                reply: $request->reply
+            )
+        );
+
+        return response()->json([
+            'message' => 'تم إرسال الرد إلى البريد الإلكتروني بنجاح.',
         ], 200);
     }
 

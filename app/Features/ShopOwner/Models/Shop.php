@@ -290,51 +290,30 @@ class Shop extends Model
     }
 
     /**
-     * Filter shops by service price range.
+     * Filter shops by service price.
      *
      * Returns shops that have at least one service
-     * whose price falls within the specified range.
-     *
-     * Both minimum and maximum prices are optional.
+     * with the specified price.
      *
      * @param Builder $query
-     * @param float|int|null $minPrice
-     * @param float|int|null $maxPrice
+     * @param float|int|null $price
      *
      * @return Builder
      */
     public function scopeByPrice(
         Builder $query,
-        float|int|null $minPrice = null,
-        float|int|null $maxPrice = null
+        float|int|null $price = null
     ): Builder {
         return $query->when(
-            $minPrice !== null || $maxPrice !== null,
-            function ($query) use ($minPrice, $maxPrice) {
-
+            $price !== null,
+            function (Builder $query) use ($price) {
                 $query->whereHas(
                     'services',
-                    function ($query) use (
-                        $minPrice,
-                        $maxPrice
-                    ) {
-
-                        $query->when(
-                            $minPrice !== null,
-                            fn($query) => $query->wherePivot(
-                                'price',
-                                '>=',
-                                $minPrice
-                            )
-                        );
-
-                        $query->when(
-                            $maxPrice !== null,
-                            fn($query) => $query->wherePivot(
-                                'price',
-                                '<=',
-                                $maxPrice
-                            )
+                    function (Builder $query) use ($price) {
+                        $query->where(
+                            'service_shop.price',
+                            '=',
+                            $price
                         );
                     }
                 );
@@ -397,13 +376,12 @@ class Shop extends Model
      */
     public function scopeByRating(
         Builder $query,
-        ?float $rating
+        ?int $rating
     ): Builder {
         return $query->when(
             $rating !== null,
-            function ($query) use ($rating) {
-
-                $query->whereRaw(
+            function (Builder $query) use ($rating) {
+                return $query->whereRaw(
                     '(
                     SELECT AVG(reviews.rating)
                     FROM reviews
