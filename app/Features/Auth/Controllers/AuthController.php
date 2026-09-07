@@ -8,7 +8,7 @@ use App\Features\Auth\DTOs\RegisterUserDTO;
 use App\Features\Auth\DTOs\ResetPasswordDTO;
 use App\Features\Auth\DTOs\SendPasswordResetCodeDTO;
 use App\Features\Auth\DTOs\SendVerificationEmailDTO;
-
+use App\Features\Auth\Models\User;
 use App\Features\Auth\Requests\ChangePasswordRequest;
 use App\Features\Auth\Requests\LoginRequest;
 use App\Features\Auth\Requests\RegisterRequest;
@@ -16,9 +16,7 @@ use App\Features\Auth\Requests\ResetPasswordRequest;
 use App\Features\Auth\Requests\SendPasswordResetCodeRequest;
 use App\Features\Auth\Requests\SendVerificationEmailRequest;
 use App\Features\Auth\Requests\VerifyEmailRequest;
-
 use App\Features\Auth\Resources\UserResource;
-
 use App\Features\Auth\UseCases\ChangePasswordUser;
 use App\Features\Auth\UseCases\LoginUser;
 use App\Features\Auth\UseCases\LogOutUser;
@@ -26,7 +24,6 @@ use App\Features\Auth\UseCases\RegisterUser;
 use App\Features\Auth\UseCases\ResetPasswordUser;
 use App\Features\Auth\UseCases\SendPasswordResetCode;
 use App\Features\Auth\UseCases\SendVerificationEmail;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
@@ -79,17 +76,31 @@ class AuthController extends Controller
         ], 201);
     }
 
+
     /**
      * Authenticate a user and create an access token.
      *
-     * Validates the login credentials, passes them to the login
-     * use case, and returns the authenticated user with their token.
+     * Validates the login credentials, checks whether the account
+     * is frozen, passes them to the login use case, and returns
+     * the authenticated user with their token.
      *
      * @param LoginRequest $loginRequest
+     *
      * @return JsonResponse
      */
     public function login(LoginRequest $loginRequest): JsonResponse
     {
+        // Check whether the account is frozen.
+        $user = User::withTrashed()
+            ->where('email', $loginRequest->email)
+            ->first();
+
+        if ($user && $user->trashed()) {
+            return response()->json([
+                'message' => 'تم تجميد حسابك، لا يمكنك تسجيل الدخول.',
+            ], 403);
+        }
+
         // Create a DTO containing the login credentials.
         $request = new LoginUserDTO(
             $loginRequest->email,
@@ -114,6 +125,7 @@ class AuthController extends Controller
             'token' => $result['token'],
         ], 200);
     }
+
 
     /**
      * Log out the currently authenticated user.

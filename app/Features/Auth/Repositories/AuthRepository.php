@@ -47,6 +47,9 @@ class AuthRepository implements AuthRepositoryInterface
         // Save the new user to the database.
         $user->save();
 
+        //  Assign customer role
+        $user->assignRole('customer');
+
         // Send the email verification notification.
         $user->sendEmailVerificationNotification();
 

@@ -17,7 +17,9 @@ use App\Features\ShopOwner\UseCases\ShopOwnerVerifications;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RuntimeException;
 
 class ShopOwnerController extends Controller
 {
@@ -43,15 +45,14 @@ class ShopOwnerController extends Controller
         );
 
         try {
-            $this->shopOwnerVerifications->create($dto);
+            $verification = $this->shopOwnerVerifications->create($dto);
 
             return response()->json([
-                'message' => 'تم إرسال طلبك ينجاح ! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة . ',
+                'message' => 'تم إرسال طلبك بنجاح! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة.',
             ], 201);
         } catch (\Throwable $e) {
-
             return response()->json([
-                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => 'فشل إرسال الطلب، يرجى المحاولة لاحقاً',
             ], 500);
         }
     }
@@ -149,6 +150,7 @@ class ShopOwnerController extends Controller
             $shopOwnerVerificationRequest->shop_name,
             $shopOwnerVerificationRequest->description,
             $shopOwnerVerificationRequest->cover_image,
+            $shopOwnerVerificationRequest->commercial_record_image,
             $shopOwnerVerificationRequest->country_id,
             $shopOwnerVerificationRequest->city_id,
             $shopOwnerVerificationRequest->district,
@@ -168,7 +170,8 @@ class ShopOwnerController extends Controller
         } catch (\Throwable $e) {
 
             return response()->json([
-                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => $e->getMessage(),
+                //'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
     }
@@ -193,17 +196,60 @@ class ShopOwnerController extends Controller
         ], 200);
     }
 
-    // Get all shop  data.
-    public function getAllShop(): JsonResponse
+    /**
+     * Get all shops with optional filters.
+     *
+     * This method retrieves all available shops and applies the
+     * requested filters using the local query scopes defined
+     * in the Shop model.
+     *
+     * The following filters are supported:
+     * - Shop name.
+     * - Country name.
+     * - City name.
+     * - District.
+     * - Street.
+     * - Shop status.
+     * - Service.
+     * - Service price range.
+     *
+     * Empty filters are ignored automatically by the corresponding
+     * local scopes.
+     *
+     * Only shops with a name are returned, and blocked shops are
+     * excluded from the public shop listing.
+     *
+     * @param Request $request
+     *        The HTTP request containing the optional filter parameters.
+     *
+     * @return JsonResponse
+     *         Returns the filtered shops as a JSON response.
+     */
+    public function getAllShop(Request $request): JsonResponse
     {
-        $shop = Shop::with([
+        $shops = Shop::with([
             'services',
             'country',
             'city',
-        ])->get();
+        ])
+            ->withAvg('reviews', 'rating')
+            ->whereNotNull('shop_name')
+            ->where('status', '!=', 'blocked')
+            ->byName($request->shopName)
+            ->byCity($request->cityName)
+            ->byService($request->service_id)
+            ->byPrice(
+                $request->min_price,
+                $request->max_price
+            )
+            ->bySparePart($request->sparePart)
+            ->byRating($request->rating)
+            ->byStatus($request->status)
+            ->ByVerification($request->is_verified)
+            ->get();
 
         return response()->json([
-            'data' => ShopResource::collection($shop),
+            'data' => ShopResource::collection($shops),
         ], 200);
     }
 
@@ -219,6 +265,7 @@ class ShopOwnerController extends Controller
             'favorites',
             'shopProducts.product.category',
             'shopProducts.deviceModel',
+            'user',
         ])->findOrFail($id);
 
         return response()->json([
@@ -271,6 +318,23 @@ class ShopOwnerController extends Controller
             return response()->json([
                 'message' => 'الورشة غير موجودة أو لا تملك صلاحية تعديلها.',
             ], 404);
+        }
+    }
+
+
+    // Verify a shop and update its status to verified
+    public function verifyShop(int $shopId): JsonResponse
+    {
+        try {
+            $this->shopOwnerVerifications->verifyShop($shopId);
+
+            return response()->json([
+                'message' => 'تم توثيق الورشة بنجاح.',
+            ]);
+        } catch (RuntimeException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
         }
     }
 }

@@ -12,34 +12,52 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shops', function (Blueprint $table) {
+
             $table->id();
             $table->foreignId('user_id')
+                ->unique()
                 ->constrained('users', 'id')
                 ->cascadeOnDelete();
-            $table->string('shop_name');
-            $table->text('description');
+            $table->string('shop_name')
+                ->nullable();
+            $table->text('description')
+                ->nullable();
             $table->string('cover_image')
                 ->nullable();
+            $table->string('commercial_record_image')
+                ->nullable();
             $table->foreignId('country_id')
-                ->constrained('countries', 'id');
+                ->nullable()
+                ->constrained('countries', 'id')
+                ->nullOnDelete();
             $table->foreignId('city_id')
-                ->constrained('cities', 'id');
-            $table->string('district');
-            $table->string('street');
-            $table->decimal('latitude', 10, 8)->comment('خط العرض');
-            $table->decimal('longitude', 11, 8)->comment('خط الطول');
-            $table->json('working_hours');
+                ->nullable()
+                ->constrained('cities', 'id')
+                ->nullOnDelete();
+            $table->string('district')
+                ->nullable();
+            $table->string('street')
+                ->nullable();
+            $table->decimal('latitude', 10, 8)
+                ->nullable()
+                ->comment('خط العرض');
+            $table->decimal('longitude', 11, 8)
+                ->nullable()
+                ->comment('خط الطول');
+            $table->json('working_hours')
+                ->nullable();
             $table->decimal('rating_average')
-                ->nullable()
                 ->default(0);
-            $table->bigInteger('rating_count')
-                ->nullable()
+            $table->unsignedBigInteger('rating_count')
                 ->default(0);
             $table->enum('status', [
                 'blocked',
                 'open',
                 'closed',
-            ])->default('open');
+            ])->default('closed');
+            $table->boolean('is_verified')
+                ->nullable()
+                ->default(false);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -50,6 +68,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shpos');
+        Schema::dropIfExists('shops');
     }
 };

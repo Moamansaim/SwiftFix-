@@ -27,8 +27,13 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->text('description');
             $table->string('image')->nullable();
-            $table->enum('status', ['pending', 'in_progress', 'completed'])
-                ->default('pending');
+            $table->enum('status', [
+                'pending',
+                'approved',
+                'rejected',
+                'in_progress',
+                'completed',
+            ])->default('pending');
             $table->string('phone_number');
             $table->string('address');
             $table->timestamps();
