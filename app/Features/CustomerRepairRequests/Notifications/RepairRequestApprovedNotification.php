@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\Notifications;
+namespace App\Features\CustomerRepairRequests\Notifications;
 
-use App\Features\CustomerRepairRequest\Models\CustomerRepairRequest;
+use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
 class RepairRequestApprovedNotification extends Notification

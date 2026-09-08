@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\Resources;
+namespace App\Features\CustomerRepairRequests\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -39,10 +39,8 @@ class CustomerRepairRequestResource extends JsonResource
 
             'description' => $this->description,
 
-            'image' => $this->image
-                ? asset('storage/' . $this->image)
-                : null,
-
+            'image' => $this->image,
+              
             'status' => $this->status,
 
             'phone_number' => $this->phone_number,

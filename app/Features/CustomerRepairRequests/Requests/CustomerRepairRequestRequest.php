@@ -1,19 +1,12 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\Requests;
+namespace App\Features\CustomerRepairRequests\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class CustomerRepairRequestRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
+ 
     /**
      * Get the validation rules that apply to the request.
      */
@@ -51,12 +44,6 @@ class CustomerRepairRequestRequest extends FormRequest
                 'max:5120',
             ],
 
-            'phone_number' => [
-                'required',
-                'string',
-                'max:30',
-            ],
-
             'address' => [
                 'required',
                 'string',
@@ -64,6 +51,4 @@ class CustomerRepairRequestRequest extends FormRequest
             ],
         ];
     }
-  
-   
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\Models;
+namespace App\Features\CustomerRepairRequests\Models;
 
 use App\Features\Auth\Models\User;
 use App\Features\DeviceModel\Models\DeviceModel;

@@ -230,10 +230,9 @@ class ShopOwnerController extends Controller
             'country',
             'city',
         ])
-            // ->withAvg('reviews', 'rating')
             ->whereNotNull('shop_name')
             ->where('status', '!=', 'blocked')
-            ->byName($request->shopName)
+            ->byName($request->name)
             ->byCity($request->cityName)
             ->byService($request->service_id)
             ->byPrice($request->price)

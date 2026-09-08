@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\Services;
+namespace App\Features\CustomerRepairRequests\Services;
 
-use App\Features\CustomerRepairRequest\Mail\RepairRequestApprovedMail;
-use App\Features\CustomerRepairRequest\Mail\RepairRequestRejectedMail;
-use App\Features\CustomerRepairRequest\Models\CustomerRepairRequest;
+use App\Features\CustomerRepairRequests\Mail\RepairRequestApprovedMail;
+use App\Features\CustomerRepairRequests\Mail\RepairRequestRejectedMail;
+use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
 use Illuminate\Support\Facades\Mail;
 
 class CustomerRepairRequestMail
