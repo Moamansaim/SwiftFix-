@@ -2,7 +2,7 @@
 
 namespace App\Features\CustomerRepairRequests\Mail;
 
-use App\Features\CustomerRepairRequest\Models\CustomerRepairRequest;
+use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;

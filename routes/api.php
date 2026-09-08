@@ -443,8 +443,8 @@ Route::group([
     Route::delete('/delete/{id}', 'destroy');
 
     // Approve a repair request
-    Route::patch('/approve/{id}', 'approve');
+    Route::post('/approve/{id}', 'approve');
 
     // Reject a repair request
-    Route::patch('/reject/{id}', 'reject');
+    Route::post('/reject/{id}', 'reject');
 });

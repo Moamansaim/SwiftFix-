@@ -5,6 +5,7 @@ namespace App\Features\ShopOwner\Models;
 use App\Features\Auth\Models\User;
 use App\Features\City\Models\City;
 use App\Features\Country\Models\Country;
+use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
 use App\Features\Favorite\Models\Favorite;
 use App\Features\FeatureShop\Models\FeatureShop;
 use App\Features\Review\Models\Review;
@@ -168,6 +169,12 @@ class Shop extends Model
             'shop_id',
             'id'
         );
+    }
+
+
+    public function customerRepairRequests(): HasMany
+    {
+        return $this->hasMany(CustomerRepairRequest::class);
     }
 
     /**

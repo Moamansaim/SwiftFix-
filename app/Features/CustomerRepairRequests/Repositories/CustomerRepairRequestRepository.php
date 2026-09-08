@@ -5,6 +5,7 @@ namespace App\Features\CustomerRepairRequests\Repositories;
 use App\Features\CustomerRepairRequests\DTOs\CustomerRepairRequestDTO;
 use App\Features\CustomerRepairRequests\Interfaces\CustomerRepairRequestInterface;
 use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerRepairRequestRepository implements CustomerRepairRequestInterface
@@ -12,7 +13,17 @@ class CustomerRepairRequestRepository implements CustomerRepairRequestInterface
     public function create(
         CustomerRepairRequestDTO $dto
     ): CustomerRepairRequest {
+
         $user = Auth::guard('sanctum')->user();
+
+        $imagePath = null;
+
+        if ($dto->image instanceof UploadedFile) {
+            $imagePath = $dto->image->store(
+                'repair-requests',
+                'public'
+            );
+        }
 
         return CustomerRepairRequest::create([
             'user_id' => $dto->user_id,
@@ -20,7 +31,7 @@ class CustomerRepairRequestRepository implements CustomerRepairRequestInterface
             'device_model_id' => $dto->device_model_id,
             'service_id' => $dto->service_id,
             'description' => $dto->description,
-            'image' => $dto->image,
+            'image' => $imagePath,
             'phone_number' => $user->phone_number,
             'address' => $dto->address,
         ]);
