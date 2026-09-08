@@ -82,7 +82,7 @@ class AuthController extends Controller
      *
      * Validates the login credentials, checks whether the account
      * is frozen, passes them to the login use case, and returns
-     * the authenticated user with their token.
+     * the authenticated user with their token and role.
      *
      * @param LoginRequest $loginRequest
      *
@@ -118,11 +118,15 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Return the authenticated user and access token.
+        // Get the user's role.
+        $role = $result['user']->getRoleNames()->first();
+
+        // Return the authenticated user, access token, and role.
         return response()->json([
             'message' => 'تم تسجيل الدخول بنجاح',
             'data' => new UserResource($result['user']),
             'token' => $result['token'],
+            'role' => $role,
         ], 200);
     }
 

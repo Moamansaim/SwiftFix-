@@ -101,4 +101,35 @@ class CustomerRepairRequestUseCase
 
         return $repairRequest;
     }
+
+    /**
+     * Mark a customer repair request as completed.
+     *
+     * This method retrieves the repair request by its ID and updates
+     * its status to completed.
+     *
+     * The request must be approved before it can be marked as completed.
+     *
+     * @param int $id
+     *        The unique identifier of the repair request.
+     *
+     * @return CustomerRepairRequest
+     *         Returns the updated repair request.
+     *
+     * @hint Called when the shop owner completes the repair request.
+     */
+    public function complete(int $id) 
+    {
+        $repairRequest = CustomerRepairRequest::findOrFail($id);
+
+        if ($repairRequest->status !== 'approved') {
+            throw new RuntimeException(
+                'لا يمكن إكمال طلب الصيانة قبل الموافقة عليه.'
+            );
+        }
+
+        $repairRequest->update([
+            'status' => 'completed',
+        ]);
+    }
 }

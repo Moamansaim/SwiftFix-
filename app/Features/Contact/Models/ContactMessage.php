@@ -34,5 +34,6 @@ class ContactMessage extends Model
         'email',
         'subject',
         'message',
+        'status'
     ];
 }

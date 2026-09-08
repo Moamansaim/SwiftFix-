@@ -10,11 +10,13 @@ use App\Features\CustomerRepairRequests\Controllers\CustomerRepairRequestControl
 use App\Features\DeviceModel\Controllers\DeviceModelController;
 use App\Features\Favorite\Controller\FavoriteController;
 use App\Features\FeatureShop\Controllers\FeatureShopController;
+use App\Features\Home\PlatformController;
 use App\Features\Product\Controllers\ProductController;
 use App\Features\Review\Controllers\AdminReviewController;
 use App\Features\Review\Controllers\CustomerReviewController;
 use App\Features\Review\Controllers\ShopOwnerReviewController;
 use App\Features\Review\Controllers\ShopReviewController;
+use App\Features\SearchShopMap\Controllers\SearchShopMapController;
 use App\Features\Services\Controllers\ServiceController;
 use App\Features\ShopOwner\Controllers\AdminShopOwnerController;
 use App\Features\ShopOwner\Controllers\ShopOwnerController;
@@ -402,6 +404,9 @@ Route::group([
 
     // Delete a contact message
     Route::delete('/delete/{id}', 'destroy');
+
+    // Reply to a contact message
+    Route::post('/reply/{id}', 'reply');
 });
 
 
@@ -447,4 +452,40 @@ Route::group([
 
     // Reject a repair request
     Route::post('/reject/{id}', 'reject');
+
+    //Get all notifications for the authenticated customer,
+    //including read and unread notifications.
+    Route::get('/notifications', 'notificationsCustomerRepairRequests');
+
+    // Mark a specific customer notification as read.
+    Route::post('/notifications/{id}/read', 'markAsRead');
+
+    // Mark all unread notifications of the authenticated customer as read.
+    Route::post('/notifications/read-all', 'markAllAsRead');
+
+    // Mark a customer repair request as completed.
+    Route::post('/customer-repair-requests/{id}/complete', 'complete');
+});
+
+
+// Search shop map routes
+Route::group([
+    'prefix' => 'shops',
+    'controller' => SearchShopMapController::class,
+], function () {
+
+    // Search shops by service or spare part
+    Route::get('/search', 'search');
+});
+
+
+
+// Platform statistics routes
+
+Route::group([
+    'prefix' => 'platform',
+    'controller' => PlatformController::class,
+], function () {
+    // Get public platform statistics
+    Route::get('/statistics', 'getStatistics');
 });

@@ -9,6 +9,14 @@ class CustomerRepairRequestResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
+     *
+     * @param Request $request
+     *        The current HTTP request.
+     *
+     * @return array
+     *
+     * @hint Returns the repair request with its related
+     *        customer, shop, device model, and service data.
      */
     public function toArray(Request $request): array
     {
@@ -40,16 +48,16 @@ class CustomerRepairRequestResource extends JsonResource
             'description' => $this->description,
 
             'image' => $this->image,
-              
+
             'status' => $this->status,
 
             'phone_number' => $this->phone_number,
 
             'address' => $this->address,
 
-            'created_at' => $this->created_at?->toDateTimeString(),
+            'created_at' => $this->created_at,
 
-            'updated_at' => $this->updated_at?->toDateTimeString(),
+            'updated_at' => $this->updated_at
         ];
     }
 }

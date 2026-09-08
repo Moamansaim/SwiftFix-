@@ -7,13 +7,25 @@ use App\Features\CustomerRepairRequests\Interfaces\CustomerRepairRequestInterfac
 use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerRepairRequestRepository implements CustomerRepairRequestInterface
 {
+    /**
+     * Create a new customer repair request.
+     *
+     * @param CustomerRepairRequestDTO $dto
+     *        The validated repair request data.
+     *
+     * @return CustomerRepairRequest
+     *         The newly created repair request.
+     *
+     * @hint Stores the uploaded image if provided, then creates
+     *        the repair request using the authenticated user's phone number.
+     */
     public function create(
         CustomerRepairRequestDTO $dto
     ): CustomerRepairRequest {
-
         $user = Auth::guard('sanctum')->user();
 
         $imagePath = null;
@@ -37,18 +49,60 @@ class CustomerRepairRequestRepository implements CustomerRepairRequestInterface
         ]);
     }
 
+    /**
+     * Find a repair request by its ID.
+     *
+     * @param int $id
+     *        The ID of the repair request.
+     *
+     * @return CustomerRepairRequest
+     *         The requested repair request.
+     *
+     * @hint Throws ModelNotFoundException if the request does not exist.
+     */
     public function findById(
         int $id
     ): CustomerRepairRequest {
         return CustomerRepairRequest::findOrFail($id);
     }
 
+    /**
+     * Delete a customer repair request.
+     *
+     * @param CustomerRepairRequest $repairRequest
+     *        The repair request to delete.
+     *
+     * @return void
+     *
+     * @hint Deletes the associated image from storage before
+     *        deleting the database record.
+     */
     public function delete(
         CustomerRepairRequest $repairRequest
     ): void {
+        if ($repairRequest->image) {
+            Storage::disk('public')->delete(
+                $repairRequest->image
+            );
+        }
+
         $repairRequest->delete();
     }
 
+    /**
+     * Update the status of a repair request.
+     *
+     * @param CustomerRepairRequest $repairRequest
+     *        The repair request whose status will be updated.
+     *
+     * @param string $status
+     *        The new repair request status.
+     *
+     * @return CustomerRepairRequest
+     *         The updated repair request.
+     *
+     * @hint Refreshes the model after updating the status.
+     */
     public function updateStatus(
         CustomerRepairRequest $repairRequest,
         string $status

@@ -6,9 +6,25 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CustomerRepairRequestRequest extends FormRequest
 {
- 
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     *
+     * @hint Only authenticated users can submit repair requests.
+     */
+    public function authorize(): bool
+    {
+        return auth('sanctum')->check();
+    }
+
     /**
      * Get the validation rules that apply to the request.
+     *
+     * @return array
+     *
+     * @hint Validates the shop, device model, service,
+     *        description, optional image, and customer address.
      */
     public function rules(): array
     {
