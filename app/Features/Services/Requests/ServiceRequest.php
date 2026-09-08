@@ -17,7 +17,7 @@ class ServiceRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('countries', 'service_name')
+                Rule::unique('services', 'service_name')
                     ->ignore($this->route('id')),
             ],
         ];

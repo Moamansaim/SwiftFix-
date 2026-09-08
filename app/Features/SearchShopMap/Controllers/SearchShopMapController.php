@@ -3,7 +3,7 @@
 namespace App\Features\SearchShopMap\Controllers;
 
 use App\Features\SearchShopMap\Requests\SearchShopMapRequest;
-use App\Features\Shop\UseCases\SearchShopMap;
+use App\Features\SearchShopMap\UseCase\SearchShopMap;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 

@@ -59,7 +59,17 @@ class RepairRequestApprovedNotification extends Notification
     {
         return [
             'title' => 'تمت الموافقة على طلب الصيانة',
+
             'message' => 'تمت الموافقة على طلب الصيانة الخاص بك.',
+
+            'service' => [
+                'service_name' => $this->repairRequest->service?->service_name,
+            ],
+
+            'device_model' => [
+                'device_model_name' => $this->repairRequest->deviceModel?->device_model_name,
+            ],
+
             'repair_request_id' => $this->repairRequest->id,
         ];
     }

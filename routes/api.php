@@ -121,45 +121,54 @@ Route::group([
 Route::group([
     'prefix' => 'countries',
     'controller' => CountryController::class,
+
 ], function () {
 
     // Get all countries
-    Route::get('/get-all', 'getAllCountries');
+    Route::get('/get-all', 'getAllCountries')
+        ->middleware('auth:sanctum');
 
     // Get countries for select
     Route::get('/get-for-select', 'getCountriesForSelect');
 
     // Create a country
-    Route::post('/store', 'store');
+    Route::post('/store', 'store')
+        ->middleware('auth:sanctum');
 
     // Update a country
-    Route::put('/update/{id}', 'update');
+    Route::put('/update/{id}', 'update')
+        ->middleware('auth:sanctum');
 
     // Delete a country
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('auth:sanctum');
 });
 
 // City routes
 Route::group([
     'prefix' => 'cities',
     'controller' => CityController::class,
-    'middleware' => 'auth:sanctum',
+
 ], function () {
 
     // Get cities by country
-    Route::get('/get-cities-by-country/{id}', 'getCitiesByCountry');
+    Route::get('/get-cities-by-country/{id}', 'getCitiesByCountry')
+        ->middleware('auth:sanctum');
 
     // Get all cities
     Route::get('/get-all', 'getAllCities');
 
     // Create a city
-    Route::post('/store', 'store');
+    Route::post('/store', 'store')
+        ->middleware('auth:sanctum');
 
     // Update a city
-    Route::put('/update/{id}', 'update');
+    Route::put('/update/{id}', 'update')
+        ->middleware('auth:sanctum');
 
     // Delete a city
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('auth:sanctum');
 });
 
 // Service routes
@@ -169,19 +178,23 @@ Route::group([
 ], function () {
 
     // Get all services
-    Route::get('/get-all', 'getAllServices');
+    Route::get('/get-all', 'getAllServices')
+        ->middleware('auth:sanctum');
 
     // Get services for select
     Route::get('/get-for-select', 'getServicesForSelect');
 
     // Create a service
-    Route::post('/store', 'store');
+    Route::post('/store', 'store')
+        ->middleware('auth:sanctum');
 
     // Update a service
-    Route::put('/update/{id}', 'update');
+    Route::put('/update/{id}', 'update')
+        ->middleware('auth:sanctum');
 
     // Delete a service
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('auth:sanctum');
 });
 
 // Brand routes
