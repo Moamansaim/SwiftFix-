@@ -247,18 +247,18 @@ class AuthController extends Controller
      * the email verification process.
      *
      * @param VerifyEmailRequest $request
-     * @return JsonResponse
+     * @return JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function verifyEmail(VerifyEmailRequest $request): JsonResponse
+    public function verifyEmail(VerifyEmailRequest $request)
     {
         // Attempt to verify the user's email address.
         $verified = $request->fulfill();
 
-        // Return success if the email was verified.
+        // Redirect to the React application after successful verification.
         if ($verified) {
-            return response()->json([
-                'message' => 'تم تفعيل البريد الإلكتروني بنجاح!',
-            ], 200);
+            return redirect()->away(
+                'https://swiftfix-app-project.vercel.app/'
+            );
         }
 
         // Return an error if the email was already verified.
@@ -266,6 +266,7 @@ class AuthController extends Controller
             'message' => 'بريدك الإلكتروني مفعل من قبل.',
         ], 422);
     }
+
 
     /**
      * Resend the email verification message.

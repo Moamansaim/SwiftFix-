@@ -42,20 +42,14 @@ class ShopDetailsResource extends JsonResource
                 ];
             }),
 
+
             'products' => $this->shopProducts->map(function ($shopProduct) {
                 return [
-                    'id' => $shopProduct->id,
-
-                    'product_name' => $shopProduct->product?->product_name,
-
+                    'product_name' => $shopProduct->product->product_name,
                     'price' => $shopProduct->price,
-
                     'quantity' => $shopProduct->quantity,
-
                     'image' => $shopProduct->image,
-
                     'description' => $shopProduct->description,
-
                     'status' => $shopProduct->status,
                 ];
             }),

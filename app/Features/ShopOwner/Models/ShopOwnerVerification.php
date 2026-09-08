@@ -2,6 +2,7 @@
 
 namespace App\Features\ShopOwner\Models;
 
+use App\Features\Auth\Models\User;
 use App\Features\Country\Models\Country;
 use App\Features\Services\Models\Service;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,6 +22,9 @@ class ShopOwnerVerification extends Model
         'commercial_record_image',
         'country_id',
         'service_ids',
+        'status',
+        'reviewed_by',
+        'reviewed_at',
         'notes',
     ];
 
@@ -39,6 +43,15 @@ class ShopOwnerVerification extends Model
         return $this->belongsTo(
             Country::class,
             'country_id',
+            'id'
+        );
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(
+            User::class,
+            'reviewed_by',
             'id'
         );
     }

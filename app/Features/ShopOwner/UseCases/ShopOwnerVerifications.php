@@ -6,8 +6,11 @@ use App\Features\Auth\Models\User;
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
+use App\Features\ShopOwner\Mail\ShopOwnerAccountApprovedMail;
+use App\Features\ShopOwner\Mail\ShopOwnerAccountRejectedMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -56,24 +59,29 @@ class ShopOwnerVerifications
             $password
         ) {
             $user = User::create([
+                'first_name' => $verification->first_name,
+                'last_name' => $verification->last_name,
                 'email' => $verification->email,
+                'phone_number' => $verification->phone_number,
                 'password' => Hash::make($password),
             ]);
 
             // Assign shop owner role
-            $user->assignRole('shop_owner');
+            //$user->assignRole('shop_owner');
 
             // Update verification status
             $this->shopOwnerVerificationsInterface
                 ->accountCreationApproval($verification->id);
 
-            // // Send approval email
-            // Mail::to($verification->email)->send(
-            //     new ShopOwnerAccountApprovedMail(
-            //         $verification,
-            //         $password
-            //     )
-            // );
+            // Send approval email
+            Mail::to($verification->email)->send(
+                new ShopOwnerAccountApprovedMail(
+                    $verification->first_name,
+                    $verification->last_name,
+                    $verification->email,
+                    $password
+                )
+            );
         });
 
         return $password;
@@ -92,9 +100,12 @@ class ShopOwnerVerifications
         $this->shopOwnerVerificationsInterface
             ->accountCreationRefused($id);
 
-        // Mail::to($verification->email)->send(
-        //     new ShopOwnerAccountRejectedMail($verification)
-        // );
+        Mail::to($verification->email)->send(
+            new ShopOwnerAccountRejectedMail(
+                $verification->first_name,
+                $verification->last_name
+            )
+        );
     }
 
     /**

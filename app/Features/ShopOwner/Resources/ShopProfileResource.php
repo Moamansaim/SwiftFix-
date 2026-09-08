@@ -12,6 +12,7 @@ class ShopProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            "id" => $this->id,
             'shop_name' => $this->shop_name,
             'description' => $this->description,
             'cover_image' => $this->cover_image,
@@ -22,6 +23,7 @@ class ShopProfileResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'working_hours' => $this->working_hours,
+            'status' => $this->status,
             'services' => $this->services->map(function ($service) {
                 return [
                     'id' => $service->id,
