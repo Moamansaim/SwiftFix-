@@ -25,6 +25,11 @@ class Review extends Model
 
     /**
      * Get the user who created the review.
+     *
+     * @return BelongsTo
+     *
+     * @hint Defines a many-to-one relationship between the review
+     *        and the user who created it through the user_id foreign key.
      */
     public function user(): BelongsTo
     {
@@ -33,6 +38,11 @@ class Review extends Model
 
     /**
      * Get the shop that owns the review.
+     *
+     * @return BelongsTo
+     *
+     * @hint Defines a many-to-one relationship between the review
+     *        and the shop being reviewed through the shop_id foreign key.
      */
     public function shop(): BelongsTo
     {

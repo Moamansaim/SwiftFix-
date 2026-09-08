@@ -20,7 +20,8 @@ class FavoriteController extends Controller
      * @return JsonResponse
      *
      * @hint Checks whether the shop is already in the user's favorites
-     *        before creating a new favorite record.
+     *        before creating a new favorite record. This prevents duplicate
+     *        favorite entries for the same user and shop.
      */
     public function addToFavorites(
         FavoriteRequest $favoriteRequest
@@ -55,7 +56,8 @@ class FavoriteController extends Controller
      * @return JsonResponse
      *
      * @hint Retrieves the authenticated user's favorite shops
-     *        with their country, city, and services.
+     *        with their country, city, and services using eager loading
+     *        to avoid unnecessary database queries.
      */
     public function getMyFavorites(): JsonResponse
     {
@@ -83,7 +85,8 @@ class FavoriteController extends Controller
      * @return JsonResponse
      *
      * @hint Finds the favorite record belonging to the authenticated user
-     *        and deletes it if it exists.
+     *        and the specified shop. If the favorite exists, it is deleted;
+     *        otherwise, a not-found response is returned.
      */
     public function removeFromFavorites(
         FavoriteRequest $favoriteRequest

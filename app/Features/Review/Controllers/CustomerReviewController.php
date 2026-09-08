@@ -13,6 +13,19 @@ class CustomerReviewController extends Controller
 {
     /**
      * Add a new review to a shop.
+     *
+     * @param ReviewRequest $request
+     *        The validated review request data.
+     *
+     * @param int $shopId
+     *        The ID of the shop being reviewed.
+     *
+     * @return JsonResponse
+     *
+     * @hint Checks whether the authenticated user has already reviewed
+     *        the specified shop before creating a new review. If no
+     *        existing review is found, the review is created and returned
+     *        with the related user data.
      */
     public function store(
         ReviewRequest $request,
@@ -47,6 +60,19 @@ class CustomerReviewController extends Controller
 
     /**
      * Update the current user's review.
+     *
+     * @param ReviewRequest $request
+     *        The validated review request data.
+     *
+     * @param int $id
+     *        The ID of the review to update.
+     *
+     * @return JsonResponse
+     *
+     * @hint Finds the review using both its ID and the authenticated
+     *        user's ID to ensure that users can only update their own
+     *        reviews. If the review does not exist or does not belong
+     *        to the user, a not-found response is returned.
      */
     public function update(
         ReviewRequest $request,
@@ -76,6 +102,16 @@ class CustomerReviewController extends Controller
 
     /**
      * Delete the current user's review.
+     *
+     * @param int $id
+     *        The ID of the review to delete.
+     *
+     * @return JsonResponse
+     *
+     * @hint Finds the review using both its ID and the authenticated
+     *        user's ID to ensure that users can only delete their own
+     *        reviews. If the review does not exist or does not belong
+     *        to the user, a not-found response is returned.
      */
     public function destroy(int $id): JsonResponse
     {

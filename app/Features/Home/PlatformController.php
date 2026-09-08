@@ -17,9 +17,9 @@ class PlatformController extends Controller
      * @return JsonResponse
      *
      * @hint Returns the total number of registered customers,
-     *       completed repair requests, excellent reviews with
-     *       ratings of 4 or 5, verified shops, and customer
-     *       reviews with their names and ratings.
+     *        completed repair requests, excellent reviews with
+     *        ratings of 4 or 5, verified shops, and customer
+     *        reviews with their names and ratings.
      */
     public function getStatistics(): JsonResponse
     {
@@ -48,7 +48,7 @@ class PlatformController extends Controller
                 return [
                     'customer_name' => trim(
                         $review->user?->first_name . ' ' .
-                        $review->user?->last_name
+                            $review->user?->last_name
                     ),
                     'comment' => $review->comment,
                     'rating' => $review->rating,
