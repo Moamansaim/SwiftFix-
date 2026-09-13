@@ -3,41 +3,78 @@
 namespace App\Features\ShopOwner\Repositories;
 
 use App\Features\Auth\Models\User;
-use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
+use App\Features\ShopOwner\Mail\ShopOwnerApprovedMail;
+use App\Features\ShopOwner\Mail\ShopOwnerRejectedMail;
 use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use App\Features\ShopOwner\Services\UploadImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterface
 {
     use UploadImage;
 
-    public function create(ShopOwnerVerificationsDTO $registerUserDTO)
-    {
-        $imagePath = null;
+    /**
+     * Create a shop owner verification request.
+     */
+    public function create(
+        ShopOwnerVerificationsDTO $registerUserDTO
+    ): ShopOwnerVerification {
+
+        $uploadedImages = [];
 
         try {
-            return DB::transaction(function () use ($registerUserDTO, &$imagePath) {
-                $imagePath = $registerUserDTO->national_id_image
-                    ->store('shop-owner/national-ids', 'public');
 
+            return DB::transaction(function () use (
+                $registerUserDTO,
+                &$uploadedImages
+            ) {
+
+                // Upload national ID image.
+                $uploadedImages['national_id_image'] =
+                    $registerUserDTO->national_id_image
+                    ->store(
+                        'shop-owner/national-ids',
+                        'public'
+                    );
+
+                // Upload commercial record image if provided.
+                if ($registerUserDTO->commercial_record_image) {
+
+                    $uploadedImages['commercial_record_image'] =
+                        $registerUserDTO->commercial_record_image
+                        ->store(
+                            'shop-owner/commercial-records',
+                            'public'
+                        );
+                }
+
+                // Create verification request.
                 $verification = ShopOwnerVerification::create([
                     'first_name' => $registerUserDTO->first_name,
                     'last_name' => $registerUserDTO->last_name,
                     'email' => $registerUserDTO->email,
                     'phone_number' => $registerUserDTO->phone_number,
-                    'national_id_image' => $imagePath,
+
+                    'national_id_image' =>
+                    $uploadedImages['national_id_image'],
+
+                    'commercial_record_image' =>
+                    $uploadedImages['commercial_record_image'] ?? null,
+
                     'country_id' => $registerUserDTO->country_id,
                     'notes' => $registerUserDTO->notes,
                 ]);
 
+                // Attach services.
                 $verification->services()->attach(
                     $registerUserDTO->service_ids
                 );
@@ -45,7 +82,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 return $verification;
             });
         } catch (\Throwable $e) {
-            if ($imagePath) {
+
+            // Delete uploaded images if the transaction fails.
+            foreach ($uploadedImages as $imagePath) {
+
                 Storage::disk('public')->delete($imagePath);
             }
 
@@ -53,16 +93,18 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         }
     }
 
-    public function createShopProfile(ProfileShopOwnerDTO $profileShopOwnerDTO)
-    {
+    /**
+     * Create a shop owner profile.
+     */
+    public function createShopProfile(
+        ProfileShopOwnerDTO $profileShopOwnerDTO
+    ): Shop {
         $imagePath = null;
-        $oldImagePath = null;
 
         try {
             return DB::transaction(function () use (
                 $profileShopOwnerDTO,
-                &$imagePath,
-                &$oldImagePath,
+                &$imagePath
             ) {
                 $user = Auth::guard('sanctum')->user();
 
@@ -74,17 +116,19 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 
                 $userId = $user->id;
 
-                // حفظ مسار الصورة القديمة
+                // Get the current shop.
                 $shop = Shop::where('user_id', $userId)->first();
 
+                // Save the old image path.
                 $oldImagePath = $shop?->cover_image;
 
-                // رفع الصورة الجديدة
+                // Upload the new image.
                 $imagePath = $this->uploadImage(
                     $profileShopOwnerDTO->cover_image,
                     'shop-owner/cover-image-profile'
                 );
 
+                // Create or update the shop.
                 $shop = Shop::updateOrCreate(
                     [
                         'user_id' => $userId,
@@ -95,7 +139,7 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                         'cover_image' => $imagePath,
                         'country_id' => $profileShopOwnerDTO->country_id,
                         'city_id' => $profileShopOwnerDTO->city_id,
-                        'district_id' => $profileShopOwnerDTO->district_id,
+                        'district' => $profileShopOwnerDTO->district,
                         'street' => $profileShopOwnerDTO->street,
                         'latitude' => $profileShopOwnerDTO->latitude,
                         'longitude' => $profileShopOwnerDTO->longitude,
@@ -103,46 +147,148 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     ]
                 );
 
-                $shop->services()->sync(
-                    $profileShopOwnerDTO->service_ids
-                );
+                // Prepare services with prices.
+                $services = collect($profileShopOwnerDTO->services)
+                    ->mapWithKeys(function ($service) {
+                        return [
+                            $service['service_id'] => [
+                                'price' => $service['price'],
+                            ],
+                        ];
+                    })
+                    ->toArray();
 
-                $this->deleteImage($oldImagePath);
+                // Sync shop services.
+                $shop->services()->sync($services);
+
+                // Delete the old image after the transaction is committed.
+                if ($oldImagePath) {
+                    DB::afterCommit(function () use ($oldImagePath) {
+                        $this->deleteImage($oldImagePath);
+                    });
+                }
 
                 return $shop;
             });
         } catch (\Throwable $e) {
-            $this->deleteImage($imagePath);
+
+            // Delete the new image if the operation fails.
+            if ($imagePath) {
+                $this->deleteImage($imagePath);
+            }
 
             throw $e;
         }
     }
 
-    // public function approve(ApproveShopOwnerVerificationDTO $dto)
-    // {
-    //     $verification = ShopOwnerVerification::findOrFail($dto->verification_id);
+    // ==========================================
+    // دوال مؤمن (مع المنطق الكامل الذي أضفناه)
+    // ==========================================
 
-    //     if ($verification->status !== 'pending') {
-    //         return [
-    //             'error'   => true,
-    //             'status'  => 422,
-    //             'message' => 'تمت مراجعة هذا الطلب مسبقاً.',
-    //         ];
-    //     }
-
-    //     $verification->status      = $dto->status;
-    //     $verification->notes       = $dto->notes;
-    //     $verification->reviewed_by = Auth::guard('sanctum')->id();
-    //     $verification->reviewed_at = now();
-    //     $verification->save();
-
-    //     return $verification;
-    // }
-
-    public function findVerificationById(int $id): ?ShopOwnerVerification
+    /**
+     * Find a shop owner verification by ID.
+     */
+    public function findById(int $id): ShopOwnerVerification
     {
-        return ShopOwnerVerification::find($id);
+        return ShopOwnerVerification::findOrFail($id);
     }
+
+    /**
+     * Update verification status.
+     */
+    public function updateStatus(
+        ShopOwnerVerification $verification,
+        string $status
+    ): void {
+        // نستخدم التعيين المباشر لأن status/reviewed_by قد لا تكون في fillable
+        $verification->status = $status;
+        $verification->reviewed_by = Auth::guard('sanctum')->id();
+        $verification->reviewed_at = now();
+        $verification->save();
+    }
+
+    /**
+     * Approve a shop owner verification request.
+     * (Logic: Create Account + Random Password + Role + Email)
+     */
+    public function accountCreationApproval(int $id): void
+    {
+        $verification = $this->findById($id);
+
+        // حارس: يجب أن يكون الطلب معلّقاً
+        if ($verification->status !== 'pending') {
+            throw new \RuntimeException('تمت مراجعة هذا الطلب مسبقاً.');
+        }
+
+        // حارس: يجب ألا يوجد حساب بنفس الإيميل
+        if ($this->userExistsByEmail($verification->email)) {
+            throw new \RuntimeException('يوجد حساب مسجل بهذا البريد مسبقاً.');
+        }
+
+        $password = Str::random(12);
+
+        DB::transaction(function () use ($verification, $password) {
+            // 1. إنشاء الحساب
+            $user = $this->createOwnerAccount($verification, $password);
+            
+            // 2. منح الدور
+            $user->assignRole('workshop_owner');
+            
+            // 3. تحديث حالة الطلب
+            $this->updateStatus($verification, 'approved');
+        });
+
+        // 4. إرسال الإيميل (خارج الترانزاكشن لضمان عدم الإرسال عند الفشل)
+        Mail::to($verification->email)->send(
+            new ShopOwnerApprovedMail($verification->first_name, $verification->email, $password)
+        );
+    }
+
+    /**
+     * Reject a shop owner verification request.
+     * (Logic: Mark Rejected + Soft Delete + Email)
+     */
+    public function accountCreationRefused(int $id, ?string $notes = null): void
+    {
+        $verification = $this->findById($id);
+
+        // حارس: يجب أن يكون الطلب معلّقاً
+        if ($verification->status !== 'pending') {
+            throw new \RuntimeException('تمت مراجعة هذا الطلب مسبقاً.');
+        }
+
+        DB::transaction(function () use ($verification, $notes) {
+            // حفظ ملاحظات الرفض
+            if ($notes) {
+                $verification->notes = $notes;
+                $verification->save();
+            }
+
+            // تحديث الحالة
+            $this->updateStatus($verification, 'rejected');
+
+            // حذف الطلب (Soft Delete)
+            $verification->delete();
+        });
+
+        // إرسال إيميل الرفض
+        Mail::to($verification->email)->send(
+            new ShopOwnerRejectedMail($verification->first_name, $notes)
+        );
+    }
+
+    /**
+     * Delete a shop owner verification request.
+     */
+    public function delete(int $id): void
+    {
+        $verification = $this->findById($id);
+        $verification->delete();
+    }
+
+    // ==========================================
+    // دوال مساعدة (أضفناها لدعم المنطق)
+    // ==========================================
 
     public function userExistsByEmail(string $email): bool
     {
@@ -157,24 +303,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         $user->email = $verification->email;
         $user->phone_number = $verification->phone_number;
         $user->password = Hash::make($password);
-        $user->email_verified_at = now();
+        $user->email_verified_at = now(); // تفعيل فوري لأننا أرسلنا البيانات
         $user->save();
 
         return $user;
-    }
-
-    public function markReviewed(ShopOwnerVerification $verification, string $status, ?string $notes): void
-    {
-        $verification->status = $status;
-        $verification->notes = $notes ?? $verification->notes;
-        $verification->reviewed_by = Auth::guard('sanctum')->id();
-        $verification->reviewed_at = now();
-        $verification->save();
-    }
-
-    public function deleteVerification(ShopOwnerVerification $verification): void
-    {
-        $verification->delete(); // SoftDeletes = حذف آمن قابل للاسترجاع
     }
 
     public function getVerifications(?string $status = null)

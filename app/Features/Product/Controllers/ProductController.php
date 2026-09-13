@@ -4,22 +4,27 @@ namespace App\Features\Product\Controllers;
 
 use App\Features\Product\Models\Product;
 use App\Features\Product\Requests\ProductRequest;
+use App\Features\Product\Resources\ProductResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
     /**
+
      * Get all products.
      */
     public function getAllProducts(): JsonResponse
     {
-        $products = Product::all();
+        $products = Product::with([
+            'category',
+        ])->get();
 
         return response()->json([
-            'products' => $products,
+            'products' => ProductResource::collection($products),
         ], 200);
     }
+
 
     /**
      * Get a product by ID.

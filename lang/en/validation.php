@@ -205,7 +205,7 @@ return [
         'first_name' => 'الاسم الأول',
 
         'service_ids' => 'الخدمات',
-        'national_id_image' => 'صورة الهوية الوطنية',
+        'national_id_image' => 'صورة الهوية ',
         'notes' => 'ملاحظات',
 
         'country_id' => 'الدولة',
@@ -225,7 +225,21 @@ return [
         'working_hours.*.from' => 'وقت بداية العمل',
         'working_hours.*.to' => 'وقت نهاية العمل',
 
-        'brand_name' => 'اسم الشركة',
+        'brand_name' => ' العلامة التجارية',
+        'brand_id' => 'العلامة التجارية',
+
+        // Shop Product
+        'shop_id' => 'الورشة',
+        'product_id' => 'المنتج',
+        'device_model_id' => 'الجهاز',
+        'quantity' => 'الكمية',
+        'price' => 'السعر',
+        'image' => 'الصورة',
+        'status' => 'الحالة',
+        'attributes' => 'الخصائص',
+        'device_model_name' => 'اسم الجهاز',
+        'category_name' => 'اسم الفئة',
+        'commercial_record_image' => 'السجل التجاري أو صورة الترخيص',
     ],
 
 ];

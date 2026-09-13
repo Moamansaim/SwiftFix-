@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained('users', 'id')
                 ->cascadeOnDelete();
-            $table->string('shop_name')->unique();
+            $table->string('shop_name');
             $table->text('description');
             $table->string('cover_image')
                 ->nullable();
@@ -24,8 +24,7 @@ return new class extends Migration
                 ->constrained('countries', 'id');
             $table->foreignId('city_id')
                 ->constrained('cities', 'id');
-            $table->foreignId('district_id')
-                ->constrained('districts', 'id');
+            $table->string('district');
             $table->string('street');
             $table->decimal('latitude', 10, 8)->comment('خط العرض');
             $table->decimal('longitude', 11, 8)->comment('خط الطول');
@@ -36,8 +35,11 @@ return new class extends Migration
             $table->bigInteger('rating_count')
                 ->nullable()
                 ->default(0);
-            $table->enum('status', ['active', 'closed', 'bloked'])
-                ->default('active');
+            $table->enum('status', [
+                'blocked',
+                'open',
+                'closed',
+            ])->default('open');
             $table->softDeletes();
             $table->timestamps();
         });

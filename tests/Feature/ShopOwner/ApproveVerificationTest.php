@@ -68,10 +68,7 @@ class ApproveVerificationTest extends TestCase
         $verification = $this->makeVerification();
 
         $this->actingAs($admin, 'sanctum')
-            ->postJson('/api/admin/shop-owner-verifications/approve', [
-                'verification_id' => $verification->id,
-                'status' => 'approved',
-            ])
+            ->patchJson("/api/admin/shop-owner/verification/{$verification->id}/approve")
             ->assertOk()
             ->assertJson(['success' => true]);
 
@@ -95,9 +92,7 @@ class ApproveVerificationTest extends TestCase
         $verification = $this->makeVerification();
 
         $this->actingAs($admin, 'sanctum')
-            ->postJson('/api/admin/shop-owner-verifications/approve', [
-                'verification_id' => $verification->id,
-                'status' => 'rejected',
+            ->patchJson("/api/admin/shop-owner/verification/{$verification->id}/reject", [
                 'notes' => 'الصورة غير واضحة',
             ])
             ->assertOk()
@@ -123,10 +118,7 @@ class ApproveVerificationTest extends TestCase
         ]);
 
         $this->actingAs($admin, 'sanctum')
-            ->postJson('/api/admin/shop-owner-verifications/approve', [
-                'verification_id' => $verification->id,
-                'status' => 'approved',
-            ])
+            ->patchJson("/api/admin/shop-owner/verification/{$verification->id}/approve")
             ->assertStatus(422);
     }
 
@@ -136,10 +128,7 @@ class ApproveVerificationTest extends TestCase
         $verification = $this->makeVerification();
 
         $this->actingAs($customer, 'sanctum')
-            ->postJson('/api/admin/shop-owner-verifications/approve', [
-                'verification_id' => $verification->id,
-                'status' => 'approved',
-            ])
+            ->patchJson("/api/admin/shop-owner/verification/{$verification->id}/approve")
             ->assertStatus(403);
     }
 
@@ -149,10 +138,7 @@ class ApproveVerificationTest extends TestCase
         $verification = $this->makeVerification('approved');
 
         $this->actingAs($admin, 'sanctum')
-            ->postJson('/api/admin/shop-owner-verifications/approve', [
-                'verification_id' => $verification->id,
-                'status' => 'rejected',
-            ])
+            ->patchJson("/api/admin/shop-owner/verification/{$verification->id}/reject")
             ->assertStatus(422);
     }
 }
