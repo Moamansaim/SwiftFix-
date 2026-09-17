@@ -4,15 +4,18 @@ use App\Features\Auth\Controllers\AuthController;
 use App\Features\Brand\Controllers\BrandController;
 use App\Features\Category\Controllers\CategoryController;
 use App\Features\City\Controllers\CityController;
+use App\Features\Contact\Controllers\ContactController;
 use App\Features\Country\Controllers\CountryController;
 use App\Features\DeviceModel\Controllers\DeviceModelController;
 use App\Features\Favorite\Controller\FavoriteController;
+use App\Features\FeatureShop\Controllers\FeatureShopController;
 use App\Features\Product\Controllers\ProductController;
 use App\Features\Review\Controllers\AdminReviewController;
 use App\Features\Review\Controllers\CustomerReviewController;
 use App\Features\Review\Controllers\ShopOwnerReviewController;
 use App\Features\Review\Controllers\ShopReviewController;
 use App\Features\Services\Controllers\ServiceController;
+use App\Features\ShopOwner\Controllers\AdminShopOwnerController;
 use App\Features\ShopOwner\Controllers\ShopOwnerController;
 use App\Features\ShopProduct\Controllers\ShopProductController;
 use Illuminate\Support\Facades\Route;
@@ -99,13 +102,18 @@ Route::group([
     Route::delete('/verification/{id}/delete', 'delete')
         ->middleware('auth:sanctum');
 
+    // Update shop status
     Route::put('/{id}/status', 'updateShopStatus')
         ->middleware('auth:sanctum');
 
+    // Get shop owner verification data
     Route::get('/get-shop-owner-verification-data', 'getShopOwnerVerificationData')
         ->middleware('auth:sanctum');
-});
 
+    // Get all shop owner verification requests
+    Route::post('/{id}/verify',  'verifyShop')
+        ->middleware('auth:sanctum');
+});
 // Country routes
 Route::group([
     'prefix' => 'countries',
@@ -352,7 +360,7 @@ Route::group([
 ], function () {
 
     // Delete a review
-    Route::delete('/delete/{id}', 'destroy');
+    Route::put('/delete/{id}', 'destroy');
 });
 
 // Home routes
@@ -365,4 +373,53 @@ Route::group([
     Route::get('/get-all-shop', 'getAllShop');
     Route::get('/{id}/shop-details', 'shopDetails')
         ->middleware('auth:sanctum');
+});
+
+
+// Feature Shop routes
+Route::group([
+    'prefix' => 'features-shop',
+    'controller' => FeatureShopController::class,
+], function () {
+    Route::get('/get-all', 'getAllFeaturesShop');
+    Route::post('/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
+});
+
+// Contact routes
+Route::group([
+    'prefix' => 'contact',
+    'controller' => ContactController::class,
+], function () {
+
+    // Submit a new contact message
+    Route::post('/store', 'store');
+
+    // Retrieve all contact messages
+    Route::get('/get-all', 'index');
+
+    // Delete a contact message
+    Route::delete('/delete/{id}', 'destroy');
+});
+
+
+// Admin Shop Owner routes
+Route::group([
+    'prefix' => 'admin/shop-owners',
+    'controller' => AdminShopOwnerController::class,
+    'middleware' => ['auth:sanctum'],
+], function () {
+
+    // Retrieve all shop owners
+    Route::get('/get-all', 'index');
+
+    // Freeze a shop owner account and block the shop
+    Route::delete('/freeze/{id}', 'freeze');
+
+    // Unfreeze a shop owner account and unblock the shop
+    Route::post('/unfreeze/{id}', 'unfreeze');
+
+    // Permanently delete the shop owner account and shop
+    Route::delete('/delete/{id}', 'destroy');
 });

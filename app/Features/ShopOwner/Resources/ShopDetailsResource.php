@@ -32,6 +32,12 @@ class ShopDetailsResource extends JsonResource
 
             'working_hours' => $this->working_hours,
 
+            'phone_number' => $this->user->phone_number,
+
+            'email' => $this->user->email,
+
+            'status' => $this->status,
+
             'services' => $this->services->map(function ($service) {
                 return [
                     'id' => $service->id,
@@ -39,6 +45,12 @@ class ShopDetailsResource extends JsonResource
                     'service_name' => $service->service_name,
 
                     'price' => $service->pivot->price,
+                ];
+            }),
+
+            'featuresShop' => $this->featuresShop->map(function ($featuresShop) {
+                return [
+                    'feature_name' => $featuresShop->feature,
                 ];
             }),
 
