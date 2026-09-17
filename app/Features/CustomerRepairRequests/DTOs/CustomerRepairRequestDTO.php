@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\DTOs;
+namespace App\Features\CustomerRepairRequests\DTOs;
 
 class CustomerRepairRequestDTO
 {
@@ -11,7 +11,6 @@ class CustomerRepairRequestDTO
         public int $service_id,
         public string $description,
         public ?string $image,
-        public string $phone_number,
         public string $address,
     ) {}
 }

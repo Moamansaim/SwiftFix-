@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\Repositories;
+namespace App\Features\CustomerRepairRequests\Interfaces;
 
-use App\Features\CustomerRepairRequest\DTOs\CustomerRepairRequestDTO;
-use App\Features\CustomerRepairRequest\Models\CustomerRepairRequest;
+use App\Features\CustomerRepairRequests\DTOs\CustomerRepairRequestDTO;
+use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
 
 interface CustomerRepairRequestInterface
 {

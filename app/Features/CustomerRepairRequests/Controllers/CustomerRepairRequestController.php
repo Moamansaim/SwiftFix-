@@ -1,16 +1,38 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\Controllers;
 
-use App\Features\CustomerRepairRequest\DTOs\CustomerRepairRequestDTO;
-use App\Features\CustomerRepairRequest\Requests\CustomerRepairRequestRequest;
-use App\Features\CustomerRepairRequest\Resources\CustomerRepairRequestResource;
-use App\Features\CustomerRepairRequest\UseCases\CustomerRepairRequestUseCase;
+namespace App\Features\CustomerRepairRequests\Controllers;
+
+
+use App\Features\CustomerRepairRequests\DTOs\CustomerRepairRequestDTO;
+use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
+use App\Features\CustomerRepairRequests\Requests\CustomerRepairRequestRequest;
+use App\Features\CustomerRepairRequests\Resources\CustomerRepairRequestResource;
+use App\Features\CustomerRepairRequests\UseCases\CustomerRepairRequestUseCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerRepairRequestController
 {
+
+    public function getAllCustomerRepairRequests(): JsonResponse
+    {
+        $repairRequests = CustomerRepairRequest::with([
+            'user',
+            'shop',
+            'deviceModel',
+            'service',
+        ])
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'message' => 'تم جلب طلبات الصيانة بنجاح.',
+            'data' => CustomerRepairRequestResource::collection(
+                $repairRequests
+            ),
+        ]);
+    }
     /**
      * Create a new controller instance.
      *
@@ -59,7 +81,6 @@ class CustomerRepairRequestController
             $request->service_id,
             $request->description,
             $request->image,
-            $request->phone_number,
             $request->address,
         );
 
@@ -120,9 +141,6 @@ class CustomerRepairRequestController
 
         return response()->json([
             'message' => 'تمت الموافقة على طلب الصيانة بنجاح.',
-            'data' => new CustomerRepairRequestResource(
-                $repairRequest
-            ),
         ]);
     }
 

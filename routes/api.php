@@ -6,6 +6,7 @@ use App\Features\Category\Controllers\CategoryController;
 use App\Features\City\Controllers\CityController;
 use App\Features\Contact\Controllers\ContactController;
 use App\Features\Country\Controllers\CountryController;
+use App\Features\CustomerRepairRequests\Controllers\CustomerRepairRequestController;
 use App\Features\DeviceModel\Controllers\DeviceModelController;
 use App\Features\Favorite\Controller\FavoriteController;
 use App\Features\FeatureShop\Controllers\FeatureShopController;
@@ -422,4 +423,28 @@ Route::group([
 
     // Permanently delete the shop owner account and shop
     Route::delete('/delete/{id}', 'destroy');
+});
+
+
+// Customer repair request routes
+Route::group([
+    'prefix' => 'repair-requests',
+    'controller' => CustomerRepairRequestController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+
+    // Get all  repair request
+    Route::get('/get-all-data', 'getAllCustomerRepairRequests');
+
+    // Create a new repair request
+    Route::post('/store', 'store');
+
+    // Delete a repair request
+    Route::delete('/delete/{id}', 'destroy');
+
+    // Approve a repair request
+    Route::patch('/approve/{id}', 'approve');
+
+    // Reject a repair request
+    Route::patch('/reject/{id}', 'reject');
 });

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Features\CustomerRepairRequest\UseCases;
+namespace App\Features\CustomerRepairRequests\UseCases;
 
-use App\Features\CustomerRepairRequest\DTOs\CustomerRepairRequestDTO;
-use App\Features\CustomerRepairRequest\Models\CustomerRepairRequest;
-use App\Features\CustomerRepairRequest\Notifications\RepairRequestApprovedNotification;
-use App\Features\CustomerRepairRequest\Notifications\RepairRequestRejectedNotification;
-use App\Features\CustomerRepairRequest\Repositories\CustomerRepairRequestInterface;
-use App\Features\CustomerRepairRequest\Services\CustomerRepairRequestMail;
+use App\Features\CustomerRepairRequests\DTOs\CustomerRepairRequestDTO;
+use App\Features\CustomerRepairRequests\Interfaces\CustomerRepairRequestInterface;
+use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
+use App\Features\CustomerRepairRequests\Notifications\RepairRequestApprovedNotification;
+use App\Features\CustomerRepairRequests\Notifications\RepairRequestRejectedNotification;
+use App\Features\CustomerRepairRequests\Services\CustomerRepairRequestMail;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 

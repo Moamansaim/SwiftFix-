@@ -207,8 +207,6 @@ class ShopOwnerController extends Controller
      * - Shop name.
      * - Country name.
      * - City name.
-     * - District.
-     * - Street.
      * - Shop status.
      * - Service.
      * - Service price range.
@@ -232,16 +230,12 @@ class ShopOwnerController extends Controller
             'country',
             'city',
         ])
-            ->withAvg('reviews', 'rating')
             ->whereNotNull('shop_name')
             ->where('status', '!=', 'blocked')
-            ->byName($request->shopName)
+            ->byName($request->name)
             ->byCity($request->cityName)
             ->byService($request->service_id)
-            ->byPrice(
-                $request->min_price,
-                $request->max_price
-            )
+            ->byPrice($request->price)
             ->bySparePart($request->sparePart)
             ->byRating($request->rating)
             ->byStatus($request->status)
