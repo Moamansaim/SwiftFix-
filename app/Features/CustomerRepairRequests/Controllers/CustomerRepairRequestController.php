@@ -15,14 +15,34 @@ use Illuminate\Support\Facades\Auth;
 class CustomerRepairRequestController
 {
 
+    /**
+     * Get all customer repair requests for the authenticated shop owner.
+     *
+     * This method retrieves all repair requests associated with the shop
+     * owned by the currently authenticated user.
+     *
+     * The authenticated user's ID is used to ensure that only repair
+     * requests belonging to their own shop are returned.
+     *
+     * The required relationships are eager loaded to avoid unnecessary
+     * database queries when transforming the data through the resource.
+     *
+     * @return JsonResponse
+     *         Returns a success message and a collection of repair requests.
+     */
     public function getAllCustomerRepairRequests(): JsonResponse
     {
+        $user = Auth::guard('sanctum')->user();
+
         $repairRequests = CustomerRepairRequest::with([
             'user',
             'shop',
             'deviceModel',
             'service',
         ])
+            ->whereHas('shop', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->latest()
             ->get();
 
@@ -33,6 +53,7 @@ class CustomerRepairRequestController
             ),
         ]);
     }
+
     /**
      * Create a new controller instance.
      *

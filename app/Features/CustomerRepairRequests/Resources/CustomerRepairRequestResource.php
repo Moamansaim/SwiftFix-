@@ -29,12 +29,12 @@ class CustomerRepairRequestResource extends JsonResource
 
             'device_model' => [
                 'id' => $this->deviceModel?->id,
-                'name' => $this->deviceModel?->name,
+                'name' => $this->deviceModel?->device_model_name,
             ],
 
             'service' => [
                 'id' => $this->service?->id,
-                'name' => $this->service?->name,
+                'name' => $this->service?->service_name,
             ],
 
             'description' => $this->description,

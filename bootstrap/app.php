@@ -89,18 +89,18 @@ return Application::configure(basePath: dirname(__DIR__))
         |--------------------------------------------------------------------------
         */
 
-        $exceptions->render(function (
-            NotFoundHttpException $e,
-            Request $request
-        ) {
+        // $exceptions->render(function (
+        //     NotFoundHttpException $e,
+        //     Request $request
+        // ) {
 
-            if ($request->is('api/*')) {
+        //     if ($request->is('api/*')) {
 
-                return response()->json([
-                    'message' => 'المورد المطلوب غير موجود.',
-                ], 404);
-            }
-        });
+        //         return response()->json([
+        //             'message' => 'المورد المطلوب غير موجود.',
+        //         ], 404);
+        //     }
+        // });
 
         /*
         |--------------------------------------------------------------------------

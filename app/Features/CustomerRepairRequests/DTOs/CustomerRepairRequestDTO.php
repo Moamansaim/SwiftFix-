@@ -2,6 +2,8 @@
 
 namespace App\Features\CustomerRepairRequests\DTOs;
 
+use Illuminate\Http\UploadedFile;
+
 class CustomerRepairRequestDTO
 {
     public function __construct(
@@ -10,7 +12,7 @@ class CustomerRepairRequestDTO
         public int $device_model_id,
         public int $service_id,
         public string $description,
-        public ?string $image,
+        public ?UploadedFile $image,
         public string $address,
     ) {}
 }
