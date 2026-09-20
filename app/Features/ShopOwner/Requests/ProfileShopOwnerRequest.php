@@ -18,7 +18,6 @@ class ProfileShopOwnerRequest extends FormRequest
                 'string',
                 'min:2',
                 'max:100',
-                'unique:shops,shop_name',
             ],
 
             'description' => [
@@ -29,6 +28,13 @@ class ProfileShopOwnerRequest extends FormRequest
 
             'cover_image' => [
                 'required',
+                'image',
+                'mimes:jpeg,png,jpg,webp',
+                'max:2048',
+            ],
+
+            'commercial_record_image' => [
+                'nullable',
                 'image',
                 'mimes:jpeg,png,jpg,webp',
                 'max:2048',

@@ -21,7 +21,7 @@ class ShopOwnerVerificationResource extends JsonResource
             'country_name' => $this->country->name,
             'status' => $this->status,
             'notes' => $this->notes,
-            'reviewed_by' => $this->reviewed_by,
+            'reviewed_by' => $this->user ? $this->user->first_name . ' ' . $this->user->last_name : null,
             'reviewed_at' => $this->reviewed_at,
             'created_at' => $this->created_at,
             'services' => $this->services->map(function ($service) {

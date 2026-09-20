@@ -32,6 +32,12 @@ class ShopDetailsResource extends JsonResource
 
             'working_hours' => $this->working_hours,
 
+            'phone_number' => $this->user->phone_number,
+
+            'email' => $this->user->email,
+
+            'status' => $this->status,
+
             'services' => $this->services->map(function ($service) {
                 return [
                     'id' => $service->id,
@@ -42,20 +48,20 @@ class ShopDetailsResource extends JsonResource
                 ];
             }),
 
+            'featuresShop' => $this->featuresShop->map(function ($featuresShop) {
+                return [
+                    'feature_name' => $featuresShop->feature,
+                ];
+            }),
+
+
             'products' => $this->shopProducts->map(function ($shopProduct) {
                 return [
-                    'id' => $shopProduct->id,
-
-                    'product_name' => $shopProduct->product?->product_name,
-
+                    'product_name' => $shopProduct->product->product_name,
                     'price' => $shopProduct->price,
-
                     'quantity' => $shopProduct->quantity,
-
                     'image' => $shopProduct->image,
-
                     'description' => $shopProduct->description,
-
                     'status' => $shopProduct->status,
                 ];
             }),

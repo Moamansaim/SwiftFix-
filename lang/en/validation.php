@@ -240,6 +240,10 @@ return [
         'device_model_name' => 'اسم الجهاز',
         'category_name' => 'اسم الفئة',
         'commercial_record_image' => 'السجل التجاري أو صورة الترخيص',
+        'full_name' => 'الاسم رباعي',
+        'subject' => 'عنوان الموضوع',
+        'message' => 'محتوى الرسالة',
+        'reply' => 'الرد',
     ],
 
 ];

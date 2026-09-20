@@ -10,6 +10,13 @@ class FeatureShop extends Model
 {
     use HasFactory;
 
+    public $table = 'shop_features';
+
+    protected $fillable = [
+        'shop_id',
+        'feature',
+    ];
+
     public function shops()
     {
         return $this->belongsTo(

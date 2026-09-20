@@ -116,38 +116,35 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 
                 $userId = $user->id;
 
-                // Get the current shop.
-                $shop = Shop::where('user_id', $userId)->first();
+                // Get the existing shop
+                $shop = Shop::where('user_id', $userId)
+                    ->firstOrFail();
 
-                // Save the old image path.
-                $oldImagePath = $shop?->cover_image;
+                // Save the old image path
+                $oldImagePath = $shop->cover_image;
 
-                // Upload the new image.
+                // Upload the new image
                 $imagePath = $this->uploadImage(
                     $profileShopOwnerDTO->cover_image,
                     'shop-owner/cover-image-profile'
                 );
 
-                // Create or update the shop.
-                $shop = Shop::updateOrCreate(
-                    [
-                        'user_id' => $userId,
-                    ],
-                    [
-                        'shop_name' => $profileShopOwnerDTO->shop_name,
-                        'description' => $profileShopOwnerDTO->description,
-                        'cover_image' => $imagePath,
-                        'country_id' => $profileShopOwnerDTO->country_id,
-                        'city_id' => $profileShopOwnerDTO->city_id,
-                        'district' => $profileShopOwnerDTO->district,
-                        'street' => $profileShopOwnerDTO->street,
-                        'latitude' => $profileShopOwnerDTO->latitude,
-                        'longitude' => $profileShopOwnerDTO->longitude,
-                        'working_hours' => $profileShopOwnerDTO->working_hours,
-                    ]
-                );
+                // Fill the existing shop with its profile data
+                $shop->update([
+                    'shop_name' => $profileShopOwnerDTO->shop_name,
+                    'description' => $profileShopOwnerDTO->description,
+                    'cover_image' => $imagePath,
+                    'commercial_record_image' => $profileShopOwnerDTO->commercial_record_image,
+                    'country_id' => $profileShopOwnerDTO->country_id,
+                    'city_id' => $profileShopOwnerDTO->city_id,
+                    'district' => $profileShopOwnerDTO->district,
+                    'street' => $profileShopOwnerDTO->street,
+                    'latitude' => $profileShopOwnerDTO->latitude,
+                    'longitude' => $profileShopOwnerDTO->longitude,
+                    'working_hours' => $profileShopOwnerDTO->working_hours,
+                ]);
 
-                // Prepare services with prices.
+                // Prepare services with prices
                 $services = collect($profileShopOwnerDTO->services)
                     ->mapWithKeys(function ($service) {
                         return [
@@ -158,25 +155,24 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     })
                     ->toArray();
 
-                // Sync shop services.
+                // Sync shop services
                 $shop->services()->sync($services);
 
-                // Delete the old image after the transaction is committed.
+                // Delete the old image after the transaction is committed
                 if ($oldImagePath) {
                     DB::afterCommit(function () use ($oldImagePath) {
                         $this->deleteImage($oldImagePath);
                     });
                 }
 
-                return $shop;
+                return $shop->fresh();
             });
         } catch (\Throwable $e) {
 
-            // Delete the new image if the operation fails.
+            // Delete the new image if the operation fails
             if ($imagePath) {
                 $this->deleteImage($imagePath);
             }
-
             throw $e;
         }
     }
@@ -285,6 +281,13 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         $verification = $this->findById($id);
         $verification->delete();
     }
+    public function verifyShop(int $shopId): void
+    {
+        $shop = Shop::findOrFail($shopId);
+        $shop->is_verified = true;
+        $shop->save();
+    }
+
 
     // ==========================================
     // دوال مساعدة (أضفناها لدعم المنطق)
@@ -317,4 +320,5 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             ->latest()
             ->get();
     }
+
 }

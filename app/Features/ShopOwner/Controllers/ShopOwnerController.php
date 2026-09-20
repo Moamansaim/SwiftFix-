@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RuntimeException;
 
 
 
@@ -52,14 +53,14 @@ class ShopOwnerController extends Controller
         );
 
         try {
-            $this->shopOwnerVerifications->create($dto);
+            $verification = $this->shopOwnerVerifications->create($dto);
 
             return response()->json([
-                'message' => 'تم إرسال طلبك ينجاح ! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة . ',
+                'message' => 'تم إرسال طلبك بنجاح! طلبك الآن قيد المراجعة وسيتم إشعارك عبر البريد الإلكتروني بنتيجة المراجعة.',
             ], 201);
         } catch (\Throwable $e) {
             return response()->json([
-                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => 'فشل إرسال الطلب، يرجى المحاولة لاحقاً',
             ], 500);
         }
     }
@@ -104,7 +105,8 @@ class ShopOwnerController extends Controller
             return response()->json($result, 200);
         } catch (\Throwable $e) {
             return response()->json([
-                'message' => 'فشل إنشاء الحساب: ' . $e->getMessage(),
+                'message' => $e->getMessage(),
+                // 'message' => 'فشل إنشاء حساب صاحب الورشة، يرجى المحاولة لاحقاً.',
             ], 500);
         }
     }
@@ -158,6 +160,7 @@ class ShopOwnerController extends Controller
             $shopOwnerVerificationRequest->shop_name,
             $shopOwnerVerificationRequest->description,
             $shopOwnerVerificationRequest->cover_image,
+            $shopOwnerVerificationRequest->commercial_record_image,
             $shopOwnerVerificationRequest->country_id,
             $shopOwnerVerificationRequest->city_id,
             $shopOwnerVerificationRequest->district,
@@ -176,7 +179,8 @@ class ShopOwnerController extends Controller
             ], 201);
         } catch (\Throwable $e) {
             return response()->json([
-                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+                'message' => $e->getMessage(),
+                //'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
             ], 500);
         }
     }
@@ -203,43 +207,85 @@ class ShopOwnerController extends Controller
         ], 200);
     }
 
-    /**
-     * Get all shop data (Moamen's method).
-     */
-    public function getAllShop(): JsonResponse
-    {
-        $shop = Shop::with([
-            'services',
-            'country',
-            'city',
-        ])->get();
-
-        return response()->json([
-            'data' => new ShopResource($shop),
-        ], 200);
-    }
 
     /**
      * Get all shops details (Moamen's method).
      */
-    public function shopDetails(): JsonResponse
+
+    /* Get all shops with optional filters.
+     *
+     * This method retrieves all available shops and applies the
+     * requested filters using the local query scopes defined
+     * in the Shop model.
+     *
+     * The following filters are supported:
+     * - Shop name.
+     * - Country name.
+     * - City name.
+     * - Shop status.
+     * - Service.
+     * - Service price range.
+     *
+     * Empty filters are ignored automatically by the corresponding
+     * local scopes.
+     *
+     * Only shops with a name are returned, and blocked shops are
+     * excluded from the public shop listing.
+     *
+     * @param Request $request
+     *        The HTTP request containing the optional filter parameters.
+     *
+     * @return JsonResponse
+     *         Returns the filtered shops as a JSON response.
+     */
+    public function getAllShop(Request $request): JsonResponse
+
     {
         $shops = Shop::with([
             'services',
             'country',
             'city',
-            'favorites',
-            'shopProducts.product.category',
-            'shopProducts.product.deviceModel',
-        ])->get();
+        ])
+            ->whereNotNull('shop_name')
+            ->where('status', '!=', 'blocked')
+            ->byName($request->name)
+            ->byCity($request->cityName)
+            ->byService($request->service_id)
+            ->byPrice($request->price)
+            ->bySparePart($request->sparePart)
+            ->byRating($request->rating)
+            ->byStatus($request->status)
+            ->ByVerification($request->is_verified)
+            ->get();
 
         return response()->json([
-            'data' => ShopDetailsResource::collection($shops),
+            'data' => ShopResource::collection($shops),
         ], 200);
     }
 
     /**
-     * Get all shop owner verification requests (Moamen's method).
+     * Get shop details.
+     */
+    public function shopDetails(int $id): JsonResponse
+    {
+        $shop = Shop::with([
+            'services',
+            'country',
+            'city',
+            'favorites',
+            'shopProducts.product.category',
+            'shopProducts.deviceModel',
+            'user',
+        ])->findOrFail($id);
+
+        return response()->json([
+            'data' => new ShopDetailsResource($shop),
+        ], 200);
+    }
+
+
+    /**
+     * Get all shop owner verification requests.
      */
     public function getAllShopOwnerVerificationData(): JsonResponse
     {
@@ -304,5 +350,22 @@ class ShopOwnerController extends Controller
             'message' => 'تم جلب الطلبات بنجاح.',
             'data'    => $verifications,
         ], 200);
+    }
+
+
+    // Verify a shop and update its status to verified
+    public function verifyShop(int $shopId): JsonResponse
+    {
+        try {
+            $this->shopOwnerVerifications->verifyShop($shopId);
+
+            return response()->json([
+                'message' => 'تم توثيق الورشة بنجاح.',
+            ]);
+        } catch (RuntimeException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
+        }
     }
 }
