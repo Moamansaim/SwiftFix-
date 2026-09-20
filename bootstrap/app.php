@@ -31,6 +31,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 ? null
                 : route('login');
         });
+
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        ]);
     })
 
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -4,7 +4,10 @@ namespace App\Features\ShopOwner\Interfaces;
 
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
-use App\Features\ShopOwner\Models\ShopOwnerVerification;
+use App\Features\ShopOwner\DTOs\ApproveShopOwnerVerificationDTO;
+use App\Features\Auth\Models\User;
+use App\Features\ShopOwner\Models\ShopOwnerVerification;            // ← السطر الناقص
+
 
 interface ShopOwnerVerificationsInterface
 {
@@ -20,9 +23,16 @@ interface ShopOwnerVerificationsInterface
      *
      * @return mixed
      */
-    public function createShopProfile(
-        ProfileShopOwnerDTO $profileShopOwnerDTO
-    );
+    public function createShopProfile(ProfileShopOwnerDTO $profileShopOwnerDTO);
+
+
+    public function userExistsByEmail(string $email): bool;
+
+    public function createOwnerAccount(ShopOwnerVerification $verification, string $password): User;
+
+    public function getVerifications(?string $status = null);
+
+
 
     /**
      * Find a shop owner verification by ID.
@@ -46,10 +56,10 @@ interface ShopOwnerVerificationsInterface
     /**
      * Reject a shop owner verification request.
      */
-    public function accountCreationRefused(int $id): void;
-
+    public function accountCreationRefused(int $id, ?string $notes = null): void;
     /**
      * Delete a shop owner verification request.
      */
     public function delete(int $id): void;
+
 }

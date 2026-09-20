@@ -2,6 +2,8 @@
 
 namespace App\Features\Auth\Models;
 
+use Spatie\Permission\Traits\HasRoles;
+
 use App\Features\Auth\Notifications\VerifyEmailNotification;
 use App\Features\Favorite\Models\Favorite;
 use App\Features\ShopOwner\Models\Shop;
@@ -13,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
+// use Spatie\Permission\Traits\HasRoles;
 
 /**
  * User model.
@@ -24,7 +26,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes , HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles;
 
     /**
      * The attributes that are mass assignable.

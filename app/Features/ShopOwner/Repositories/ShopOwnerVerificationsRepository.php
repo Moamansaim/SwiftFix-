@@ -6,12 +6,17 @@ use App\Features\Auth\Models\User;
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
 use App\Features\ShopOwner\Interfaces\ShopOwnerVerificationsInterface;
+use App\Features\ShopOwner\Mail\ShopOwnerApprovedMail;
+use App\Features\ShopOwner\Mail\ShopOwnerRejectedMail;
 use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use App\Features\ShopOwner\Services\UploadImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterface
 {
@@ -172,6 +177,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         }
     }
 
+    // ==========================================
+    // دوال مؤمن (مع المنطق الكامل الذي أضفناه)
+    // ==========================================
+
     /**
      * Find a shop owner verification by ID.
      */
@@ -187,36 +196,80 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         ShopOwnerVerification $verification,
         string $status
     ): void {
-        $verification->update([
-            'status' => $status,
-            'reviewed_by' => Auth::guard('sanctum')->id(),
-            'reviewed_at' => now(),
-        ]);
+        // نستخدم التعيين المباشر لأن status/reviewed_by قد لا تكون في fillable
+        $verification->status = $status;
+        $verification->reviewed_by = Auth::guard('sanctum')->id();
+        $verification->reviewed_at = now();
+        $verification->save();
     }
 
     /**
      * Approve a shop owner verification request.
+     * (Logic: Create Account + Random Password + Role + Email)
      */
     public function accountCreationApproval(int $id): void
     {
         $verification = $this->findById($id);
 
-        $this->updateStatus(
-            $verification,
-            'approved'
+        // حارس: يجب أن يكون الطلب معلّقاً
+        if ($verification->status !== 'pending') {
+            throw new \RuntimeException('تمت مراجعة هذا الطلب مسبقاً.');
+        }
+
+        // حارس: يجب ألا يوجد حساب بنفس الإيميل
+        if ($this->userExistsByEmail($verification->email)) {
+            throw new \RuntimeException('يوجد حساب مسجل بهذا البريد مسبقاً.');
+        }
+
+        $password = Str::random(12);
+
+        DB::transaction(function () use ($verification, $password) {
+            // 1. إنشاء الحساب
+            $user = $this->createOwnerAccount($verification, $password);
+            
+            // 2. منح الدور
+            $user->assignRole('workshop_owner');
+            
+            // 3. تحديث حالة الطلب
+            $this->updateStatus($verification, 'approved');
+        });
+
+        // 4. إرسال الإيميل (خارج الترانزاكشن لضمان عدم الإرسال عند الفشل)
+        Mail::to($verification->email)->send(
+            new ShopOwnerApprovedMail($verification->first_name, $verification->email, $password)
         );
     }
 
     /**
      * Reject a shop owner verification request.
+     * (Logic: Mark Rejected + Soft Delete + Email)
      */
-    public function accountCreationRefused(int $id): void
+    public function accountCreationRefused(int $id, ?string $notes = null): void
     {
         $verification = $this->findById($id);
 
-        $this->updateStatus(
-            $verification,
-            'rejected'
+        // حارس: يجب أن يكون الطلب معلّقاً
+        if ($verification->status !== 'pending') {
+            throw new \RuntimeException('تمت مراجعة هذا الطلب مسبقاً.');
+        }
+
+        DB::transaction(function () use ($verification, $notes) {
+            // حفظ ملاحظات الرفض
+            if ($notes) {
+                $verification->notes = $notes;
+                $verification->save();
+            }
+
+            // تحديث الحالة
+            $this->updateStatus($verification, 'rejected');
+
+            // حذف الطلب (Soft Delete)
+            $verification->delete();
+        });
+
+        // إرسال إيميل الرفض
+        Mail::to($verification->email)->send(
+            new ShopOwnerRejectedMail($verification->first_name, $notes)
         );
     }
 
@@ -226,7 +279,46 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     public function delete(int $id): void
     {
         $verification = $this->findById($id);
-
         $verification->delete();
     }
+    public function verifyShop(int $shopId): void
+    {
+        $shop = Shop::findOrFail($shopId);
+        $shop->is_verified = true;
+        $shop->save();
+    }
+
+
+    // ==========================================
+    // دوال مساعدة (أضفناها لدعم المنطق)
+    // ==========================================
+
+    public function userExistsByEmail(string $email): bool
+    {
+        return User::where('email', $email)->exists();
+    }
+
+    public function createOwnerAccount(ShopOwnerVerification $verification, string $password): User
+    {
+        $user = new User;
+        $user->first_name = $verification->first_name;
+        $user->last_name = $verification->last_name;
+        $user->email = $verification->email;
+        $user->phone_number = $verification->phone_number;
+        $user->password = Hash::make($password);
+        $user->email_verified_at = now(); // تفعيل فوري لأننا أرسلنا البيانات
+        $user->save();
+
+        return $user;
+    }
+
+    public function getVerifications(?string $status = null)
+    {
+        return ShopOwnerVerification::query()
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->with('country')
+            ->latest()
+            ->get();
+    }
+
 }

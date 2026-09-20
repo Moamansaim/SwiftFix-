@@ -2,6 +2,10 @@
 
 namespace App\Features\ShopOwner\UseCases;
 
+
+
+use App\Features\ShopOwner\Mail\ShopOwnerApprovedMail;
+use App\Features\ShopOwner\Mail\ShopOwnerRejectedMail;
 use App\Features\Auth\Models\User;
 use App\Features\Auth\Notifications\NewShopOwnerVerification;
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
@@ -15,6 +19,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use RuntimeException;
 
 class ShopOwnerVerifications

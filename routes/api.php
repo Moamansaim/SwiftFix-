@@ -23,64 +23,24 @@ use Illuminate\Support\Facades\Route;
 
 // Health check
 Route::get('/health', function () {
-    return response()->json([
-        'success' => true,
-        'message' => 'SwiftFix API is alive.',
-        'data' => ['status' => 'ok', 'time' => now()->toDateTimeString()],
-    ]);
+    return response()->json(['success' => true, 'message' => 'SwiftFix API is alive.', 'data' => ['status' => 'ok', 'time' => now()->toDateTimeString()]]);
 });
 
-// Authentication routes
-Route::group([
-    'prefix' => 'auth',
-    'controller' => AuthController::class,
-], function () {
-
-    // Register a new user
-    Route::post('/register', 'register')
-        ->middleware(['guest.sanctum', 'throttle:5,1']);
-
-    // Login user
-    Route::post('/login', 'login')
-        ->middleware(['guest.sanctum', 'throttle:5,1']);
-
-    // Send password reset code
-    Route::post('/password/send-code', 'sendPasswordResetCode')
-        ->middleware(['guest.sanctum', 'throttle:5,1']);
-
-    // Reset user password
-    Route::post('/password/reset', 'resetPassword')
-        ->middleware(['guest.sanctum', 'throttle:5,1']);
-
-    // Send email verification
-    Route::post('/email/send-verification', 'sendVerificationEmail')
-        ->middleware(['guest.sanctum', 'throttle:5,1']);
-
-    // Verify user email
-    Route::get('/email/verify/{id}/{hash}', 'verifyEmail')
-        ->middleware(['signed'])
-        ->name('verification.verify');
-
-    // Resend email verification
-    Route::post('/email/resend-verification', 'resendVerificationEmail')
-        ->middleware(['guest.sanctum', 'throttle:5,1']);
-
-    // Logout user
-    Route::post('/logout', 'logout')
-        ->middleware('auth:sanctum');
-
-    // Change user password
-    Route::post('/change-password', 'changePassword')
-        ->middleware('auth:sanctum');
+// Auth Routes
+Route::group(['prefix' => 'auth', 'controller' => AuthController::class], function () {
+    Route::post('/register', 'register')->middleware(['guest.sanctum', 'throttle:5,1']);
+    Route::post('/login', 'login')->middleware(['guest.sanctum', 'throttle:5,1']);
+    Route::post('/password/send-code', 'sendPasswordResetCode')->middleware(['guest.sanctum', 'throttle:5,1']);
+    Route::post('/password/reset', 'resetPassword')->middleware(['guest.sanctum', 'throttle:5,1']);
+    Route::post('/email/send-verification', 'sendVerificationEmail')->middleware(['guest.sanctum', 'throttle:5,1']);
+    Route::get('/email/verify/{id}/{hash}', 'verifyEmail')->middleware(['signed'])->name('verification.verify');
+    Route::post('/email/resend-verification', 'resendVerificationEmail')->middleware(['guest.sanctum', 'throttle:5,1']);
+    Route::post('/logout', 'logout')->middleware('auth:sanctum');
+    Route::post('/change-password', 'changePassword')->middleware('auth:sanctum');
 });
 
-// Shop owner routes
-Route::group([
-    'prefix' => 'shop-owner',
-    'controller' => ShopOwnerController::class,
-], function () {
-
-    // Submit shop owner verification request
+// Shop Owner Routes (Public & Authenticated Owner)
+Route::group(['prefix' => 'shop-owner', 'controller' => ShopOwnerController::class], function () {
     Route::post('/store/shop-owner-verifications', 'storeShopOwnerVerifications');
 
     // Save or update shop profile
@@ -91,297 +51,133 @@ Route::group([
     Route::get('/get/shop-profile', 'getShopProfile')
         ->middleware('auth:sanctum');
 
-    // Approve shop owner verification
-    Route::post('/verification/{id}/approve', 'accountCreationApproval')
-        ->middleware('auth:sanctum');
-
-    // Reject shop owner verification
-    Route::post('/verification/{id}/reject', 'accountCreationRefused')
-        ->middleware('auth:sanctum');
-
-    // Delete shop owner verification
-    Route::delete('/verification/{id}/delete', 'delete')
-        ->middleware('auth:sanctum');
-
     // Update shop status
     Route::put('/{id}/status', 'updateShopStatus')
         ->middleware('auth:sanctum');
-
-    // Get shop owner verification data
-    Route::get('/get-shop-owner-verification-data', 'getShopOwnerVerificationData')
-        ->middleware('auth:sanctum');
-
-    // Get all shop owner verification requests
-    Route::post('/{id}/verify',  'verifyShop')
-        ->middleware('auth:sanctum');
 });
-// Country routes
-Route::group([
-    'prefix' => 'countries',
-    'controller' => CountryController::class,
-], function () {
 
-    // Get all countries
+// Admin Routes (Protected by Role: Admin)
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+    Route::controller(ShopOwnerController::class)->group(function () {
+        // قائمة الطلبات مع الفلترة
+        Route::get('/shop-owner-verifications', 'getVerifications');
+        // الموافقة (ID بالـ URL)
+        Route::patch('/shop-owner/verification/{id}/approve', 'accountCreationApproval');
+        // الرفض (ID بالـ URL)
+        Route::patch('/shop-owner/verification/{id}/reject', 'accountCreationRefused');
+        // الحذف
+        Route::delete('/shop-owner/verification/{id}', 'delete');
+        // كل بيانات الطلبات
+        Route::get('/shop-owner/get-shop-owner-verification-data', 'getShopOwnerVerificationData');
+        // توثيق الورشة
+        Route::patch('/shop/{shopId}/verify', 'verifyShop');
+    });
+});
+
+// Public Resources
+Route::group(['prefix' => 'countries', 'controller' => CountryController::class], function () {
     Route::get('/get-all', 'getAllCountries');
-
-    // Get countries for select
     Route::get('/get-for-select', 'getCountriesForSelect');
-
-    // Create a country
     Route::post('/store', 'store');
-
-    // Update a country
     Route::put('/update/{id}', 'update');
-
-    // Delete a country
     Route::delete('/delete/{id}', 'destroy');
 });
 
-// City routes
-Route::group([
-    'prefix' => 'cities',
-    'controller' => CityController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Get cities by country
-    Route::get('/get-cities-by-country/{id}', 'getCitiesByCountry');
-
-    // Get all cities
-    Route::get('/get-all', 'getAllCities');
-
-    // Create a city
-    Route::post('/store', 'store');
-
-    // Update a city
-    Route::put('/update/{id}', 'update');
-
-    // Delete a city
-    Route::delete('/delete/{id}', 'destroy');
-});
-
-// Service routes
-Route::group([
-    'prefix' => 'services',
-    'controller' => ServiceController::class,
-], function () {
-
-    // Get all services
+Route::group(['prefix' => 'services', 'controller' => ServiceController::class], function () {
     Route::get('/get-all', 'getAllServices');
-
-    // Get services for select
     Route::get('/get-for-select', 'getServicesForSelect');
-
-    // Create a service
     Route::post('/store', 'store');
-
-    // Update a service
     Route::put('/update/{id}', 'update');
-
-    // Delete a service
     Route::delete('/delete/{id}', 'destroy');
 });
 
-// Brand routes
-Route::group([
-    'prefix' => 'brands',
-    'controller' => BrandController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
+// Authenticated Resources
+Route::group(['prefix' => 'cities', 'controller' => CityController::class, 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/get-cities-by-country/{id}', 'getCitiesByCountry');
+    Route::get('/get-all', 'getAllCities');
+    Route::post('/store', 'store');
+    Route::put('/update/{id}', 'update');
+    Route::delete('/delete/{id}', 'destroy');
+});
 
-    // Get all brands
+Route::group(['prefix' => 'brands', 'controller' => BrandController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::get('/get-all', 'getAllBrands');
-
-    // Get brands for select
     Route::get('/get-for-select', 'getBrandsForSelect');
-
-    // Create a brand
     Route::post('/store', 'store');
-
-    // Get brand details
     Route::get('/show/{id}', 'show');
-
-    // Update a brand
     Route::put('/update/{id}', 'update');
-
-    // Delete a brand
     Route::delete('/delete/{id}', 'destroy');
 });
 
-// Device model routes
-Route::group([
-    'prefix' => 'device-models',
-    'controller' => DeviceModelController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Get all device models
+Route::group(['prefix' => 'device-models', 'controller' => DeviceModelController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::get('/get-all', 'getAllDeviceModels');
-
-    // Create a device model
     Route::post('/store', 'store');
-
-    // Update a device model
     Route::put('/update/{id}', 'update');
-
-    // Delete a device model
     Route::delete('/delete/{id}', 'destroy');
 });
 
-// Category routes
-Route::group([
-    'prefix' => 'categories',
-    'controller' => CategoryController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Get all categories
+Route::group(['prefix' => 'categories', 'controller' => CategoryController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::get('/get-all', 'getAllCategories');
-
-    // Get categories for select
     Route::get('/get-for-select', 'getCategoriesForSelect');
-
-    // Create a category
     Route::post('/store', 'store');
-
-    // Get category details
     Route::get('/show/{id}', 'show');
-
-    // Update a category
     Route::put('/update/{id}', 'update');
-
-    // Delete a category
     Route::delete('/delete/{id}', 'destroy');
 });
 
-// Product routes
-Route::group([
-    'prefix' => 'products',
-    'controller' => ProductController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Get all products
+Route::group(['prefix' => 'products', 'controller' => ProductController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::get('/get-all', 'getAllProducts');
-
-    // Create a product
     Route::post('/store', 'store');
-
-    // Update a product
     Route::put('/update/{id}', 'update');
-
-    // Delete a product
     Route::delete('/delete/{id}', 'destroy');
 });
 
-// Shop product routes
-Route::group([
-    'prefix' => 'shop-products',
-    'controller' => ShopProductController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Get all shop products
+Route::group(['prefix' => 'shop-products', 'controller' => ShopProductController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::get('/get-all', 'getAllShopProducts');
-
-    // Create a shop product
     Route::post('/store', 'store');
-
-    // Update a shop product
     Route::put('/update/{id}', 'update');
-
-    // Delete a shop product
     Route::delete('/delete/{id}', 'destroy');
 });
 
 // Favorite routes
-Route::group([
-    'prefix' => 'favorites',
-    'controller' => FavoriteController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Add shop to favorites
+Route::group(['prefix' => 'favorites', 'controller' => FavoriteController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::post('/add', 'addToFavorites');
-
-    // Get user's favorites
     Route::get('/get-my-favorites', 'getMyFavorites');
-
-    // Remove shop from favorites
     Route::delete('/remove/{shopId}', 'removeFromFavorites');
 });
 
 // Customer review routes
-Route::group([
-    'prefix' => 'reviews',
-    'controller' => CustomerReviewController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Create a shop review
+Route::group(['prefix' => 'reviews', 'controller' => CustomerReviewController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::post('/{shopId}/reviews/store', 'store');
-
-    // Update a review
     Route::put('/update/{id}', 'update');
-
-    // Delete a review
     Route::delete('/delete/{id}', 'destroy');
 });
 
 // Shop review routes
-Route::group([
-    'prefix' => 'shops',
-    'controller' => ShopReviewController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Get shop reviews
+Route::group(['prefix' => 'shops', 'controller' => ShopReviewController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::get('/{shopId}/reviews', 'index');
 });
 
 // Shop owner review routes
-Route::group([
-    'prefix' => 'shop-owner/reviews',
-    'controller' => ShopOwnerReviewController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Get shop owner reviews
+Route::group(['prefix' => 'shop-owner/reviews', 'controller' => ShopOwnerReviewController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::get('/get-all', 'index');
-
-    // Reply to a review
     Route::patch('/reply/{id}', 'reply');
 });
 
 // Admin review routes
-Route::group([
-    'prefix' => 'admin/reviews',
-    'controller' => AdminReviewController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Delete a review
+Route::group(['prefix' => 'admin/reviews', 'controller' => AdminReviewController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::put('/delete/{id}', 'destroy');
 });
 
 // Home routes
-Route::group([
-    'prefix' => 'home',
-    'controller' => ShopOwnerController::class,
-], function () {
-
-    // Get all shops
+Route::group(['prefix' => 'home', 'controller' => ShopOwnerController::class], function () {
     Route::get('/get-all-shop', 'getAllShop');
     Route::get('/{id}/shop-details', 'shopDetails')
         ->middleware('auth:sanctum');
 });
 
-
 // Feature Shop routes
-Route::group([
-    'prefix' => 'features-shop',
-    'controller' => FeatureShopController::class,
-], function () {
+Route::group(['prefix' => 'features-shop', 'controller' => FeatureShopController::class], function () {
     Route::get('/get-all', 'getAllFeaturesShop');
     Route::post('/store', 'store');
     Route::put('/update/{id}', 'update');
@@ -389,62 +185,25 @@ Route::group([
 });
 
 // Contact routes
-Route::group([
-    'prefix' => 'contact',
-    'controller' => ContactController::class,
-], function () {
-
-    // Submit a new contact message
+Route::group(['prefix' => 'contact', 'controller' => ContactController::class], function () {
     Route::post('/store', 'store');
-
-    // Retrieve all contact messages
     Route::get('/get-all', 'index');
-
-    // Delete a contact message
     Route::delete('/delete/{id}', 'destroy');
 });
-
 
 // Admin Shop Owner routes
-Route::group([
-    'prefix' => 'admin/shop-owners',
-    'controller' => AdminShopOwnerController::class,
-    'middleware' => ['auth:sanctum'],
-], function () {
-
-    // Retrieve all shop owners
+Route::group(['prefix' => 'admin/shop-owners', 'controller' => AdminShopOwnerController::class, 'middleware' => ['auth:sanctum']], function () {
     Route::get('/get-all', 'index');
-
-    // Freeze a shop owner account and block the shop
     Route::delete('/freeze/{id}', 'freeze');
-
-    // Unfreeze a shop owner account and unblock the shop
     Route::post('/unfreeze/{id}', 'unfreeze');
-
-    // Permanently delete the shop owner account and shop
     Route::delete('/delete/{id}', 'destroy');
 });
 
-
 // Customer repair request routes
-Route::group([
-    'prefix' => 'repair-requests',
-    'controller' => CustomerRepairRequestController::class,
-    'middleware' => 'auth:sanctum',
-], function () {
-
-    // Get all  repair request
+Route::group(['prefix' => 'repair-requests', 'controller' => CustomerRepairRequestController::class, 'middleware' => 'auth:sanctum'], function () {
     Route::get('/get-all-data', 'getAllCustomerRepairRequests');
-
-    // Create a new repair request
     Route::post('/store', 'store');
-
-    // Delete a repair request
     Route::delete('/delete/{id}', 'destroy');
-
-    // Approve a repair request
     Route::post('/approve/{id}', 'approve');
-
-    // Reject a repair request
     Route::post('/reject/{id}', 'reject');
 });

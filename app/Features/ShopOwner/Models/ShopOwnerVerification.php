@@ -7,12 +7,14 @@ use App\Features\Country\Models\Country;
 use App\Features\Services\Models\Service;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;   // ← الاستيراد
+
 
 
 class ShopOwnerVerification extends Model
 {
-    use HasFactory;
-
+    use HasFactory, SoftDeletes;
+    
     protected $fillable = [
         'first_name',
         'last_name',
