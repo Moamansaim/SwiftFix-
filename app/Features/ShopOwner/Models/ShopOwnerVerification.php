@@ -57,4 +57,8 @@ class ShopOwnerVerification extends Model
             'id'
         );
     }
+    public function verifyShop(int $shopId)
+    {
+        return $this->shopOwnerVerificationsInterface->verifyShop($shopId);
+    }
 }

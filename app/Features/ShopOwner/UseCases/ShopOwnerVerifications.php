@@ -16,6 +16,7 @@ use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use App\Features\ShopOwner\Services\ShopOwnerMail;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -56,12 +57,19 @@ class ShopOwnerVerifications
     /**
      * Create or update the shop profile.
      */
-    public function saveOrUpdateProfile(
-        ProfileShopOwnerDTO $profileShopOwnerDTO
-    ) {
-        return $this->shopOwnerVerificationsInterface->createShopProfile(
-            $profileShopOwnerDTO
-        );
+    public function saveOrUpdateProfile(ProfileShopOwnerDTO $profileShopOwnerDTO)
+    {
+        $user = Auth::guard('sanctum')->user();
+
+        if (! $user instanceof User) {
+            throw new RuntimeException('لم يتم العثور على المستخدم المسجّل دخوله.');
+        }
+
+        if (! $this->shopOwnerVerificationsInterface->hasApprovedVerification($user->email)) {
+            throw new RuntimeException('لا يمكنك حفظ ملف الورشة قبل اعتماد طلب توثيقك من الإدارة.');
+        }
+
+        return $this->shopOwnerVerificationsInterface->createShopProfile($profileShopOwnerDTO);
     }
 
     public function accountCreationApproval(int $id): string

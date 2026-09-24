@@ -177,7 +177,21 @@ class ShopOwnerController extends Controller
             return response()->json([
                 'message' => 'تم حفظ التغييرات بنجاح.',
             ], 201);
+
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 403);
+
         } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',
+            ], 500);
+        }
+        
+        catch (\Throwable $e)
+        {
             return response()->json([
                 'message' => $e->getMessage(),
                 //'message' => 'فشل إرسال الطلب ؟ يرجى المحاولة لاحقاً',

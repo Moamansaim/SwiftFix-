@@ -117,11 +117,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 $userId = $user->id;
 
                 // Get the existing shop
-                $shop = Shop::where('user_id', $userId)
-                    ->firstOrFail();
+                $shop = Shop::where('user_id', $userId)->first();
 
                 // Save the old image path
-                $oldImagePath = $shop->cover_image;
+                $oldImagePath = $shop?->cover_image;
 
                 // Upload the new image
                 $imagePath = $this->uploadImage(
@@ -130,7 +129,7 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 );
 
                 // Fill the existing shop with its profile data
-                $shop->update([
+                $shop = Shop::updateOrCreate(['user_id' => $userId], [                   
                     'shop_name' => $profileShopOwnerDTO->shop_name,
                     'description' => $profileShopOwnerDTO->description,
                     'cover_image' => $imagePath,
@@ -319,6 +318,13 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             ->with('country')
             ->latest()
             ->get();
+    }
+
+    public function hasApprovedVerification(string $email): bool
+    {
+        return ShopOwnerVerification::where('email', $email)
+            ->where('status', 'approved')
+            ->exists();
     }
 
 }

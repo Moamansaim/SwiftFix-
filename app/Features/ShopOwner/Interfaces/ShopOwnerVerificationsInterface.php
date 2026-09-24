@@ -62,4 +62,7 @@ interface ShopOwnerVerificationsInterface
      */
     public function delete(int $id): void;
 
+    public function verifyShop(int $shopId): void;
+    
+    public function hasApprovedVerification(string $email): bool;
 }
