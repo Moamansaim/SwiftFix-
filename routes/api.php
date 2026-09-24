@@ -1,5 +1,6 @@
 <?php
 
+use App\Features\Ai\Controllers\ShopRecommendationController;
 use App\Features\Auth\Controllers\AuthController;
 use App\Features\Brand\Controllers\BrandController;
 use App\Features\Category\Controllers\CategoryController;
@@ -502,3 +503,9 @@ Route::group([
     // Get public platform statistics
     Route::get('/statistics', 'getStatistics');
 });
+
+
+Route::post(
+    '/ai/shop-recommendations',
+    ShopRecommendationController::class
+);
