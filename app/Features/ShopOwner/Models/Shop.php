@@ -4,6 +4,7 @@ namespace App\Features\ShopOwner\Models;
 
 use App\Features\Auth\Models\User;
 use App\Features\City\Models\City;
+use App\Features\Complaint\Models\Complaint;
 use App\Features\Country\Models\Country;
 use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
 use App\Features\Favorite\Models\Favorite;
@@ -175,6 +176,15 @@ class Shop extends Model
     public function customerRepairRequests(): HasMany
     {
         return $this->hasMany(CustomerRepairRequest::class);
+    }
+
+
+    /**
+     * Complaints submitted against this shop.
+     */
+    public function complaints(): HasMany
+    {
+        return $this->hasMany(Complaint::class);
     }
 
     /**

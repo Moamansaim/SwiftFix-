@@ -1,19 +1,11 @@
 <?php
 
-namespace App\Features\Ai\Requests;
+namespace App\Features\Ai\Request;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class ShopRecommendationRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /**
      * Get the validation rules.
      */
@@ -23,8 +15,14 @@ class ShopRecommendationRequest extends FormRequest
             'prompt' => [
                 'required',
                 'string',
-                'min:5',
+                'min:1',
                 'max:2000',
+            ],
+
+            'conversation_id' => [
+                'nullable',
+                'integer',
+                'exists:ai_conversations,id',
             ],
 
             'latitude' => [

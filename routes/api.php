@@ -5,6 +5,7 @@ use App\Features\Auth\Controllers\AuthController;
 use App\Features\Brand\Controllers\BrandController;
 use App\Features\Category\Controllers\CategoryController;
 use App\Features\City\Controllers\CityController;
+use App\Features\Complaint\Controllers\ComplaintController;
 use App\Features\Contact\Controllers\ContactController;
 use App\Features\Country\Controllers\CountryController;
 use App\Features\CustomerRepairRequests\Controllers\CustomerRepairRequestController;
@@ -17,6 +18,7 @@ use App\Features\Review\Controllers\AdminReviewController;
 use App\Features\Review\Controllers\CustomerReviewController;
 use App\Features\Review\Controllers\ShopOwnerReviewController;
 use App\Features\Review\Controllers\ShopReviewController;
+use App\Features\Role\Controllers\RoleController;
 use App\Features\SearchShopMap\Controllers\SearchShopMapController;
 use App\Features\Services\Controllers\ServiceController;
 use App\Features\ShopOwner\Controllers\AdminShopOwnerController;
@@ -505,7 +507,75 @@ Route::group([
 });
 
 
-Route::post(
-    '/ai/shop-recommendations',
-    ShopRecommendationController::class
-);
+// Platform statistics routes
+
+Route::group([
+    'prefix' => 'ai',
+    'middleware' => 'auth:sanctum',
+], function () {
+    // Get public platform statistics
+    Route::post('/shop-recommendations', ShopRecommendationController::class);
+});
+
+
+// Role management routes
+Route::group([
+    'prefix' => 'roles',
+    'controller' => RoleController::class,
+], function () {
+
+    // Get all roles
+    Route::get('/', 'getAllRoles');
+
+    // Get roles for select inputs
+    Route::get('/select', 'getRolesForSelect');
+
+    // Create a new role
+    Route::post('/', 'store');
+
+    // Update an existing role
+    Route::put('/{id}', 'update');
+
+    // Delete a role
+    Route::delete('/{id}', 'destroy');
+
+    // Get all permissions for a specific role
+    Route::get('/{roleId}/permissions', 'showPermissions');
+
+    // Give a permission to a role
+    Route::post('/{roleId}/permissions/{permissionId}', 'givePermission');
+
+    // Revoke a permission from a role
+    Route::delete('/{roleId}/permissions/{permissionId}', 'revokePermission');
+});
+
+
+// Complaint routes
+Route::group([
+    'prefix' => 'complaints',
+    'controller' => ComplaintController::class,
+    'middleware' => 'auth:sanctum',
+], function () {
+
+    /*
+    | Customer
+    */
+
+    // Submit a new complaint against a shop.
+    Route::post('/store', 'store');
+
+    // Get complaints submitted by the authenticated customer.
+    Route::get('/my-complaints', 'myComplaints');
+
+    /*
+    | Admin
+    */
+    // Get all complaints.
+    Route::get('/get-all', 'index');
+
+    // Reply to a complaint and send the reply by email.
+    Route::post('/reply/{id}', 'reply');
+
+    // Delete a complaint.
+    Route::delete('/delete/{id}', 'destroy');
+});

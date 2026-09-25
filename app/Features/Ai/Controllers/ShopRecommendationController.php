@@ -3,15 +3,14 @@
 namespace App\Features\Ai\Controllers;
 
 use App\Features\Ai\DTOs\ShopRecommendationDTO;
-use App\Features\Ai\Requests\ShopRecommendationRequest;
+use App\Features\Ai\Request\ShopRecommendationRequest;
 use App\Features\Ai\UseCases\RecommendShops;
 use Illuminate\Http\JsonResponse;
 
 class ShopRecommendationController
 {
     /**
-     * Recommend the most suitable shops based on
-     * the customer's natural language request.
+     * Handle the AI conversation and workshop search.
      */
     public function __invoke(
         ShopRecommendationRequest $request,
@@ -19,6 +18,9 @@ class ShopRecommendationController
     ): JsonResponse {
         $dto = new ShopRecommendationDTO(
             prompt: $request->validated('prompt'),
+            conversationId: $request->validated('conversation_id'),
+            latitude: $request->validated('latitude'),
+            longitude: $request->validated('longitude'),
         );
 
         $result = $recommendShops->execute($dto);

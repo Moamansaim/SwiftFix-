@@ -6,7 +6,9 @@ class ShopRecommendationDTO
 {
     public function __construct(
         public string $prompt,
+        public ?int $conversationId = null,
         public ?float $latitude = null,
         public ?float $longitude = null,
-    ) {}
+    ) {
+    }
 }
