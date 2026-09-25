@@ -37,8 +37,6 @@ class ShopResource extends JsonResource
                 1
             ),
 
-            'complaints_count' => $this->complaints()->count(),
-
             'is_verified' => $this->is_verified,
         ];
     }
