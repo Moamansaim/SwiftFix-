@@ -107,7 +107,7 @@ class UserSettingsController extends Controller
 
             $user->tokens()->delete();
 
-            $user->delete();
+            $user->forceDelete();
         });
 
         return response()->json([

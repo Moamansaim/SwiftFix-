@@ -6,6 +6,7 @@ use App\Features\CustomerRepairRequests\DTOs\CustomerRepairRequestDTO;
 use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
 use App\Features\CustomerRepairRequests\Requests\CustomerRepairRequestRequest;
 use App\Features\CustomerRepairRequests\Resources\CustomerRepairRequestResource;
+use App\Features\CustomerRepairRequests\Resources\RepairRequestTrackingResource;
 use App\Features\CustomerRepairRequests\UseCases\CustomerRepairRequestUseCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -337,5 +338,28 @@ class CustomerRepairRequestController
         return response()->json([
             'message' => 'تم إكمال طلب الصيانة بنجاح.',
         ]);
+    }
+
+
+    /**
+     * Get the authenticated customer's repair requests.
+     */
+    public function getMyRepairRequests(): JsonResponse
+    {
+        $user = auth()->user();
+
+        $repairRequests = CustomerRepairRequest::query()
+            ->where('user_id', $user->id)
+            ->with([
+                'shop',
+                'deviceModel',
+                'service',
+            ])
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'data' => RepairRequestTrackingResource::collection($repairRequests),
+        ], 200);
     }
 }

@@ -597,9 +597,18 @@ Route::group([
     // Delete authenticated user's account
     Route::delete('/account', 'deleteAccount');
 
-      // Delete authenticated user's account
+    // Delete authenticated user's account
     Route::get('/get/deletion-reasons', 'getDeletionReasons');
 
-        // Toggle account deletion reason status
+    // Toggle account deletion reason status
     Route::patch('/deletion-reasons/{id}/toggle', 'toggleDeletionReason');
+});
+
+
+Route::group([
+    'prefix' => 'customer/repair-requests',
+    'middleware' => 'auth:sanctum',
+    'controller' => CustomerRepairRequestController::class,
+], function () {
+    Route::get('/', 'getMyRepairRequests');
 });
