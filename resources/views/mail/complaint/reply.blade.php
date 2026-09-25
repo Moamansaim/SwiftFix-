@@ -248,39 +248,7 @@
                                     </td>
                                 </tr>
 
-                                <!-- Customer complaint -->
-                                <tr>
-                                    <td class="email-px" style="padding: 16px 40px 8px 40px;">
-
-                                        <h3 style="
-                                                margin: 0 0 10px 0;
-                                                font-size: 16px;
-                                                line-height: 26px;
-                                                color: #13294d;
-                                            ">
-                                            نص الشكوى
-                                        </h3>
-
-                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-                                            width="100%" style="
-                                                background-color: #f7f9fc;
-                                                border: 1px solid #dce3ee;
-                                            ">
-                                            <tr>
-                                                <td style="
-                                                        padding: 16px;
-                                                        text-align: right;
-                                                        font-size: 14px;
-                                                        line-height: 26px;
-                                                        color: #475569;
-                                                    ">
-                                                    {!! $complaint->message !!}
-                                                </td>
-                                            </tr>
-                                        </table>
-
-                                    </td>
-                                </tr>
+                             
 
                                 <!-- Admin reply -->
                                 <tr>
