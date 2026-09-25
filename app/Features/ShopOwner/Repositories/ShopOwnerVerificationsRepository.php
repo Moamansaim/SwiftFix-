@@ -95,11 +95,13 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
         ProfileShopOwnerDTO $profileShopOwnerDTO
     ): Shop {
         $imagePath = null;
+        $commercialRecordImagePath = null;
 
         try {
             return DB::transaction(function () use (
                 $profileShopOwnerDTO,
-                &$imagePath
+                &$imagePath,
+                &$commercialRecordImagePath
             ) {
                 $user = Auth::guard('sanctum')->user();
 
@@ -115,21 +117,45 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 $shop = Shop::where('user_id', $userId)
                     ->firstOrFail();
 
-                // Save the old image path
+                // Save the old image paths
                 $oldImagePath = $shop->cover_image;
+                $oldCommercialRecordImagePath =
+                    $shop->commercial_record_image;
 
-                // Upload the new image
-                $imagePath = $this->uploadImage(
-                    $profileShopOwnerDTO->cover_image,
-                    'shop-owner/cover-image-profile'
-                );
+                /*
+             * Upload the new cover image only if
+             * the user actually sent a new image.
+             */
+                if ($profileShopOwnerDTO->cover_image !== null) {
+                    $imagePath = $this->uploadImage(
+                        $profileShopOwnerDTO->cover_image,
+                        'shop-owner/cover-image-profile'
+                    );
+                }
 
-                // Fill the existing shop with its profile data
-                $shop->update([
+                /*
+             * Upload the new commercial record image only if
+             * the user actually sent a new image.
+             */
+                if (
+                    $profileShopOwnerDTO->commercial_record_image !== null
+                ) {
+                    $commercialRecordImagePath = $this->uploadImage(
+                        $profileShopOwnerDTO->commercial_record_image,
+                        'shop-owner/commercial-record'
+                    );
+                }
+
+                /*
+             * Prepare the shop profile data.
+             *
+             * Do not include the image fields here by default.
+             * This prevents the old images from being replaced
+             * with null when no new image is sent.
+             */
+                $data = [
                     'shop_name' => $profileShopOwnerDTO->shop_name,
                     'description' => $profileShopOwnerDTO->description,
-                    'cover_image' => $imagePath,
-                    'commercial_record_image' => $profileShopOwnerDTO->commercial_record_image,
                     'country_id' => $profileShopOwnerDTO->country_id,
                     'city_id' => $profileShopOwnerDTO->city_id,
                     'district' => $profileShopOwnerDTO->district,
@@ -137,9 +163,31 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     'latitude' => $profileShopOwnerDTO->latitude,
                     'longitude' => $profileShopOwnerDTO->longitude,
                     'working_hours' => $profileShopOwnerDTO->working_hours,
-                ]);
+                ];
 
-                // Prepare services with prices
+                /*
+             * Update the cover image only when
+             * a new image was uploaded.
+             */
+                if ($imagePath !== null) {
+                    $data['cover_image'] = $imagePath;
+                }
+
+                /*
+             * Update the commercial record image only when
+             * a new image was uploaded.
+             */
+                if ($commercialRecordImagePath !== null) {
+                    $data['commercial_record_image'] =
+                        $commercialRecordImagePath;
+                }
+
+                // Update the shop profile
+                $shop->update($data);
+
+                /*
+             * Prepare services with prices.
+             */
                 $services = collect($profileShopOwnerDTO->services)
                     ->mapWithKeys(function ($service) {
                         return [
@@ -153,10 +201,33 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 // Sync shop services
                 $shop->services()->sync($services);
 
-                // Delete the old image after the transaction is committed
-                if ($oldImagePath) {
+                /*
+             * Delete the old cover image only if
+             * a new cover image was uploaded.
+             */
+                if (
+                    $oldImagePath !== null
+                    && $imagePath !== null
+                ) {
                     DB::afterCommit(function () use ($oldImagePath) {
                         $this->deleteImage($oldImagePath);
+                    });
+                }
+
+                /*
+             * Delete the old commercial record image only if
+             * a new commercial record image was uploaded.
+             */
+                if (
+                    $oldCommercialRecordImagePath !== null
+                    && $commercialRecordImagePath !== null
+                ) {
+                    DB::afterCommit(function () use (
+                        $oldCommercialRecordImagePath
+                    ) {
+                        $this->deleteImage(
+                            $oldCommercialRecordImagePath
+                        );
                     });
                 }
 
@@ -164,10 +235,21 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
             });
         } catch (\Throwable $e) {
 
-            // Delete the new image if the operation fails
-            if ($imagePath) {
+            /*
+         * Delete the new cover image if the operation fails.
+         */
+            if ($imagePath !== null) {
                 $this->deleteImage($imagePath);
             }
+
+            /*
+         * Delete the new commercial record image
+         * if the operation fails.
+         */
+            if ($commercialRecordImagePath !== null) {
+                $this->deleteImage($commercialRecordImagePath);
+            }
+
             throw $e;
         }
     }

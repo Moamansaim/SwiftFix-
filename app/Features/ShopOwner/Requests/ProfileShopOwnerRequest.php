@@ -2,8 +2,10 @@
 
 namespace App\Features\ShopOwner\Requests;
 
+use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Rules\TimeAfter;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProfileShopOwnerRequest extends FormRequest
 {
@@ -27,7 +29,20 @@ class ProfileShopOwnerRequest extends FormRequest
             ],
 
             'cover_image' => [
-                'required',
+                Rule::requiredIf(function (): bool {
+                    $user = $this->user();
+
+                    if (! $user) {
+                        return true;
+                    }
+
+                    $shop = Shop::where(
+                        'user_id',
+                        $user->id
+                    )->first();
+
+                    return ! $shop?->cover_image;
+                }),
                 'image',
                 'mimes:jpeg,png,jpg,webp',
                 'max:2048',

@@ -13,7 +13,7 @@ class ProfileShopOwnerDTO
     public function __construct(
         public string $shop_name,
         public string $description,
-        public UploadedFile $cover_image,
+        public ?UploadedFile $cover_image,
         public ?UploadedFile $commercial_record_image,
         public int $country_id,
         public int $city_id,
