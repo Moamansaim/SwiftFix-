@@ -24,6 +24,7 @@ use App\Features\Services\Controllers\ServiceController;
 use App\Features\ShopOwner\Controllers\AdminShopOwnerController;
 use App\Features\ShopOwner\Controllers\ShopOwnerController;
 use App\Features\ShopProduct\Controllers\ShopProductController;
+use App\Features\UserSettings\Controllers\UserSettingsController;
 use Illuminate\Support\Facades\Route;
 
 // Health check
@@ -578,4 +579,27 @@ Route::group([
 
     // Delete a complaint.
     Route::delete('/delete/{id}', 'destroy');
+});
+
+
+Route::group([
+    'prefix' => 'user-settings',
+    'middleware' => 'auth:sanctum',
+    'controller' => UserSettingsController::class,
+], function () {
+
+    // Get authenticated user's profile
+    Route::get('/profile', 'getProfile');
+
+    // Update authenticated user's profile
+    Route::put('/profile', 'updateProfile');
+
+    // Delete authenticated user's account
+    Route::delete('/account', 'deleteAccount');
+
+      // Delete authenticated user's account
+    Route::get('/get/deletion-reasons', 'getDeletionReasons');
+
+        // Toggle account deletion reason status
+    Route::patch('/deletion-reasons/{id}/toggle', 'toggleDeletionReason');
 });
