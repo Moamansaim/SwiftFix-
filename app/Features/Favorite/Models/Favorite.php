@@ -9,6 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Favorite extends Model
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     *
+     * @hint Defines the fields that can be assigned using
+     *        mass assignment when creating a favorite record.
+     */
     protected $fillable = [
         'user_id',
         'shop_id',
@@ -16,6 +24,10 @@ class Favorite extends Model
 
     /**
      * Favorite belongs to a user.
+     *
+     * @return BelongsTo
+     *
+     * @hint Each favorite record belongs to one user.
      */
     public function user(): BelongsTo
     {
@@ -24,6 +36,10 @@ class Favorite extends Model
 
     /**
      * Favorite belongs to a shop.
+     *
+     * @return BelongsTo
+     *
+     * @hint Each favorite record belongs to one shop.
      */
     public function shop(): BelongsTo
     {

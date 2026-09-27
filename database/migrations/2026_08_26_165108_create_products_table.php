@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
             $table->unique([
-                'name',
+                'product_name',
                 'category_id',
                 'device_model_id',
             ]);

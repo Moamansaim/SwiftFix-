@@ -13,9 +13,19 @@ class FavoriteController extends Controller
 {
     /**
      * Add a shop to favorites.
+     *
+     * @param FavoriteRequest $favoriteRequest
+     *        The validated favorite request data.
+     *
+     * @return JsonResponse
+     *
+     * @hint Checks whether the shop is already in the user's favorites
+     *        before creating a new favorite record. This prevents duplicate
+     *        favorite entries for the same user and shop.
      */
-    public function addToFavorites(FavoriteRequest $favoriteRequest): JsonResponse
-    {
+    public function addToFavorites(
+        FavoriteRequest $favoriteRequest
+    ): JsonResponse {
         $user = Auth::guard('sanctum')->user();
 
         $shopId = $favoriteRequest->validated('shop_id');
@@ -42,6 +52,12 @@ class FavoriteController extends Controller
 
     /**
      * Get current user's favorites.
+     *
+     * @return JsonResponse
+     *
+     * @hint Retrieves the authenticated user's favorite shops
+     *        with their country, city, and services using eager loading
+     *        to avoid unnecessary database queries.
      */
     public function getMyFavorites(): JsonResponse
     {
@@ -62,9 +78,19 @@ class FavoriteController extends Controller
 
     /**
      * Remove a shop from favorites.
+     *
+     * @param FavoriteRequest $favoriteRequest
+     *        The validated favorite request data.
+     *
+     * @return JsonResponse
+     *
+     * @hint Finds the favorite record belonging to the authenticated user
+     *        and the specified shop. If the favorite exists, it is deleted;
+     *        otherwise, a not-found response is returned.
      */
-    public function removeFromFavorites(FavoriteRequest $favoriteRequest): JsonResponse
-    {
+    public function removeFromFavorites(
+        FavoriteRequest $favoriteRequest
+    ): JsonResponse {
         $user = Auth::guard('sanctum')->user();
 
         $shopId = $favoriteRequest->validated('shop_id');

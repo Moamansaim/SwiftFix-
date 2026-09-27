@@ -104,10 +104,16 @@ class ContactController
             )
         );
 
+        $contactMessage->update([
+            'status' => 'replied',
+        ]);
+
         return response()->json([
             'message' => 'تم إرسال الرد إلى البريد الإلكتروني بنجاح.',
         ], 200);
     }
+
+
 
     /**
      * Delete a contact message.

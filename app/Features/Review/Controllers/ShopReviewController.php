@@ -11,6 +11,16 @@ class ShopReviewController extends Controller
 {
     /**
      * Get all visible reviews for a shop.
+     *
+     * @param int $shopId
+     *        The ID of the shop whose reviews will be retrieved.
+     *
+     * @return JsonResponse
+     *
+     * @hint Retrieves all reviews for the specified shop and calculates
+     *        the average rating, total number of reviews, and rating
+     *        distribution from 1 to 5. Reviews are ordered from newest
+     *        to oldest and returned with the related customer data.
      */
     public function index(int $shopId): JsonResponse
     {
@@ -32,9 +42,7 @@ class ShopReviewController extends Controller
 
         return response()->json([
             'average_rating' => round($averageRating ?? 0, 1),
-
             'reviews_count' => $reviewsCount,
-
             'rating_distribution' => [
                 '5' => $ratingDistribution->get(5, 0),
                 '4' => $ratingDistribution->get(4, 0),
@@ -42,7 +50,6 @@ class ShopReviewController extends Controller
                 '2' => $ratingDistribution->get(2, 0),
                 '1' => $ratingDistribution->get(1, 0),
             ],
-
             'reviews' => ReviewResource::collection($reviews),
         ], 200);
     }

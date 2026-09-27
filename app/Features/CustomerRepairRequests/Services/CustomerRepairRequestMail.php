@@ -9,10 +9,20 @@ use Illuminate\Support\Facades\Mail;
 
 class CustomerRepairRequestMail
 {
+    /**
+     * Send an approval email to the customer.
+     *
+     * @param CustomerRepairRequest $repairRequest
+     *        The approved repair request.
+     *
+     * @return void
+     *
+     * @hint Sends an email notification to the customer
+     *        after the repair request has been approved.
+     */
     public function sendApproval(
         CustomerRepairRequest $repairRequest
     ): void {
-
         Mail::to($repairRequest->user->email)->send(
             new RepairRequestApprovedMail(
                 $repairRequest
@@ -20,10 +30,20 @@ class CustomerRepairRequestMail
         );
     }
 
+    /**
+     * Send a rejection email to the customer.
+     *
+     * @param CustomerRepairRequest $repairRequest
+     *        The rejected repair request.
+     *
+     * @return void
+     *
+     * @hint Sends an email notification to the customer
+     *        after the repair request has been rejected.
+     */
     public function sendRejection(
         CustomerRepairRequest $repairRequest
     ): void {
-
         Mail::to($repairRequest->user->email)->send(
             new RepairRequestRejectedMail(
                 $repairRequest

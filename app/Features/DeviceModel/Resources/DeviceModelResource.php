@@ -9,6 +9,14 @@ class DeviceModelResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
+     *
+     * @param Request $request
+     *        The current HTTP request.
+     *
+     * @return array
+     *
+     * @hint Returns the device model information along with
+     *        the associated brand name.
      */
     public function toArray(Request $request): array
     {

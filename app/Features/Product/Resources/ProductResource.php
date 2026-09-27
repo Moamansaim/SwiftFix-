@@ -9,6 +9,15 @@ class ProductResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
+     *
+     * @param Request $request
+     *        The current HTTP request instance.
+     *
+     * @return array
+     *
+     * @hint Returns the product data including its ID, name,
+     *        category name, and creation date. The category name
+     *        is retrieved from the product's related category.
      */
     public function toArray(Request $request): array
     {

@@ -13,6 +13,14 @@ class ShopOwnerReviewController extends Controller
 {
     /**
      * Get all reviews for the authenticated shop owner.
+     *
+     * @return JsonResponse
+     *
+     * @hint Retrieves the shop associated with the authenticated user
+     *        and returns all reviews belonging to that shop, including
+     *        the related customer data. The reviews are ordered from
+     *        newest to oldest, along with the average rating and total
+     *        number of reviews.
      */
     public function index(): JsonResponse
     {
@@ -35,15 +43,26 @@ class ShopOwnerReviewController extends Controller
 
         return response()->json([
             'average_rating' => round($averageRating ?? 0, 1),
-
             'reviews_count' => $reviews->count(),
-
             'reviews' => ReviewResource::collection($reviews),
         ], 200);
     }
 
     /**
      * Reply to a review belonging to the authenticated shop.
+     *
+     * @param ReviewReplyRequest $request
+     *        The validated request containing the shop owner's reply.
+     *
+     * @param int $id
+     *        The ID of the review to reply to.
+     *
+     * @return JsonResponse
+     *
+     * @hint Verifies that the authenticated user has an associated shop
+     *        and that the specified review belongs to that shop before
+     *        saving the reply. The reply timestamp is also recorded,
+     *        and the updated review is returned with the customer data.
      */
     public function reply(
         ReviewReplyRequest $request,

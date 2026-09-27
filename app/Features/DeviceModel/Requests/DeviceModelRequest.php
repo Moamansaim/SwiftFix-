@@ -10,7 +10,13 @@ use Illuminate\Validation\Rules\Unique;
 class DeviceModelRequest extends FormRequest
 {
     /**
+     * Get the validation rules that apply to the request.
+     *
      * @return array<string, array<int, string|ValidationRule|Unique>>
+     *
+     * @hint Validates the device model name and the associated brand.
+     *        The device model name must be unique while allowing
+     *        the current device model during update.
      */
     public function rules(): array
     {
@@ -19,9 +25,9 @@ class DeviceModelRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('device_models', 'device_model_name')
-                    ->ignore($this->route('id')),
+                Rule::unique('device_models', 'device_model_name')->ignore($this->route('id')),
             ],
+
             'brand_id' => [
                 'required',
                 'integer',

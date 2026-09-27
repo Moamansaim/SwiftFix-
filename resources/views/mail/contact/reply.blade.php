@@ -158,7 +158,7 @@
                                                     line-height: 26px;
                                                     color: #475569;
                                                 ">
-                                                    {!! $reply !!}
+                                                    {!!  $reply !!}
 
                                                 </td>
                                             </tr>

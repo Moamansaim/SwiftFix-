@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Features\CustomerRepairRequests\Controllers;
-
 
 use App\Features\CustomerRepairRequests\DTOs\CustomerRepairRequestDTO;
 use App\Features\CustomerRepairRequests\Models\CustomerRepairRequest;
@@ -191,6 +189,153 @@ class CustomerRepairRequestController
             'data' => new CustomerRepairRequestResource(
                 $repairRequest
             ),
+        ]);
+    }
+
+
+    /**
+     * Get all notifications for the authenticated customer.
+     *
+     * This method retrieves all notifications associated with the
+     * currently authenticated customer, including both read and
+     * unread notifications.
+     *
+     * Notifications are retrieved through the authenticated user's
+     * notifications relationship and sorted from newest to oldest.
+     *
+     * Only users with the customer role are allowed to access
+     * this method.
+     *
+     * @return JsonResponse
+     *         Returns a success message and a collection of
+     *         the customer's notifications.
+     *
+     * @hint Route:
+     *        GET /notifications
+     */
+    public function notificationsCustomerRepairRequests(): JsonResponse
+    {
+        $user = Auth::guard('sanctum')->user();
+
+        if (!$user->hasRole('customer')) {
+            return response()->json([
+                'message' => 'غير مصرح لك بالوصول إلى إشعارات العملاء.',
+            ], 403);
+        }
+
+        $notifications = $user->notifications()
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'message' => 'تم جلب الإشعارات بنجاح.',
+            'data' => $notifications,
+        ]);
+    }
+
+    /**
+     * Mark a specific notification as read.
+     *
+     * This method marks a specific notification belonging to the
+     * currently authenticated customer as read.
+     *
+     * The notification is retrieved through the authenticated user's
+     * notifications relationship to ensure that the customer can
+     * only access and update their own notifications.
+     *
+     * Only users with the customer role are allowed to access
+     * this method.
+     *
+     * @param string $id
+     *        The unique identifier of the notification to mark as read.
+     *
+     * @return JsonResponse
+     *         Returns a success message after the notification
+     *         has been marked as read.
+     *
+     * @hint Route:
+     *        POST /notifications/{id}/read
+     */
+    public function markAsRead(string $id): JsonResponse
+    {
+        $user = Auth::guard('sanctum')->user();
+
+        if (!$user->hasRole('customer')) {
+            return response()->json([
+                'message' => 'غير مصرح لك بالوصول إلى إشعارات العملاء.',
+            ], 403);
+        }
+
+        $notification = $user->notifications()
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $notification->markAsRead();
+
+        return response()->json([
+            'message' => 'تمت قراءة الإشعار بنجاح.',
+        ]);
+    }
+
+    /**
+     * Mark all notifications as read.
+     *
+     * This method marks all unread notifications belonging to the
+     * currently authenticated customer as read.
+     *
+     * Only the notifications associated with the authenticated
+     * customer are affected.
+     *
+     * Only users with the customer role are allowed to access
+     * this method.
+     *
+     * @return JsonResponse
+     *         Returns a success message after all unread notifications
+     *         have been marked as read.
+     *
+     * @hint Route:
+     *        POST /notifications/read-all
+     */
+    public function markAllAsRead(): JsonResponse
+    {
+        $user = Auth::guard('sanctum')->user();
+
+        if (!$user->hasRole('customer')) {
+            return response()->json([
+                'message' => 'غير مصرح لك بالوصول إلى إشعارات العملاء.',
+            ], 403);
+        }
+
+        $user->unreadNotifications->markAsRead();
+
+        return response()->json([
+            'message' => 'تمت قراءة جميع الإشعارات بنجاح.',
+        ], 200);
+    }
+
+
+    /**
+     * Mark a customer repair request as completed.
+     *
+     * This method delegates the completion process to the use case,
+     * which is responsible for validating the current status and
+     * updating the repair request.
+     *
+     * @param int $id
+     *        The unique identifier of the repair request.
+     *
+     * @return JsonResponse
+     *         Returns a success message and the updated repair request.
+     *
+     * @hint Route:
+     *        POST /customer-repair-requests/{id}/complete
+     */
+    public function complete(int $id): JsonResponse
+    {
+        $repairRequest = $this->useCase->complete($id);
+
+        return response()->json([
+            'message' => 'تم إكمال طلب الصيانة بنجاح.',
         ]);
     }
 }

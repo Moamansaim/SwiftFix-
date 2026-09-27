@@ -12,7 +12,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class FavoriteResource extends JsonResource
 {
     /**
+     * Transform the resource into an array.
+     *
+     * @param Request $request
+     *        The current HTTP request.
+     *
      * @return array<string, mixed>
+     *
+     * @hint Returns the favorite shop information including
+     *        its location details and available services.
      */
     public function toArray(Request $request): array
     {
