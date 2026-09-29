@@ -20,13 +20,17 @@ class RecommendShops
      * Analyze the customer request and recommend suitable workshops.
      *
      * Laravel provides the real workshop data.
-     * Gemini understands the request and analyzes those workshops.
+     * Gemini understands the customer request and analyzes
+     * the available workshops using the full conversation context.
      *
      * @return array<string, mixed>
      */
     public function execute(
         ShopRecommendationDTO $dto
     ): array {
+        /*
+         * Get the existing conversation or create a new one.
+         */
         $conversation = $this->getConversation(
             $dto->conversationId ?? null
         );
@@ -53,17 +57,10 @@ class RecommendShops
             ->all();
 
         /*
-         * Save the current user message.
-         */
-        $conversation->messages()->create([
-            'role' => 'user',
-            'message' => $dto->prompt,
-        ]);
-
-        /*
          * Get ALL valid public workshops.
          *
          * There is intentionally NO filtering here by:
+         *
          * - service
          * - device
          * - brand
@@ -73,7 +70,7 @@ class RecommendShops
          * - rating
          * - city
          *
-         * Gemini will analyze the workshop data.
+         * Gemini analyzes the workshop data.
          */
         $shops = $this->getAllShops();
 
@@ -83,17 +80,26 @@ class RecommendShops
         $shopData = $this->prepareShopData($shops);
 
         /*
-         * Gemini analyzes:
+         * Gemini receives:
          *
-         * - the current prompt
-         * - previous conversation
-         * - all available workshops
+         * 1. Full previous conversation.
+         * 2. Current customer request.
+         * 3. Real workshop data from the database.
          */
         $result = $this->geminiService->recommendShops(
             userPrompt: $dto->prompt,
             shops: $shopData,
             conversation: $conversationHistory
         );
+
+        /*
+         * Save the current user message AFTER sending it
+         * to Gemini.
+         */
+        $conversation->messages()->create([
+            'role' => 'user',
+            'message' => $dto->prompt,
+        ]);
 
         /*
          * Save Gemini's response.
@@ -106,6 +112,8 @@ class RecommendShops
         /*
          * Convert Gemini recommendations into the format
          * required by React.
+         *
+         * Laravel uses the real Shop models, not Gemini data.
          */
         $recommendations = $this->buildRecommendations(
             recommendations: $result['recommendations'] ?? [],
@@ -114,11 +122,8 @@ class RecommendShops
 
         return [
             'conversation_id' => $conversation->id,
-
             'message' => $result['message'],
-
             'intent' => $result['intent'],
-
             'recommendations' => $recommendations,
         ];
     }
@@ -144,7 +149,13 @@ class RecommendShops
     /**
      * Get all public workshops.
      *
-     * No semantic filtering is performed here.
+     * Only workshops that are:
+     *
+     * - verified
+     * - not blocked
+     * - have a shop name
+     *
+     * are provided to Gemini.
      */
     private function getAllShops()
     {
@@ -222,10 +233,10 @@ class RecommendShops
                                     $shopProduct->product?->product_name,
 
                                 'quantity' =>
-                                    $shopProduct->quantity ?? null,
+                                    $shopProduct->quantity,
 
                                 'price' =>
-                                    $shopProduct->price ?? null,
+                                    $shopProduct->price,
                             ];
                         })
                         ->values()
@@ -257,8 +268,8 @@ class RecommendShops
     /**
      * Build the final recommendations using real Shop models.
      *
-     * Gemini decides which IDs are suitable.
-     * Laravel retrieves the actual shops by those IDs.
+     * Gemini only decides which shop IDs are relevant.
+     * Laravel retrieves the actual workshop data.
      *
      * @param array<int, array<string, mixed>> $recommendations
      * @param \Illuminate\Support\Collection<int, Shop> $shops
@@ -269,7 +280,7 @@ class RecommendShops
         $shops
     ): array {
         /*
-         * Create an indexed collection:
+         * Create:
          *
          * [
          *     shop_id => Shop
@@ -279,7 +290,7 @@ class RecommendShops
 
         return collect($recommendations)
             ->map(function (array $recommendation) use ($shopsById) {
-                $shopId = (int) $recommendation['shop_id'];
+                $shopId = (int) ($recommendation['shop_id'] ?? 0);
 
                 /*
                  * Never trust Gemini blindly.
@@ -298,10 +309,21 @@ class RecommendShops
 
                     'shop_name' => $shop->shop_name,
 
+                    /*
+                     * Rank comes from the order returned by Gemini.
+                     *
+                     * The actual workshop data still comes from Laravel.
+                     */
                     'rank' => (int) (
                         $recommendation['rank'] ?? 0
                     ),
 
+                    /*
+                     * This is Gemini's explanation.
+                     *
+                     * It should NOT be treated as authoritative
+                     * database information.
+                     */
                     'reason' => (string) (
                         $recommendation['reason'] ?? ''
                     ),
