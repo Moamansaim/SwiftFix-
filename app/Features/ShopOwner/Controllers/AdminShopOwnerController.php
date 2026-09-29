@@ -18,6 +18,7 @@ class AdminShopOwnerController
             ->with([
                 'shop.country',
                 'shop.city',
+                'shop.complaints'
             ])
             ->role('shopOwner')
             ->latest()

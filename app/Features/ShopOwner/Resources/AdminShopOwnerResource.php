@@ -24,6 +24,7 @@ class AdminShopOwnerResource extends JsonResource
             'city' => $this->shop?->city?->name,
             'shop_status' => $this->shop?->status,
             'shop_id' => $this->shop?->id,
+            'complaints_count' => $this->shop?->complaints()->count() ?? 0,
             'is_verified' => $this->shop?->is_verified,
         ];
     }
