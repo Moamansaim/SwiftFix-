@@ -31,6 +31,8 @@ class BrandController extends Controller
      */
     public function getAllBrands(): JsonResponse
     {
+        // $this->authorize('viewAny', Brand::class);
+
         /*
          * Retrieve all brands from the brands table.
          */
