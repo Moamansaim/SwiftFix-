@@ -43,6 +43,7 @@ class AdminReviewController extends Controller
                             'review_id' => $review->id,
                             'user_name' => $review->user->first_name . ' ' . $review->user->last_name,
                             'comment' => $review->comment,
+                            'created_at' => $review->created_at->toDateTimeString(),
                         ];
                     }),
                 ];
