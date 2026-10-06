@@ -36,13 +36,6 @@ class AdminReviewController extends Controller
         return response()->json([
             'shops' => $shops->map(function ($shop) {
                 return [
-                    'shop_id' => $shop->id,
-                    'shop_name' => $shop->shop_name,
-                    'reviews_count' => $shop->reviews->count(),
-                    'average_rating' => round(
-                        $shop->reviews->avg('rating') ?? 0,
-                        1
-                    ),
                     'reviews' => ReviewResource::collection($shop->reviews),
                 ];
             }),

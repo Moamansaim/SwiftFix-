@@ -85,8 +85,6 @@ class AdminRole extends Seeder
             'الموافقة على طلب تحقق صاحب الورشة',
             'رفض طلب تحقق صاحب الورشة',
             'حذف طلب تحقق صاحب الورشة',
-            'تعديل ملف الورشة',
-            'عرض ملف الورشة',
 
 
             // Account Deletion Reason Permissions

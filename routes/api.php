@@ -545,7 +545,7 @@ Route::group([
         ->middleware('permission:حذف تعليق تقييم');
 
     // Delete a review
-    Route::get('/api/admin/reviews/get-all}', 'destroy')
+    Route::get('/get-all', 'destroy')
         ->middleware('permission:عرض تقييمات جميع الورش');
 });
 
