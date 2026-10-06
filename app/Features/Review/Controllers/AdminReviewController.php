@@ -3,12 +3,53 @@
 namespace App\Features\Review\Controllers;
 
 use App\Features\Review\Models\Review;
+use App\Features\Review\Resources\ReviewResource;
+use App\Features\ShopOwner\Models\Shop;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 
 class AdminReviewController extends Controller
 {
+    /**
+     * Get all reviews grouped by shop.
+     *
+     * @return JsonResponse
+     *
+     * @hint Retrieves all shops that have reviews and groups their reviews
+     *       under each shop. Each shop includes its review count, average
+     *       rating, and the related customer data for every review.
+     */
+    public function index(): JsonResponse
+    {
+        Gate::authorize('viewAllShopReviews', Review::class);
+
+        $shops = Shop::with([
+            'reviews' => function ($query) {
+                $query->with('user')
+                    ->latest();
+            },
+        ])
+            ->whereHas('reviews')
+            ->get();
+
+        return response()->json([
+            'shops' => $shops->map(function ($shop) {
+                return [
+                    'shop_id' => $shop->id,
+                    'shop_name' => $shop->shop_name,
+                    'reviews_count' => $shop->reviews->count(),
+                    'average_rating' => round(
+                        $shop->reviews->avg('rating') ?? 0,
+                        1
+                    ),
+                    'reviews' => ReviewResource::collection($shop->reviews),
+                ];
+            }),
+        ], 200);
+    }
+
+
     /**
      * Remove the customer's comment from a review.
      *

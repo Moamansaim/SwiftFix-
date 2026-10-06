@@ -18,6 +18,16 @@ class ReviewPolicy
         return $user->can('حذف تعليق تقييم');
     }
 
+
+    /**
+     * Determine whether the user can view
+     * reviews of all shops.
+     */
+    public function viewAllShopReviews(User $user): bool
+    {
+        return $user->can('عرض تقييمات جميع الورش');
+    }
+
     /**
      * Determine whether the shop owner can view
      * the reviews of their shop.
