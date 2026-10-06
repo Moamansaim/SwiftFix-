@@ -544,8 +544,8 @@ Route::group([
     Route::put('/delete/{id}', 'destroy')
         ->middleware('permission:حذف تعليق تقييم');
 
-    // Delete a review
-    Route::get('/get-all', 'destroy')
+    // Get all reviews
+    Route::get('/get-all', 'index')
         ->middleware('permission:عرض تقييمات جميع الورش');
 });
 
