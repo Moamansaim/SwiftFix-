@@ -544,8 +544,13 @@ Route::group([
     Route::put('/delete/{id}', 'destroy')
         ->middleware('permission:حذف تعليق تقييم');
 
+ mumen
+    // Get all reviews
+    Route::get('/get-all', 'index')
+
     // Delete a review
     Route::get('/api/admin/reviews/get-all}', 'destroy')
+
         ->middleware('permission:عرض تقييمات جميع الورش');
 });
 
