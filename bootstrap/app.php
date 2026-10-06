@@ -8,6 +8,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Spatie\Permission\Middleware\PermissionMiddleware;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -28,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'guest.sanctum' => GuestSanctum::class,
+            'permission' => PermissionMiddleware::class,
         ]);
 
         $middleware->redirectGuestsTo(function (Request $request) {
@@ -66,6 +69,25 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json([
                     'message' => 'غير مصرح لك بالوصول. يرجى تسجيل الدخول أولاً.',
                 ], 401);
+            }
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | المستخدم لا يملك الصلاحية المطلوبة
+        |--------------------------------------------------------------------------
+        */
+
+        $exceptions->render(function (
+            UnauthorizedException $e,
+            Request $request
+        ) {
+
+            if ($request->is('api/*')) {
+
+                return response()->json([
+                    'message' => 'ليس لديك صلاحية لتنفيذ هذا الإجراء.',
+                ], 403);
             }
         });
 

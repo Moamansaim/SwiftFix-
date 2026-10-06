@@ -118,15 +118,20 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Get the user's role.
+        // Get the user's role and the permissions inherited from it.
         $role = $result['user']->getRoleNames()->first();
+        $permissions = $result['user']
+            ->getAllPermissions()
+            ->pluck('name')
+            ->values();
 
-        // Return the authenticated user, access token, and role.
+        // Return the authenticated user, access token, role, and permissions.
         return response()->json([
             'message' => 'تم تسجيل الدخول بنجاح',
             'data' => new UserResource($result['user']),
             'token' => $result['token'],
             'role' => $role,
+            'permissions' => $permissions,
         ], 200);
     }
 

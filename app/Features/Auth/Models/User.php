@@ -27,6 +27,13 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes , HasRoles;
 
     /**
+     * Roles and permissions are stored on the web guard.
+     * Sanctum authenticates the API request, then Spatie
+     * resolves authorization against this guard.
+     */
+    protected string $guard_name = 'web';
+
+    /**
      * The attributes that are mass assignable.
      *
      * These attributes can be assigned using mass assignment

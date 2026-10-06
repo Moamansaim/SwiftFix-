@@ -99,23 +99,23 @@ Route::group([
 
     // Approve shop owner verification
     Route::post('/verification/{id}/approve', 'accountCreationApproval')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:الموافقة على طلب تحقق صاحب ورشة']);
 
     // Reject shop owner verification
     Route::post('/verification/{id}/reject', 'accountCreationRefused')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:رفض طلب تحقق صاحب ورشة']);
 
     // Delete shop owner verification
     Route::delete('/verification/{id}/delete', 'delete')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:حذف طلب تحقق صاحب ورشة']);
 
     // Update shop status
     Route::put('/{id}/status', 'updateShopStatus')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:تحديث حالة الورشة']);
 
     // Get shop owner verification data
     Route::get('/get-shop-owner-verification-data', 'getShopOwnerVerificationData')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:عرض طلبات تحقق أصحاب الورش|عرض بيانات تحقق صاحب الورشة']);
 
     // Get all shop owner verification requests
     Route::post('/{id}/verify',  'verifyShop')
@@ -130,22 +130,22 @@ Route::group([
 
     // Get all countries
     Route::get('/get-all', 'getAllCountries')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:عرض الدول']);
 
     // Get countries for select
     Route::get('/get-for-select', 'getCountriesForSelect');
 
     // Create a country
     Route::post('/store', 'store')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:إضافة دولة']);
 
     // Update a country
     Route::put('/update/{id}', 'update')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:تعديل دولة']);
 
     // Delete a country
     Route::delete('/delete/{id}', 'destroy')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:حذف دولة']);
 });
 
 // City routes
@@ -160,19 +160,20 @@ Route::group([
         ->middleware('auth:sanctum');
 
     // Get all cities
-    Route::get('/get-all', 'getAllCities');
+    Route::get('/get-all', 'getAllCities')
+        ->middleware(['auth:sanctum', 'permission:عرض المدن']);
 
     // Create a city
     Route::post('/store', 'store')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:إضافة مدينة']);
 
     // Update a city
     Route::put('/update/{id}', 'update')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:تعديل مدينة']);
 
     // Delete a city
     Route::delete('/delete/{id}', 'destroy')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:حذف مدينة']);
 });
 
 // Service routes
@@ -183,22 +184,22 @@ Route::group([
 
     // Get all services
     Route::get('/get-all', 'getAllServices')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:عرض الخدمات']);
 
     // Get services for select
     Route::get('/get-for-select', 'getServicesForSelect');
 
     // Create a service
     Route::post('/store', 'store')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:إضافة خدمة']);
 
     // Update a service
     Route::put('/update/{id}', 'update')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:تعديل خدمة']);
 
     // Delete a service
     Route::delete('/delete/{id}', 'destroy')
-        ->middleware('auth:sanctum');
+        ->middleware(['auth:sanctum', 'permission:حذف خدمة']);
 });
 
 // Brand routes
@@ -209,22 +210,27 @@ Route::group([
 ], function () {
 
     // Get all brands
-    Route::get('/get-all', 'getAllBrands');
+    Route::get('/get-all', 'getAllBrands')
+        ->middleware('permission:عرض العلامات التجارية');
 
     // Get brands for select
     Route::get('/get-for-select', 'getBrandsForSelect');
 
     // Create a brand
-    Route::post('/store', 'store');
+    Route::post('/store', 'store')
+        ->middleware('permission:إضافة علامة تجارية');
 
     // Get brand details
-    Route::get('/show/{id}', 'show');
+    Route::get('/show/{id}', 'show')
+        ->middleware('permission:عرض تفاصيل العلامة التجارية');
 
     // Update a brand
-    Route::put('/update/{id}', 'update');
+    Route::put('/update/{id}', 'update')
+        ->middleware('permission:تعديل علامة تجارية');
 
     // Delete a brand
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف علامة تجارية');
 });
 
 // Device model routes
@@ -235,16 +241,20 @@ Route::group([
 ], function () {
 
     // Get all device models
-    Route::get('/get-all', 'getAllDeviceModels');
+    Route::get('/get-all', 'getAllDeviceModels')
+        ->middleware('permission:عرض موديلات الأجهزة');
 
     // Create a device model
-    Route::post('/store', 'store');
+    Route::post('/store', 'store')
+        ->middleware('permission:إضافة موديل جهاز');
 
     // Update a device model
-    Route::put('/update/{id}', 'update');
+    Route::put('/update/{id}', 'update')
+        ->middleware('permission:تعديل موديل جهاز');
 
     // Delete a device model
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف موديل جهاز');
 });
 
 // Category routes
@@ -255,22 +265,27 @@ Route::group([
 ], function () {
 
     // Get all categories
-    Route::get('/get-all', 'getAllCategories');
+    Route::get('/get-all', 'getAllCategories')
+        ->middleware('permission:عرض التصنيفات');
 
     // Get categories for select
     Route::get('/get-for-select', 'getCategoriesForSelect');
 
     // Create a category
-    Route::post('/store', 'store');
+    Route::post('/store', 'store')
+        ->middleware('permission:إضافة تصنيف');
 
     // Get category details
-    Route::get('/show/{id}', 'show');
+    Route::get('/show/{id}', 'show')
+        ->middleware('permission:عرض تفاصيل التصنيف');
 
     // Update a category
-    Route::put('/update/{id}', 'update');
+    Route::put('/update/{id}', 'update')
+        ->middleware('permission:تعديل تصنيف');
 
     // Delete a category
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف تصنيف');
 });
 
 // Product routes
@@ -281,16 +296,20 @@ Route::group([
 ], function () {
 
     // Get all products
-    Route::get('/get-all', 'getAllProducts');
+    Route::get('/get-all', 'getAllProducts')
+        ->middleware('permission:عرض المنتجات');
 
     // Create a product
-    Route::post('/store', 'store');
+    Route::post('/store', 'store')
+        ->middleware('permission:إضافة منتج');
 
     // Update a product
-    Route::put('/update/{id}', 'update');
+    Route::put('/update/{id}', 'update')
+        ->middleware('permission:تعديل منتج');
 
     // Delete a product
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف منتج');
 });
 
 // Shop product routes
@@ -301,16 +320,20 @@ Route::group([
 ], function () {
 
     // Get all shop products
-    Route::get('/get-all', 'getAllShopProducts');
+    Route::get('/get-all', 'getAllShopProducts')
+        ->middleware('permission:عرض منتجات الورش');
 
     // Create a shop product
-    Route::post('/store', 'store');
+    Route::post('/store', 'store')
+        ->middleware('permission:إضافة منتج للورشة');
 
     // Update a shop product
-    Route::put('/update/{id}', 'update');
+    Route::put('/update/{id}', 'update')
+        ->middleware('permission:تعديل منتج الورشة');
 
     // Delete a shop product
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف منتج الورشة');
 });
 
 // Favorite routes
@@ -366,7 +389,8 @@ Route::group([
 ], function () {
 
     // Get shop owner reviews
-    Route::get('/get-all', 'index');
+    Route::get('/get-all', 'index')
+        ->middleware('permission:عرض مراجعات الورش');
 
     // Reply to a review
     Route::patch('/reply/{id}', 'reply');
@@ -380,7 +404,8 @@ Route::group([
 ], function () {
 
     // Delete a review
-    Route::put('/delete/{id}', 'destroy');
+    Route::put('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف مراجعة');
 });
 
 // Home routes
@@ -400,11 +425,16 @@ Route::group([
 Route::group([
     'prefix' => 'features-shop',
     'controller' => FeatureShopController::class,
+    'middleware' => 'auth:sanctum',
 ], function () {
-    Route::get('/get-all', 'getAllFeaturesShop');
-    Route::post('/store', 'store');
-    Route::put('/update/{id}', 'update');
-    Route::delete('/delete/{id}', 'destroy');
+    Route::get('/get-all', 'getAllFeaturesShop')
+        ->middleware('permission:عرض الورش المميزة');
+    Route::post('/store', 'store')
+        ->middleware('permission:إضافة ورشة مميزة');
+    Route::put('/update/{id}', 'update')
+        ->middleware('permission:تعديل ورشة مميزة');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف ورشة مميزة');
 });
 
 // Contact routes
@@ -417,13 +447,16 @@ Route::group([
     Route::post('/store', 'store');
 
     // Retrieve all contact messages
-    Route::get('/get-all', 'index');
+    Route::get('/get-all', 'index')
+        ->middleware(['auth:sanctum', 'permission:عرض رسائل التواصل']);
 
     // Delete a contact message
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware(['auth:sanctum', 'permission:حذف رسالة تواصل']);
 
     // Reply to a contact message
-    Route::post('/reply/{id}', 'reply');
+    Route::post('/reply/{id}', 'reply')
+        ->middleware(['auth:sanctum', 'permission:الرد على رسالة تواصل']);
 });
 
 
@@ -435,16 +468,20 @@ Route::group([
 ], function () {
 
     // Retrieve all shop owners
-    Route::get('/get-all', 'index');
+    Route::get('/get-all', 'index')
+        ->middleware('permission:عرض أصحاب الورش');
 
     // Freeze a shop owner account and block the shop
-    Route::delete('/freeze/{id}', 'freeze');
+    Route::delete('/freeze/{id}', 'freeze')
+        ->middleware('permission:تجميد حساب صاحب ورشة');
 
     // Unfreeze a shop owner account and unblock the shop
-    Route::post('/unfreeze/{id}', 'unfreeze');
+    Route::post('/unfreeze/{id}', 'unfreeze')
+        ->middleware('permission:إلغاء تجميد حساب صاحب ورشة');
 
     // Permanently delete the shop owner account and shop
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف حساب صاحب ورشة');
 });
 
 
@@ -456,19 +493,23 @@ Route::group([
 ], function () {
 
     // Get all  repair request
-    Route::get('/get-all-data', 'getAllCustomerRepairRequests');
+    Route::get('/get-all-data', 'getAllCustomerRepairRequests')
+        ->middleware('permission:عرض طلبات الصيانة');
 
     // Create a new repair request
     Route::post('/store', 'store');
 
     // Delete a repair request
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف طلب صيانة');
 
     // Approve a repair request
-    Route::post('/approve/{id}', 'approve');
+    Route::post('/approve/{id}', 'approve')
+        ->middleware('permission:الموافقة على طلب صيانة');
 
     // Reject a repair request
-    Route::post('/reject/{id}', 'reject');
+    Route::post('/reject/{id}', 'reject')
+        ->middleware('permission:رفض طلب صيانة');
 
     //Get all notifications for the authenticated customer,
     //including read and unread notifications.
@@ -523,31 +564,40 @@ Route::group([
 Route::group([
     'prefix' => 'roles',
     'controller' => RoleController::class,
+    'middleware' => 'auth:sanctum',
 ], function () {
 
     // Get all roles
-    Route::get('/', 'getAllRoles');
+    Route::get('/', 'getAllRoles')
+        ->middleware('permission:عرض الأدوار');
 
     // Get roles for select inputs
-    Route::get('/select', 'getRolesForSelect');
+    Route::get('/select', 'getRolesForSelect')
+        ->middleware('permission:عرض الأدوار');
 
     // Create a new role
-    Route::post('/', 'store');
+    Route::post('/', 'store')
+        ->middleware('permission:إضافة دور');
 
     // Update an existing role
-    Route::put('/{id}', 'update');
+    Route::put('/{id}', 'update')
+        ->middleware('permission:تعديل دور');
 
     // Delete a role
-    Route::delete('/{id}', 'destroy');
+    Route::delete('/{id}', 'destroy')
+        ->middleware('permission:حذف دور');
 
     // Get all permissions for a specific role
-    Route::get('/{roleId}/permissions', 'showPermissions');
+    Route::get('/{roleId}/permissions', 'showPermissions')
+        ->middleware('permission:عرض صلاحيات الدور');
 
     // Give a permission to a role
-    Route::post('/{roleId}/permissions/{permissionId}', 'givePermission');
+    Route::post('/{roleId}/permissions/{permissionId}', 'givePermission')
+        ->middleware('permission:إضافة صلاحية للدور');
 
     // Revoke a permission from a role
-    Route::delete('/{roleId}/permissions/{permissionId}', 'revokePermission');
+    Route::delete('/{roleId}/permissions/{permissionId}', 'revokePermission')
+        ->middleware('permission:إزالة صلاحية من الدور');
 });
 
 
@@ -572,13 +622,16 @@ Route::group([
     | Admin
     */
     // Get all complaints.
-    Route::get('/get-all', 'index');
+    Route::get('/get-all', 'index')
+        ->middleware('permission:عرض الشكاوى');
 
     // Reply to a complaint and send the reply by email.
-    Route::post('/reply/{id}', 'reply');
+    Route::post('/reply/{id}', 'reply')
+        ->middleware('permission:الرد على شكوى');
 
     // Delete a complaint.
-    Route::delete('/delete/{id}', 'destroy');
+    Route::delete('/delete/{id}', 'destroy')
+        ->middleware('permission:حذف شكوى');
 });
 
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace App\Features\Role\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
