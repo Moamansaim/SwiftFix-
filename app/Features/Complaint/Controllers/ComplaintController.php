@@ -10,6 +10,7 @@ use App\Features\Complaint\Resources\ComplaintResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 
 class ComplaintController extends Controller
@@ -40,32 +41,34 @@ class ComplaintController extends Controller
         ], 201);
     }
 
-    /**
-     * Get customer's complaints.
-     */
-    public function myComplaints(
-        Request $request
-    ): JsonResponse {
-        $complaints = Complaint::query()
-            ->where('user_id', $request->user()->id)
-            ->with([
-                'shop:id,shop_name',
-            ])
-            ->latest()
-            ->paginate(15);
+    // /**
+    //  * Get customer's complaints.
+    //  */
+    // public function myComplaints(
+    //     Request $request
+    // ): JsonResponse {
+    //     $complaints = Complaint::query()
+    //         ->where('user_id', $request->user()->id)
+    //         ->with([
+    //             'shop:id,shop_name',
+    //         ])
+    //         ->latest()
+    //         ->paginate(15);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'تم جلب الشكاوى بنجاح.',
-            'data' => ComplaintResource::collection($complaints),
-        ]);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'تم جلب الشكاوى بنجاح.',
+    //         'data' => ComplaintResource::collection($complaints),
+    //     ]);
+    // }
 
     /**
      * Get all complaints for admin.
      */
     public function index(): JsonResponse
     {
+        Gate::authorize('viewAny', Complaint::class);
+
         $complaints = Complaint::query()
             ->with([
                 'user:id,first_name,last_name,email',
@@ -95,6 +98,8 @@ class ComplaintController extends Controller
             ])
             ->findOrFail($id);
 
+        Gate::authorize('viewAny', $complaint);
+
         $complaint->update([
             'admin_reply' => $request->validated('admin_reply'),
             'status' => 'replied',
@@ -123,6 +128,8 @@ class ComplaintController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $complaint = Complaint::findOrFail($id);
+
+        Gate::authorize('delete', $complaint);
 
         $complaint->delete();
 

@@ -4,6 +4,7 @@ namespace App\Features\ShopOwner\Interfaces;
 
 use App\Features\ShopOwner\DTOs\ProfileShopOwnerDTO;
 use App\Features\ShopOwner\DTOs\ShopOwnerVerificationsDTO;
+use App\Features\ShopOwner\Models\Shop;
 use App\Features\ShopOwner\Models\ShopOwnerVerification;
 
 interface ShopOwnerVerificationsInterface
@@ -17,39 +18,29 @@ interface ShopOwnerVerificationsInterface
 
     /**
      * Create a shop owner profile.
-     *
-     * @return mixed
      */
     public function createShopProfile(
         ProfileShopOwnerDTO $profileShopOwnerDTO
-    );
+    ): Shop;
 
     /**
-     * Find a shop owner verification by ID.
+     * Approve a shop owner verification request.
      */
-    public function findById(int $id): ShopOwnerVerification;
-
-    /**
-     * Update the verification status.
-     */
-    public function updateStatus(
-        ShopOwnerVerification $verification,
-        string $status
+    public function accountCreationApproval(
+        ShopOwnerVerification $verification
     ): void;
-
-    /**
-     * Approve a shop owner verification request
-     * and create the shop owner account.
-     */
-    public function accountCreationApproval(int $id): void;
 
     /**
      * Reject a shop owner verification request.
      */
-    public function accountCreationRefused(int $id): void;
+    public function accountCreationRefused(
+        ShopOwnerVerification $verification
+    ): void;
 
     /**
      * Delete a shop owner verification request.
      */
-    public function delete(int $id): void;
+    public function delete(
+        ShopOwnerVerification $verification
+    ): void;
 }

@@ -7,6 +7,7 @@ use App\Features\Contact\Models\ContactMessage;
 use App\Features\Contact\Requests\ContactMessageRequest;
 use App\Features\Contact\Requests\ContactReplyRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController
@@ -66,6 +67,8 @@ class ContactController
      */
     public function index(): JsonResponse
     {
+        Gate::authorize('viewAny', ContactMessage::class);
+
         $contactMessages = ContactMessage::latest()->get();
 
         return response()->json([
@@ -97,6 +100,8 @@ class ContactController
         int $id
     ): JsonResponse {
         $contactMessage = ContactMessage::findOrFail($id);
+
+        Gate::authorize('reply', $contactMessage);
 
         Mail::to($contactMessage->email)->send(
             new ContactReplyMail(
@@ -135,6 +140,8 @@ class ContactController
     public function destroy(int $id): JsonResponse
     {
         $contactMessage = ContactMessage::findOrFail($id);
+
+        Gate::authorize('delete', $contactMessage);
 
         $contactMessage->delete();
 

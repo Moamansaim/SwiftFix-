@@ -244,6 +244,9 @@ Route::group([
     Route::get('/get-all', 'getAllDeviceModels')
         ->middleware('permission:عرض موديلات الأجهزة');
 
+    // Get device models for select
+    Route::get('/for-select', 'getDeviceModelsForSelect');
+
     // Create a device model
     Route::post('/store', 'store')
         ->middleware('permission:إضافة موديل جهاز');
@@ -653,8 +656,10 @@ Route::group([
     // Delete authenticated user's account
     Route::get('/get/deletion-reasons', 'getDeletionReasons');
 
+    Route::get('/get/all-deletion-reasons', 'getAllDeletionReasons');
+
     // Toggle account deletion reason status
-    Route::patch('/deletion-reasons/{id}/toggle', 'toggleDeletionReason');
+    Route::post('/deletion-reasons/{id}/toggle', 'toggleDeletionReason');
 });
 
 

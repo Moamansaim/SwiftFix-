@@ -24,16 +24,16 @@ class ShopOwnerVerifications
         private ShopOwnerMail $shopOwnerMail
     ) {}
 
-
     /**
      * Create a shop owner verification request.
      */
     public function create(
         ShopOwnerVerificationsDTO $shopOwnerVerificationsDTO
     ): ShopOwnerVerification {
-        $verification = $this->shopOwnerVerificationsInterface->create(
-            $shopOwnerVerificationsDTO
-        );
+        $verification =
+            $this->shopOwnerVerificationsInterface->create(
+                $shopOwnerVerificationsDTO
+            );
 
         $admins = User::role('admin')->get();
 
@@ -54,15 +54,17 @@ class ShopOwnerVerifications
     public function saveOrUpdateProfile(
         ProfileShopOwnerDTO $profileShopOwnerDTO
     ) {
-        return $this->shopOwnerVerificationsInterface->createShopProfile(
-            $profileShopOwnerDTO
-        );
+        return $this->shopOwnerVerificationsInterface
+            ->createShopProfile($profileShopOwnerDTO);
     }
 
-    public function accountCreationApproval(int $id): string
-    {
-        $verification = $this->shopOwnerVerificationsInterface->findById($id);
-
+    /**
+     * Approve a shop owner verification request
+     * and create the shop owner account.
+     */
+    public function accountCreationApproval(
+        ShopOwnerVerification $verification
+    ): string {
         if ($verification->status !== 'pending') {
             throw new RuntimeException(
                 'تمت معالجة طلب التحقق هذا مسبقًا.'
@@ -84,29 +86,31 @@ class ShopOwnerVerifications
                     'password' => Hash::make($password),
                 ]);
 
-                // Assign shop owner role
+                // Assign shop owner role.
                 $user->assignRole('shopOwner');
 
-                // Create empty shop
+                // Create empty shop.
                 Shop::create([
                     'user_id' => $user->id,
                     'is_verified' => false,
                 ]);
 
-                // Update verification status
+                // Update verification status.
                 $this->shopOwnerVerificationsInterface
-                    ->accountCreationApproval($verification->id);
+                    ->accountCreationApproval($verification);
 
-                // Send approval email
+                // Send approval email.
                 $this->shopOwnerMail->sendAccountApproval(
                     $verification,
                     $password
                 );
             });
         } catch (QueryException $e) {
-
-            // MySQL duplicate entry
-            if ($e->errorInfo[0] === '23000' && $e->errorInfo[1] === 1062) {
+            // MySQL duplicate entry.
+            if (
+                $e->errorInfo[0] === '23000'
+                && $e->errorInfo[1] === 1062
+            ) {
                 if (str_contains($e->getMessage(), 'phone_number')) {
                     throw new RuntimeException(
                         'رقم الهاتف مستخدم بالفعل، لا يمكن استخدامه لأكثر من حساب.'
@@ -126,10 +130,12 @@ class ShopOwnerVerifications
         return $password;
     }
 
-    public function accountCreationRefused(int $id): void
-    {
-        $verification = $this->shopOwnerVerificationsInterface->findById($id);
-
+    /**
+     * Reject a shop owner verification request.
+     */
+    public function accountCreationRefused(
+        ShopOwnerVerification $verification
+    ): void {
         if ($verification->status !== 'pending') {
             throw new RuntimeException(
                 'تمت معالجة طلب التحقق هذا مسبقًا.'
@@ -137,9 +143,9 @@ class ShopOwnerVerifications
         }
 
         $this->shopOwnerVerificationsInterface
-            ->accountCreationRefused($id);
+            ->accountCreationRefused($verification);
 
-        // Send rejection email
+        // Send rejection email.
         $this->shopOwnerMail->sendAccountRejection(
             $verification
         );
@@ -148,16 +154,19 @@ class ShopOwnerVerifications
     /**
      * Delete a shop owner verification request.
      */
-    public function delete(int $id): void
-    {
-        $this->shopOwnerVerificationsInterface->delete($id);
+    public function delete(
+        ShopOwnerVerification $verification
+    ): void {
+        $this->shopOwnerVerificationsInterface
+            ->delete($verification);
     }
 
-
-    // Verify a shop and update its status to verified 
-    public function verifyShop(int $Id): void
+    /**
+     * Verify a shop and update its status to verified.
+     */
+    public function verifyShop(int $id): void
     {
-        $shop = Shop::findOrFail($Id);
+        $shop = Shop::findOrFail($id);
 
         if ($shop->is_verified) {
             throw new RuntimeException(

@@ -8,6 +8,7 @@ use App\Features\Review\Resources\ReviewResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ShopOwnerReviewController extends Controller
 {
@@ -24,6 +25,8 @@ class ShopOwnerReviewController extends Controller
      */
     public function index(): JsonResponse
     {
+        Gate::authorize('viewShopReviews', Review::class);
+
         $user = Auth::guard('sanctum')->user();
 
         $shop = $user->shop;
@@ -68,6 +71,8 @@ class ShopOwnerReviewController extends Controller
         ReviewReplyRequest $request,
         int $id
     ): JsonResponse {
+
+
         $user = Auth::guard('sanctum')->user();
 
         $shop = $user->shop;
@@ -81,6 +86,8 @@ class ShopOwnerReviewController extends Controller
         $review = Review::where('id', $id)
             ->where('shop_id', $shop->id)
             ->first();
+
+        Gate::authorize('reply', $review);
 
         if (! $review) {
             return response()->json([

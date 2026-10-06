@@ -7,6 +7,7 @@ use App\Features\FeatureShop\Requests\FeatureShopRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class FeatureShopController extends Controller
 {
@@ -20,6 +21,7 @@ class FeatureShopController extends Controller
      */
     public function getAllFeaturesShop(): JsonResponse
     {
+
         $user = Auth::guard('sanctum')->user();
 
         $featuresShop = FeatureShop::where(
@@ -47,6 +49,9 @@ class FeatureShopController extends Controller
     public function store(
         FeatureShopRequest $featureShopRequest
     ): JsonResponse {
+       
+        Gate::authorize('create', FeatureShop::class);
+
         $user = Auth::guard('sanctum')->user();
 
         $validated = $featureShopRequest->validated();
@@ -81,6 +86,8 @@ class FeatureShopController extends Controller
     ): JsonResponse {
         $featureShop = FeatureShop::findOrFail($id);
 
+        Gate::authorize('update', $featureShop);
+
         $featureShop->update(
             $featureShopRequest->validated()
         );
@@ -103,6 +110,8 @@ class FeatureShopController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $featureShop = FeatureShop::findOrFail($id);
+
+        Gate::authorize('delete', $featureShop);
 
         $featureShop->delete();
 

@@ -69,11 +69,21 @@ class UserSettingsController extends Controller
     {
         $reasons = AccountDeletionReason::query()
             ->where('is_active', true)
-            ->orderBy('id')
-            ->get([
-                'id',
-                'reason',
-            ]);
+            ->get();
+
+        return response()->json([
+            'data' => $reasons,
+        ]);
+    }
+
+
+    /**
+     * Get the available account deletion reasons => Admin.
+     */
+    public function getAllDeletionReasons(): JsonResponse
+    {
+        $reasons = AccountDeletionReason::query()
+           ->get();
 
         return response()->json([
             'data' => $reasons,
@@ -114,8 +124,6 @@ class UserSettingsController extends Controller
             'message' => 'تم حذف الحساب بنجاح.',
         ]);
     }
-
-
 
     /**
      * Toggle the activation status of an account deletion reason.

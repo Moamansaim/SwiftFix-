@@ -15,8 +15,8 @@ class RepairRequestTrackingResource extends JsonResource
         return [
             'shop_name' => $this->shop?->shop_name,
             'status' => $this->status,
-            'device_model_name' => $this->deviceModel?->name,
-            'service_name' => $this->service?->name,
+            'device_model_name' => $this->deviceModel?->device_model_name,
+            'service_name' => $this->service?->service_name,
             'created_at' => $this->created_at,
         ];
     }

@@ -5,6 +5,7 @@ namespace App\Features\Review\Controllers;
 use App\Features\Review\Models\Review;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class AdminReviewController extends Controller
 {
@@ -38,6 +39,8 @@ class AdminReviewController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $review = Review::find($id);
+
+        Gate::authorize('removeComment', $review);
 
         if (! $review) {
             return response()->json([

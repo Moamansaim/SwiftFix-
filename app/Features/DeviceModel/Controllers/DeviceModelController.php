@@ -7,6 +7,7 @@ use App\Features\DeviceModel\Requests\DeviceModelRequest;
 use App\Features\DeviceModel\Resources\DeviceModelResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class DeviceModelController extends Controller
 {
@@ -19,7 +20,28 @@ class DeviceModelController extends Controller
      */
     public function getAllDeviceModels(): JsonResponse
     {
+        Gate::authorize('viewAny', DeviceModel::class);
+
         $deviceModels = DeviceModel::with('brand')->get();
+
+        return response()->json([
+            'device_models' => DeviceModelResource::collection(
+                $deviceModels
+            ),
+        ], 200);
+    }
+
+    /**
+     * Get all device models for select options.
+     *
+     * @return JsonResponse
+     */
+    public function getDeviceModelsForSelect(): JsonResponse
+    {
+        $deviceModels = DeviceModel::query()
+            ->with('brand')
+            ->select('id', 'device_model_name')
+            ->get();
 
         return response()->json([
             'device_models' => DeviceModelResource::collection(
@@ -41,6 +63,8 @@ class DeviceModelController extends Controller
     public function store(
         DeviceModelRequest $deviceModelRequest
     ): JsonResponse {
+        Gate::authorize('create', DeviceModel::class);
+
         DeviceModel::create(
             $deviceModelRequest->validated()
         );
@@ -69,6 +93,8 @@ class DeviceModelController extends Controller
     ): JsonResponse {
         $deviceModel = DeviceModel::findOrFail($id);
 
+        Gate::authorize('update', $deviceModel);
+
         $deviceModel->update(
             $deviceModelRequest->validated()
         );
@@ -91,6 +117,8 @@ class DeviceModelController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $deviceModel = DeviceModel::findOrFail($id);
+
+        Gate::authorize('delete', $deviceModel);
 
         $deviceModel->delete();
 

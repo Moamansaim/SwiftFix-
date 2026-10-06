@@ -6,6 +6,7 @@ use App\Features\Country\Models\Country;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 /**
@@ -32,6 +33,8 @@ class CountryController extends Controller
      */
     public function getAllCountries(): JsonResponse
     {
+        Gate::authorize('viewAny', Country::class);
+        
         // Retrieve all countries from the database.
         $countries = Country::all();
 
@@ -74,6 +77,8 @@ class CountryController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        Gate::authorize('create', Country::class);
+        
         // Validate the incoming country data.
         $validated = $request->validate([
             'name' => [
@@ -129,6 +134,8 @@ class CountryController extends Controller
         // Find the country or return a 404 response if it does not exist.
         $country = Country::findOrFail($id);
 
+        Gate::authorize('update', $country);
+
         // Validate the updated country data.
         $validated = $request->validate([
             'name' => [
@@ -178,6 +185,8 @@ class CountryController extends Controller
     {
         // Find the country or return a 404 response if it does not exist.
         $country = Country::findOrFail($id);
+
+        Gate::authorize('delete', $country);
 
         // Delete the country from the database.
         $country->delete();
