@@ -5,6 +5,7 @@ namespace App\Features\Role\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -24,10 +25,12 @@ class RoleController extends Controller
      * @return JsonResponse
      *
      * @hint Route:
-     *        GET /api/roles
+     *       GET /api/roles
      */
     public function getAllRoles(): JsonResponse
     {
+        Gate::authorize('viewAny', Role::class);
+
         $roles = Role::where(
             'guard_name',
             self::GUARD_NAME
@@ -46,10 +49,12 @@ class RoleController extends Controller
      * @return JsonResponse
      *
      * @hint Route:
-     *        GET /api/roles/select
+     *       GET /api/roles/select
      */
     public function getRolesForSelect(): JsonResponse
     {
+        Gate::authorize('viewAny', Role::class);
+
         $roles = Role::where(
             'guard_name',
             self::GUARD_NAME
@@ -72,10 +77,12 @@ class RoleController extends Controller
      * @return JsonResponse
      *
      * @hint Route:
-     *        POST /api/roles
+     *       POST /api/roles
      */
     public function store(Request $request): JsonResponse
     {
+        Gate::authorize('create', Role::class);
+
         $validated = $request->validate(
             [
                 'name' => [
@@ -115,7 +122,7 @@ class RoleController extends Controller
      * @return JsonResponse
      *
      * @hint Route:
-     *        PUT /api/roles/{id}
+     *       PUT /api/roles/{id}
      */
     public function update(
         Request $request,
@@ -125,6 +132,8 @@ class RoleController extends Controller
             'guard_name',
             self::GUARD_NAME
         )->findOrFail($id);
+
+        Gate::authorize('update', $role);
 
         $validated = $request->validate(
             [
@@ -164,7 +173,7 @@ class RoleController extends Controller
      * @return JsonResponse
      *
      * @hint Route:
-     *        DELETE /api/roles/{id}
+     *       DELETE /api/roles/{id}
      */
     public function destroy(int $id): JsonResponse
     {
@@ -172,6 +181,8 @@ class RoleController extends Controller
             'guard_name',
             self::GUARD_NAME
         )->findOrFail($id);
+
+        Gate::authorize('delete', $role);
 
         $role->delete();
 
@@ -191,7 +202,7 @@ class RoleController extends Controller
      * @return JsonResponse
      *
      * @hint Route:
-     *        GET /api/roles/{roleId}/permissions
+     *       GET /api/roles/{roleId}/permissions
      */
     public function showPermissions(int $roleId): JsonResponse
     {
@@ -199,6 +210,8 @@ class RoleController extends Controller
             'guard_name',
             self::GUARD_NAME
         )->findOrFail($roleId);
+
+        Gate::authorize('viewPermissions', $role);
 
         $permissions = Permission::where(
             'guard_name',
@@ -232,7 +245,7 @@ class RoleController extends Controller
      * @return JsonResponse
      *
      * @hint Route:
-     *        POST /api/roles/{roleId}/permissions/{permissionId}
+     *       POST /api/roles/{roleId}/permissions/{permissionId}
      */
     public function givePermission(
         int $roleId,
@@ -242,6 +255,8 @@ class RoleController extends Controller
             'guard_name',
             self::GUARD_NAME
         )->findOrFail($roleId);
+
+        Gate::authorize('givePermission', $role);
 
         $permission = Permission::where('id', $permissionId)
             ->where('guard_name', self::GUARD_NAME)
@@ -270,7 +285,7 @@ class RoleController extends Controller
      * @return JsonResponse
      *
      * @hint Route:
-     *        DELETE /api/roles/{roleId}/permissions/{permissionId}
+     *       DELETE /api/roles/{roleId}/permissions/{permissionId}
      */
     public function revokePermission(
         int $roleId,
@@ -280,6 +295,8 @@ class RoleController extends Controller
             'guard_name',
             self::GUARD_NAME
         )->findOrFail($roleId);
+
+        Gate::authorize('revokePermission', $role);
 
         $permission = Permission::where('id', $permissionId)
             ->where('guard_name', self::GUARD_NAME)

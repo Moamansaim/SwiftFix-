@@ -10,9 +10,28 @@ use App\Features\CustomerRepairRequests\Resources\RepairRequestTrackingResource;
 use App\Features\CustomerRepairRequests\UseCases\CustomerRepairRequestUseCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CustomerRepairRequestController
 {
+
+    /**
+     * Create a new controller instance.
+     *
+     * The CustomerRepairRequestUseCase is injected into the controller
+     * through Laravel's service container and is responsible for
+     * handling the business logic related to customer repair requests.
+     *
+     * Keeping the business logic inside the use case prevents the
+     * controller from becoming responsible for database operations
+     * and other application logic.
+     *
+     * @param CustomerRepairRequestUseCase $useCase
+     *        The use case responsible for managing customer repair requests.
+     */
+    public function __construct(
+        private CustomerRepairRequestUseCase $useCase
+    ) {}
 
     /**
      * Get all customer repair requests for the authenticated shop owner.
@@ -31,6 +50,8 @@ class CustomerRepairRequestController
      */
     public function getAllCustomerRepairRequests(): JsonResponse
     {
+        Gate::authorize('viewAny', CustomerRepairRequest::class);
+
         $user = Auth::guard('sanctum')->user();
 
         $repairRequests = CustomerRepairRequest::with([
@@ -53,23 +74,6 @@ class CustomerRepairRequestController
         ]);
     }
 
-    /**
-     * Create a new controller instance.
-     *
-     * The CustomerRepairRequestUseCase is injected into the controller
-     * through Laravel's service container and is responsible for
-     * handling the business logic related to customer repair requests.
-     *
-     * Keeping the business logic inside the use case prevents the
-     * controller from becoming responsible for database operations
-     * and other application logic.
-     *
-     * @param CustomerRepairRequestUseCase $useCase
-     *        The use case responsible for managing customer repair requests.
-     */
-    public function __construct(
-        private CustomerRepairRequestUseCase $useCase
-    ) {}
 
     /**
      * Store a new customer repair request.
@@ -131,6 +135,10 @@ class CustomerRepairRequestController
      */
     public function destroy(int $id): JsonResponse
     {
+        $repairRequest = $this->useCase->findById($id);
+
+        Gate::authorize('delete', $repairRequest);
+
         $this->useCase->delete($id);
 
         return response()->json([
@@ -157,7 +165,11 @@ class CustomerRepairRequestController
      */
     public function approve(int $id): JsonResponse
     {
-        $repairRequest = $this->useCase->approve($id);
+        $repairRequest = $this->useCase->findById($id);
+
+        Gate::authorize('approve', $repairRequest);
+
+        $this->useCase->approve($id);
 
         return response()->json([
             'message' => 'تمت الموافقة على طلب الصيانة بنجاح.',
@@ -183,6 +195,10 @@ class CustomerRepairRequestController
      */
     public function reject(int $id): JsonResponse
     {
+        $repairRequest = $this->useCase->findById($id);
+
+        Gate::authorize('reject', $repairRequest);
+
         $repairRequest = $this->useCase->reject($id);
 
         return response()->json([

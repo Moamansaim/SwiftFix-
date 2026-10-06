@@ -15,13 +15,6 @@ class BrandPolicy
         return $user->can('عرض العلامات التجارية');
     }
 
-    /**
-     * Determine whether the user can view a brand.
-     */
-    public function view(User $user, Brand $brand): bool
-    {
-        return $user->can('عرض العلامة التجارية');
-    }
 
     /**
      * Determine whether the user can create a brand.

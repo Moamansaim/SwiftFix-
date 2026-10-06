@@ -176,5 +176,12 @@ class CustomerRepairRequestUseCase
         $repairRequest->update([
             'status' => 'completed',
         ]);
+
+        return $repairRequest;
+    }
+
+    public function findById(int $id): CustomerRepairRequest
+    {
+        return $this->repository->findById($id);
     }
 }
