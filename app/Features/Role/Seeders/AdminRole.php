@@ -48,17 +48,17 @@ class AdminRole extends Seeder
             'عرض رسائل التواصل',
             'الرد على رسائل التواصل',
             'حذف رسائل التواصل',
-          
+
             // Device Model Permissions
             'عرض الأجهزة',
             'إضافة جهاز',
             'تعديل جهاز',
             'حذف جهاز',
-          
+
             // Review Permissions
             'حذف تعليق تقييم',
-            'عرض تقييمات الورشة',
-            
+            'عرض تقييمات جميع الورش',
+
 
             // Role Permissions
             'عرض الأدوار',
@@ -88,7 +88,7 @@ class AdminRole extends Seeder
             'تعديل ملف الورشة',
             'عرض ملف الورشة',
 
-          
+
             // Account Deletion Reason Permissions
             'تفعيل وإلغاء تفعيل أسباب حذف الحساب',
         ];
