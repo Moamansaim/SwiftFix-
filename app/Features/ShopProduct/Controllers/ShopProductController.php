@@ -9,6 +9,7 @@ use App\Features\ShopProduct\Services\ImageProduct;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ShopProductController extends Controller
 {
@@ -17,8 +18,9 @@ class ShopProductController extends Controller
      */
     public function getAllShopProducts(): JsonResponse
     {
-        $user = Auth::guard('sanctum')->user();
+        Gate::authorize('viewAny', ShopProduct::class);
 
+        $user = Auth::guard('sanctum')->user();
         $shop = $user->shop;
 
         if (! $shop) {
@@ -46,8 +48,9 @@ class ShopProductController extends Controller
         ShopProductRequest $shopProductRequest,
         ImageProduct $imageProduct
     ): JsonResponse {
-        $user = Auth::guard('sanctum')->user();
+        Gate::authorize('create', ShopProduct::class);
 
+        $user = Auth::guard('sanctum')->user();
         $shop = $user->shop;
 
         if (! $shop) {
@@ -83,7 +86,6 @@ class ShopProductController extends Controller
         ImageProduct $imageProduct
     ): JsonResponse {
         $user = Auth::guard('sanctum')->user();
-
         $shop = $user->shop;
 
         if (! $shop) {
@@ -95,6 +97,8 @@ class ShopProductController extends Controller
         $product = ShopProduct::where('id', $id)
             ->where('shop_id', $shop->id)
             ->firstOrFail();
+
+        Gate::authorize('update', $product);
 
         $validated = $shopProductRequest->validated();
 
@@ -122,6 +126,8 @@ class ShopProductController extends Controller
     ): JsonResponse {
         try {
             $shopProduct = ShopProduct::findOrFail($id);
+
+            Gate::authorize('delete', $shopProduct);
 
             $imagePath = $shopProduct->image;
 

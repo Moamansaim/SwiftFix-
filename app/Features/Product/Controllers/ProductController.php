@@ -7,6 +7,7 @@ use App\Features\Product\Requests\ProductRequest;
 use App\Features\Product\Resources\ProductResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends Controller
 {
@@ -20,6 +21,8 @@ class ProductController extends Controller
      */
     public function getAllProducts(): JsonResponse
     {
+        Gate::authorize('viewAny', Product::class);
+        
         $products = Product::with([
             'category',
         ])->get();
@@ -63,6 +66,8 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $productRequest): JsonResponse
     {
+        Gate::authorize('create', Product::class);
+        
         Product::create($productRequest->validated());
 
         return response()->json([
@@ -90,6 +95,8 @@ class ProductController extends Controller
     ): JsonResponse {
         $product = Product::findOrFail($id);
 
+        Gate::authorize('update', $product);
+
         $product->update($productRequest->validated());
 
         return response()->json([
@@ -111,6 +118,8 @@ class ProductController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $product = Product::findOrFail($id);
+
+        Gate::authorize('delete', $product);
 
         $product->delete();
 

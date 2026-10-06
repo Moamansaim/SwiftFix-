@@ -6,6 +6,7 @@ use App\Features\Auth\Models\User;
 use App\Features\ShopOwner\Resources\AdminShopOwnerResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class AdminShopOwnerController
 {
@@ -14,6 +15,8 @@ class AdminShopOwnerController
      */
     public function index(): JsonResponse
     {
+        Gate::authorize('viewAny', User::class);
+
         $shopOwners = User::withTrashed()
             ->with([
                 'shop.country',
@@ -38,6 +41,8 @@ class AdminShopOwnerController
             ->role('shopOwner')
             ->with('shop')
             ->findOrFail($id);
+
+        Gate::authorize('freeze', $shopOwner);
 
         if ($shopOwner->trashed()) {
             return response()->json([
@@ -73,6 +78,8 @@ class AdminShopOwnerController
             ->with('shop')
             ->findOrFail($id);
 
+        Gate::authorize('unfreeze', $shopOwner);
+
         if (! $shopOwner->trashed()) {
             return response()->json([
                 'message' => 'هذا الحساب غير مجمد.',
@@ -105,6 +112,8 @@ class AdminShopOwnerController
         $shopOwner = User::withTrashed()
             ->role('shopOwner')
             ->findOrFail($id);
+
+        Gate::authorize('delete', $shopOwner);
 
         $shopOwner->forceDelete();
 

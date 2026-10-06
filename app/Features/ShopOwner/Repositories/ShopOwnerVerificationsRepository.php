@@ -23,33 +23,29 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     public function create(
         ShopOwnerVerificationsDTO $registerUserDTO
     ): ShopOwnerVerification {
-
         $uploadedImages = [];
 
         try {
-
             return DB::transaction(function () use (
                 $registerUserDTO,
                 &$uploadedImages
             ) {
-
                 // Upload national ID image.
                 $uploadedImages['national_id_image'] =
                     $registerUserDTO->national_id_image
-                    ->store(
-                        'shop-owner/national-ids',
-                        'public'
-                    );
+                        ->store(
+                            'shop-owner/national-ids',
+                            'public'
+                        );
 
                 // Upload commercial record image if provided.
                 if ($registerUserDTO->commercial_record_image) {
-
                     $uploadedImages['commercial_record_image'] =
                         $registerUserDTO->commercial_record_image
-                        ->store(
-                            'shop-owner/commercial-records',
-                            'public'
-                        );
+                            ->store(
+                                'shop-owner/commercial-records',
+                                'public'
+                            );
                 }
 
                 // Create verification request.
@@ -58,13 +54,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     'last_name' => $registerUserDTO->last_name,
                     'email' => $registerUserDTO->email,
                     'phone_number' => $registerUserDTO->phone_number,
-
                     'national_id_image' =>
-                    $uploadedImages['national_id_image'],
-
+                        $uploadedImages['national_id_image'],
                     'commercial_record_image' =>
-                    $uploadedImages['commercial_record_image'] ?? null,
-
+                        $uploadedImages['commercial_record_image'] ?? null,
                     'country_id' => $registerUserDTO->country_id,
                     'notes' => $registerUserDTO->notes,
                 ]);
@@ -77,10 +70,8 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 return $verification;
             });
         } catch (\Throwable $e) {
-
             // Delete uploaded images if the transaction fails.
             foreach ($uploadedImages as $imagePath) {
-
                 Storage::disk('public')->delete($imagePath);
             }
 
@@ -113,19 +104,20 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
 
                 $userId = $user->id;
 
-                // Get the existing shop
+                // Get the existing shop.
                 $shop = Shop::where('user_id', $userId)
                     ->firstOrFail();
 
-                // Save the old image paths
+                // Save the old image paths.
                 $oldImagePath = $shop->cover_image;
+
                 $oldCommercialRecordImagePath =
                     $shop->commercial_record_image;
 
-                /*
-             * Upload the new cover image only if
-             * the user actually sent a new image.
-             */
+                /**
+                 * Upload the new cover image only if
+                 * the user actually sent a new image.
+                 */
                 if ($profileShopOwnerDTO->cover_image !== null) {
                     $imagePath = $this->uploadImage(
                         $profileShopOwnerDTO->cover_image,
@@ -133,10 +125,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     );
                 }
 
-                /*
-             * Upload the new commercial record image only if
-             * the user actually sent a new image.
-             */
+                /**
+                 * Upload the new commercial record image only if
+                 * the user actually sent a new image.
+                 */
                 if (
                     $profileShopOwnerDTO->commercial_record_image !== null
                 ) {
@@ -146,13 +138,13 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     );
                 }
 
-                /*
-             * Prepare the shop profile data.
-             *
-             * Do not include the image fields here by default.
-             * This prevents the old images from being replaced
-             * with null when no new image is sent.
-             */
+                /**
+                 * Prepare the shop profile data.
+                 *
+                 * Do not include the image fields here by default.
+                 * This prevents the old images from being replaced
+                 * with null when no new image is sent.
+                 */
                 $data = [
                     'shop_name' => $profileShopOwnerDTO->shop_name,
                     'description' => $profileShopOwnerDTO->description,
@@ -165,29 +157,29 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     'working_hours' => $profileShopOwnerDTO->working_hours,
                 ];
 
-                /*
-             * Update the cover image only when
-             * a new image was uploaded.
-             */
+                /**
+                 * Update the cover image only when
+                 * a new image was uploaded.
+                 */
                 if ($imagePath !== null) {
                     $data['cover_image'] = $imagePath;
                 }
 
-                /*
-             * Update the commercial record image only when
-             * a new image was uploaded.
-             */
+                /**
+                 * Update the commercial record image only when
+                 * a new image was uploaded.
+                 */
                 if ($commercialRecordImagePath !== null) {
                     $data['commercial_record_image'] =
                         $commercialRecordImagePath;
                 }
 
-                // Update the shop profile
+                // Update the shop profile.
                 $shop->update($data);
 
-                /*
-             * Prepare services with prices.
-             */
+                /**
+                 * Prepare services with prices.
+                 */
                 $services = collect($profileShopOwnerDTO->services)
                     ->mapWithKeys(function ($service) {
                         return [
@@ -198,13 +190,13 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     })
                     ->toArray();
 
-                // Sync shop services
+                // Sync shop services.
                 $shop->services()->sync($services);
 
-                /*
-             * Delete the old cover image only if
-             * a new cover image was uploaded.
-             */
+                /**
+                 * Delete the old cover image only if
+                 * a new cover image was uploaded.
+                 */
                 if (
                     $oldImagePath !== null
                     && $imagePath !== null
@@ -214,10 +206,10 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                     });
                 }
 
-                /*
-             * Delete the old commercial record image only if
-             * a new commercial record image was uploaded.
-             */
+                /**
+                 * Delete the old commercial record image only if
+                 * a new commercial record image was uploaded.
+                 */
                 if (
                     $oldCommercialRecordImagePath !== null
                     && $commercialRecordImagePath !== null
@@ -234,18 +226,17 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
                 return $shop->fresh();
             });
         } catch (\Throwable $e) {
-
-            /*
-         * Delete the new cover image if the operation fails.
-         */
+            /**
+             * Delete the new cover image if the operation fails.
+             */
             if ($imagePath !== null) {
                 $this->deleteImage($imagePath);
             }
 
-            /*
-         * Delete the new commercial record image
-         * if the operation fails.
-         */
+            /**
+             * Delete the new commercial record image
+             * if the operation fails.
+             */
             if ($commercialRecordImagePath !== null) {
                 $this->deleteImage($commercialRecordImagePath);
             }
@@ -255,17 +246,9 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     }
 
     /**
-     * Find a shop owner verification by ID.
-     */
-    public function findById(int $id): ShopOwnerVerification
-    {
-        return ShopOwnerVerification::findOrFail($id);
-    }
-
-    /**
      * Update verification status.
      */
-    public function updateStatus(
+    private function updateStatus(
         ShopOwnerVerification $verification,
         string $status
     ): void {
@@ -279,10 +262,9 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     /**
      * Approve a shop owner verification request.
      */
-    public function accountCreationApproval(int $id): void
-    {
-        $verification = $this->findById($id);
-
+    public function accountCreationApproval(
+        ShopOwnerVerification $verification
+    ): void {
         $this->updateStatus(
             $verification,
             'approved'
@@ -292,10 +274,9 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     /**
      * Reject a shop owner verification request.
      */
-    public function accountCreationRefused(int $id): void
-    {
-        $verification = $this->findById($id);
-
+    public function accountCreationRefused(
+        ShopOwnerVerification $verification
+    ): void {
         $this->updateStatus(
             $verification,
             'rejected'
@@ -305,10 +286,9 @@ class ShopOwnerVerificationsRepository implements ShopOwnerVerificationsInterfac
     /**
      * Delete a shop owner verification request.
      */
-    public function delete(int $id): void
-    {
-        $verification = $this->findById($id);
-
+    public function delete(
+        ShopOwnerVerification $verification
+    ): void {
         $verification->delete();
     }
 }

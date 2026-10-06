@@ -6,6 +6,7 @@ use App\Features\City\Models\City;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 /**
@@ -57,6 +58,8 @@ class CityController extends Controller
      */
     public function getAllCities(): JsonResponse
     {
+        Gate::authorize('viewAny', City::class);
+
         // Join cities with countries to include the country name
         // in the response.
         $cities = City::join(
@@ -96,6 +99,8 @@ class CityController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        Gate::authorize('create', City::class);
+
         // Validate the incoming city data.
         $validated = $request->validate([
             'country_id' => [
@@ -160,8 +165,11 @@ class CityController extends Controller
         Request $request,
         int $id
     ): JsonResponse {
+
         // Find the city or return a 404 response if it does not exist.
         $city = City::findOrFail($id);
+
+        Gate::authorize('update', $city);
 
         // Validate the updated city data.
         $validated = $request->validate([
@@ -224,6 +232,8 @@ class CityController extends Controller
     {
         // Find the city or return a 404 response if it does not exist.
         $city = City::findOrFail($id);
+
+        Gate::authorize('delete', $city);
 
         // Delete the city from the database.
         $city->delete();
