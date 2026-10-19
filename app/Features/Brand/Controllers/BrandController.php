@@ -46,9 +46,6 @@ class BrandController extends Controller
     public function getBrandsForSelect(): JsonResponse
     {
 
-=======
-
-
         $brands = Brand::select('id', 'brand_name')
             ->get();
 
