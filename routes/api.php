@@ -405,6 +405,9 @@ Route::group([
     Route::get('/get-all', 'getAllProducts')
         ->middleware('permission:عرض المنتجات');
 
+    // Get products for select
+    Route::get('/for-select', 'getProductsForSelect');
+
     // Create a product
     Route::post('/store', 'store')
         ->middleware('permission:إضافة منتج');

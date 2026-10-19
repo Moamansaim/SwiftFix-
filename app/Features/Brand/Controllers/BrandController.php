@@ -45,7 +45,6 @@ class BrandController extends Controller
      */
     public function getBrandsForSelect(): JsonResponse
     {
-        Gate::authorize('viewAny', Brand::class);
 
         $brands = Brand::select('id', 'brand_name')
             ->get();

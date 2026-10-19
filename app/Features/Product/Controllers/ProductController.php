@@ -22,10 +22,27 @@ class ProductController extends Controller
     public function getAllProducts(): JsonResponse
     {
         Gate::authorize('viewAny', Product::class);
-        
+
         $products = Product::with([
             'category',
         ])->get();
+
+        return response()->json([
+            'products' => ProductResource::collection($products),
+        ], 200);
+    }
+
+    /**
+     * Get products for select options.
+     *
+     * @return JsonResponse
+     */
+    public function getProductsForSelect(): JsonResponse
+    {
+        $products = Product::query()
+            ->with('category')
+            ->select('id', 'product_name')
+            ->get();
 
         return response()->json([
             'products' => ProductResource::collection($products),
@@ -67,7 +84,7 @@ class ProductController extends Controller
     public function store(ProductRequest $productRequest): JsonResponse
     {
         Gate::authorize('create', Product::class);
-        
+
         Product::create($productRequest->validated());
 
         return response()->json([
