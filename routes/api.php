@@ -405,6 +405,9 @@ Route::group([
     Route::get('/get-all', 'getAllProducts')
         ->middleware('permission:عرض المنتجات');
 
+    // Get products for select
+    Route::get('/for-select', 'getProductsForSelect');
+
     // Create a product
     Route::post('/store', 'store')
         ->middleware('permission:إضافة منتج');
@@ -544,9 +547,9 @@ Route::group([
     Route::put('/delete/{id}', 'destroy')
         ->middleware('permission:حذف تعليق تقييم');
 
- mumen
+
     // Get all reviews
-    Route::get('/get-all', 'index')
+    Route::get('/get-all', 'index');
 
     // Delete a review
     Route::get('/api/admin/reviews/get-all}', 'destroy')
