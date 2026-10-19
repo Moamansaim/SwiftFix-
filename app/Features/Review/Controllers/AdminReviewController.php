@@ -17,8 +17,6 @@ class AdminReviewController extends Controller
      * @return JsonResponse
      *
      * @hint Retrieves all shops that have reviews and groups their reviews
-     *       under each shop. Each shop includes its review count, average
-     *       rating, and the related customer data for every review.
      */
     public function index(): JsonResponse
     {
@@ -36,6 +34,17 @@ class AdminReviewController extends Controller
         return response()->json([
             'shops' => $shops->map(function ($shop) {
                 return [
+                    'shop_name' => $shop->shop_name,
+
+                    'reviews' => $shop->reviews->map(function ($review) {
+                        return [
+                            'review_id' => $review->id,
+                            'user_name' => $review->user->first_name . ' ' . $review->user->last_name,
+                            'comment' => $review->comment,
+                            'created_at' => $review->created_at->toDateTimeString(),
+                        ];
+                    }),
+
                     'shop_id' => $shop->id,
                     'shop_name' => $shop->shop_name,
                     'reviews_count' => $shop->reviews->count(),
@@ -44,6 +53,7 @@ class AdminReviewController extends Controller
                         1
                     ),
                     'reviews' => ReviewResource::collection($shop->reviews),
+
                 ];
             }),
         ], 200);
