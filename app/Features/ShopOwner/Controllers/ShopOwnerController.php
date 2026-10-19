@@ -88,10 +88,10 @@ class ShopOwnerController extends Controller
     public function accountCreationApproval(
         ShopOwnerVerification $verification
     ): JsonResponse {
-        // Gate::authorize(
-        //     'approveVerification',
-        //     $verification
-        // );
+        Gate::authorize(
+            'approveVerification',
+            $verification
+        );
 
         try {
             $this->shopOwnerVerifications
@@ -113,10 +113,10 @@ class ShopOwnerController extends Controller
     public function accountCreationRefused(
         ShopOwnerVerification $verification
     ): JsonResponse {
-        // Gate::authorize(
-        //     'refuseVerification',
-        //     $verification
-        // );
+        Gate::authorize(
+            'refuseVerification',
+            $verification
+        );
 
         try {
             $this->shopOwnerVerifications
@@ -140,10 +140,10 @@ class ShopOwnerController extends Controller
     public function delete(
         ShopOwnerVerification $verification
     ): JsonResponse {
-        // Gate::authorize(
-        //     'deleteVerification',
-        //     $verification
-        // );
+        Gate::authorize(
+            'deleteVerification',
+            $verification
+        );
 
         try {
             $this->shopOwnerVerifications
