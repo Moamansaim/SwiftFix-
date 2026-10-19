@@ -51,6 +51,23 @@ class ProductController extends Controller
     }
 
     /**
+     * Get products for select options.
+     *
+     * @return JsonResponse
+     */
+    public function getProductsForSelect(): JsonResponse
+    {
+        $products = Product::query()
+            ->with('category')
+            ->select('id', 'product_name')
+            ->get();
+
+        return response()->json([
+            'products' => ProductResource::collection($products),
+        ], 200);
+    }
+
+    /**
      * Get a product by ID.
      *
      * @param int $id
