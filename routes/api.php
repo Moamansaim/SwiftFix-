@@ -116,21 +116,21 @@ Route::group([
         ->middleware('auth:sanctum');
 
     // Approve shop owner verification
-    Route::post('/verification/{id}/approve', 'accountCreationApproval')
+    Route::post('/verification/{verification}/approve', 'accountCreationApproval')
         ->middleware([
             'auth:sanctum',
             'permission:الموافقة على طلب تحقق صاحب الورشة',
         ]);
 
     // Reject shop owner verification
-    Route::post('/verification/{id}/reject', 'accountCreationRefused')
+    Route::post('/verification/{verification}/reject', 'accountCreationRefused')
         ->middleware([
             'auth:sanctum',
             'permission:رفض طلب تحقق صاحب الورشة',
         ]);
 
     // Delete shop owner verification
-    Route::delete('/verification/{id}/delete', 'delete')
+    Route::delete('/verification/{verification}/delete', 'delete')
         ->middleware([
             'auth:sanctum',
             'permission:حذف طلب تحقق صاحب الورشة',

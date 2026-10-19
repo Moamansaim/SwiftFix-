@@ -44,6 +44,16 @@ echo "Running Product..."
 php /var/www/html/artisan db:seed --class="App\Features\Product\Seeders\ProductSeeder" --force
 
 
+echo "Running Role..."
+
+php /var/www/html/artisan db:seed --class="App\Features\Role\Seeders\RoleSeeder" --force
+
+php /var/www/html/artisan db:seed --class="App\Features\Role\Seeders\PermissionSeeder" --force
+
+php /var/www/html/artisan db:seed --class="App\Features\Role\Seeders\AdminRole" --force
+
+
+
 echo "Starting PHP-FPM..."
 
 php-fpm -D
