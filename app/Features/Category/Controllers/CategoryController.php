@@ -46,7 +46,6 @@ class CategoryController extends Controller
      */
     public function getCategoriesForSelect(): JsonResponse
     {
-
         $categories = Category::select('id', 'category_name')
             ->get();
 

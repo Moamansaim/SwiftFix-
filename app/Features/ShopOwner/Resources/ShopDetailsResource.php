@@ -38,6 +38,8 @@ class ShopDetailsResource extends JsonResource
 
             'status' => $this->status,
 
+            'completed_repair_requests_count' => $this->completed_repair_requests_count,
+
             'services' => $this->services->map(function ($service) {
                 return [
                     'id' => $service->id,
