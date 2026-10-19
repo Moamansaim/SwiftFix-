@@ -31,6 +31,7 @@ class ProductController extends Controller
             'products' => ProductResource::collection($products),
         ], 200);
     }
+  
 
     /**
      * Get products for select options.
@@ -45,7 +46,7 @@ class ProductController extends Controller
             ->get();
 
         return response()->json([
-            'products' => ProductResource::collection($products),
+            'products' => $products
         ], 200);
     }
 

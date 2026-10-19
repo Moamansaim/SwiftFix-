@@ -45,7 +45,6 @@ class BrandController extends Controller
      */
     public function getBrandsForSelect(): JsonResponse
     {
-
         $brands = Brand::select('id', 'brand_name')
             ->get();
 
@@ -63,8 +62,6 @@ class BrandController extends Controller
     public function show(int $id): JsonResponse
     {
         $brand = Brand::findOrFail($id);
-
-        Gate::authorize('viewAny', Brand::class);
 
         $deviceModels = $brand->deviceModels()
             ->select('id', 'device_model_name')

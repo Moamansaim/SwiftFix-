@@ -220,6 +220,9 @@ Route::group([
             'permission:عرض المدن',
         ]);
 
+    // Get all cities
+    Route::get('/get-for-select', 'getSelectCities');
+
     // Create a city
     Route::post('/store', 'store')
         ->middleware([
@@ -308,9 +311,8 @@ Route::group([
     Route::post('/store', 'store')
         ->middleware('permission:إضافة علامة تجارية');
 
-    // Get brand details
-    Route::get('/show/{id}', 'show')
-        ->middleware('permission:عرض العلامات التجارية');
+    // Get brand details;
+    Route::get('/show/{id}', 'show');
 
     // Update a brand
     Route::put('/update/{id}', 'update')
@@ -377,9 +379,7 @@ Route::group([
         ->middleware('permission:إضافة فئة');
 
     // Get category details
-    Route::get('/show/{id}', 'show')
-        ->middleware('permission:عرض الفئات');
-
+    Route::get('/show/{id}', 'show');
     // Update a category
     Route::put('/update/{id}', 'update')
         ->middleware('permission:تعديل الفئة');

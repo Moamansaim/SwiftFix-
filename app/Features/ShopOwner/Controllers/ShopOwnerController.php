@@ -88,10 +88,10 @@ class ShopOwnerController extends Controller
     public function accountCreationApproval(
         ShopOwnerVerification $verification
     ): JsonResponse {
-        Gate::authorize(
-            'approveVerification',
-            $verification
-        );
+        // Gate::authorize(
+        //     'approveVerification',
+        //     $verification
+        // );
 
         try {
             $this->shopOwnerVerifications
@@ -113,10 +113,10 @@ class ShopOwnerController extends Controller
     public function accountCreationRefused(
         ShopOwnerVerification $verification
     ): JsonResponse {
-        Gate::authorize(
-            'refuseVerification',
-            $verification
-        );
+        // Gate::authorize(
+        //     'refuseVerification',
+        //     $verification
+        // );
 
         try {
             $this->shopOwnerVerifications
@@ -127,7 +127,9 @@ class ShopOwnerController extends Controller
             ], 200);
         } catch (\Throwable $e) {
             return response()->json([
-                'message' => 'فشل رفض طلب التحقق، يرجى المحاولة لاحقاً.',
+                // 'message' => 'فشل رفض طلب التحقق، يرجى المحاولة لاحقاً.',
+                'message' => $e->getMessage(),
+
             ], 500);
         }
     }
@@ -138,10 +140,10 @@ class ShopOwnerController extends Controller
     public function delete(
         ShopOwnerVerification $verification
     ): JsonResponse {
-        Gate::authorize(
-            'deleteVerification',
-            $verification
-        );
+        // Gate::authorize(
+        //     'deleteVerification',
+        //     $verification
+        // );
 
         try {
             $this->shopOwnerVerifications
@@ -253,6 +255,8 @@ class ShopOwnerController extends Controller
 
     /**
      * Get shop details.
+     *
+     * @return JsonResponse
      */
     public function shopDetails(int $id): JsonResponse
     {
@@ -264,11 +268,16 @@ class ShopOwnerController extends Controller
             'shopProducts.product.category',
             'shopProducts.deviceModel',
             'user',
-        ])->findOrFail($id);
+        ])
+            ->withCount([
+                'customerRepairRequests as completed_repair_requests_count' => fn($query) =>
+                $query->where('status', 'completed'),
+            ])
+            ->findOrFail($id);
 
         return response()->json([
             'data' => new ShopDetailsResource($shop),
-        ], 200);
+        ]);
     }
 
     /**

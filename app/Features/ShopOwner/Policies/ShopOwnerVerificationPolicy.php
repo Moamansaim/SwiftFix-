@@ -14,11 +14,11 @@ class ShopOwnerVerificationPolicy
     {
         return $user->can('عرض أصحاب الورش');
     }
-
+    
     /**
      * Determine whether the user can freeze a shop owner account.
      */
-    public function freeze(User $user): bool
+    public function freeze(User $user, User $shopOwner): bool
     {
         return $user->can('تجميد حساب صاحب الورشة');
     }
@@ -26,7 +26,7 @@ class ShopOwnerVerificationPolicy
     /**
      * Determine whether the user can unfreeze a shop owner account.
      */
-    public function unfreeze(User $user): bool
+    public function unfreeze(User $user, User $shopOwner): bool
     {
         return $user->can('فك تجميد حساب صاحب الورشة');
     }
@@ -35,7 +35,7 @@ class ShopOwnerVerificationPolicy
      * Determine whether the user can permanently delete
      * a shop owner account and shop.
      */
-    public function delete(User $user): bool
+    public function delete(User $user, User $shopOwner): bool
     {
         return $user->can('حذف حساب صاحب الورشة');
     }

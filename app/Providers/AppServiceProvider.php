@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Features\Auth\Interfaces\AuthRepositoryInterface;
 use App\Features\Auth\Interfaces\SendEmailInterface;
+use App\Features\Auth\Models\User;
 use App\Features\Auth\Repositories\AuthRepository;
 use App\Features\Auth\Repositories\SendEmailRepository;
 use App\Features\Brand\Models\Brand;
@@ -88,6 +89,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Service::class, ServicePolicy::class);
         Gate::policy(ShopProduct::class, ShopProductPolicy::class);
-        
+        Gate::policy(
+            User::class,
+            ShopOwnerVerificationPolicy::class
+        );
     }
 }

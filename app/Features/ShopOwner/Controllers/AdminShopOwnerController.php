@@ -3,6 +3,7 @@
 namespace App\Features\ShopOwner\Controllers;
 
 use App\Features\Auth\Models\User;
+use App\Features\ShopOwner\Models\ShopOwnerVerification;
 use App\Features\ShopOwner\Resources\AdminShopOwnerResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class AdminShopOwnerController
      */
     public function index(): JsonResponse
     {
-        Gate::authorize('viewAny', User::class);
+        Gate::authorize('viewAny', ShopOwnerVerification::class);
 
         $shopOwners = User::withTrashed()
             ->with([

@@ -46,6 +46,23 @@ class CityController extends Controller
     }
 
     /**
+     * Get all cities with their associated country names.
+     *
+     * @return JsonResponse
+     */
+    public function getSelectCities(): JsonResponse
+    {
+        $cities = City::select('id', 'name')
+            ->with('country:id,name')
+            ->get();
+
+        return response()->json([
+            'cities' => $cities,
+        ], 200);
+    }
+
+
+    /**
      * Get all cities.
      *
      * Retrieves all cities together with the name of their
@@ -58,7 +75,6 @@ class CityController extends Controller
      */
     public function getAllCities(): JsonResponse
     {
-        Gate::authorize('viewAny', City::class);
 
         // Join cities with countries to include the country name
         // in the response.
@@ -82,6 +98,7 @@ class CityController extends Controller
             'cities' => $cities,
         ], 200);
     }
+
 
     /**
      * Store a new city.
