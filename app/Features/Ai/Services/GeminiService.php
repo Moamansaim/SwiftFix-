@@ -1138,9 +1138,7 @@ PROMPT;
                 'rating_preference' => null,
             ],
 
-            'message' => $exception !== null
-                ? 'خطأ Gemini: ' . $exception->getMessage()
-                : 'عذراً، حدث  بببييخطأ أثناء معالجة طلبك.',
+            'message' =>  'خطأ Gemini: ' . $exception->getMessage(),
 
             'recommendations' => [],
         ];
