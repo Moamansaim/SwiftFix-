@@ -45,7 +45,7 @@ class ShopRecommendationController
 
             // Return detailed errors only when APP_DEBUG=true.
             return response()->json([
-                'message' => 'حدث خطأ أثناء تحليل طلبك.',
+                'message' => $e->getMessage(),
                 'error' => config('app.debug')
                     ? $e->getMessage()
                     : 'Internal Server Error',
