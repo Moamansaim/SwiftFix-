@@ -808,10 +808,10 @@ PROMPT;
                         [
                             'task' => [
                                 'instruction' =>
-                                    'Analyze the current customer request using the complete conversation context.',
+                                'Analyze the current customer request using the complete conversation context.',
 
                                 'important_rule' =>
-                                    'Use the conversation only to understand the customer intent and context. Use ONLY the available_workshops_from_database data for factual workshop information.',
+                                'Use the conversation only to understand the customer intent and context. Use ONLY the available_workshops_from_database data for factual workshop information.',
                             ],
 
                             'conversation_context' => $conversation,
@@ -821,8 +821,8 @@ PROMPT;
                             'available_workshops_from_database' => $shops,
                         ],
                         JSON_UNESCAPED_UNICODE
-                        | JSON_UNESCAPED_SLASHES
-                        | JSON_PRETTY_PRINT
+                            | JSON_UNESCAPED_SLASHES
+                            | JSON_PRETTY_PRINT
                     ),
                 ],
             ],
@@ -905,7 +905,7 @@ PROMPT;
 
         $validShopIds = collect($shops)
             ->pluck('id')
-            ->map(fn ($id) => (int) $id)
+            ->map(fn($id) => (int) $id)
             ->values()
             ->all();
 
@@ -1132,8 +1132,6 @@ PROMPT;
                 'distance_preference' => null,
                 'rating_preference' => null,
             ],
-
-            'message' => 'عذراً، حدث خطأ أثناء تحليل طلبك.',
 
             'recommendations' => [],
         ];
