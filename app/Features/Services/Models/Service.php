@@ -14,6 +14,14 @@ class Service extends Model
 
     protected $fillable = ['service_name'];
 
+
+    /**
+     * Get the shop owner verifications associated with the service.
+     *
+     * @return BelongsToMany
+     * @hint Retrieves all shop owner verification requests linked to this
+     *       service through the shop_owner_verification_service pivot table.
+     */
     public function shopOwnerVerifications(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -24,6 +32,13 @@ class Service extends Model
         );
     }
 
+    /**
+     * Get the shops that provide this service.
+     *
+     * @return BelongsToMany
+     * @hint Retrieves all shops offering this service through the service_shop
+     *       pivot table, including the service price for each shop.
+     */
     public function shops(): BelongsToMany
     {
         return $this->belongsToMany(
