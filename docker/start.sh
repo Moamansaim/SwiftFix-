@@ -13,13 +13,21 @@ echo "PORT=$PORT"
 
 echo "Preparing SQLite database..."
 
-# Create the directory and database file if they do not exist.
-mkdir -p "$(dirname "$DB_DATABASE")"
+# Create the database directory and file if they do not exist.
+DB_DIR="$(dirname "$DB_DATABASE")"
+
+mkdir -p "$DB_DIR"
 touch "$DB_DATABASE"
 
-# Allow the web server to access the database.
-chown www-data:www-data "$DB_DATABASE"
+# Configure permissions for SQLite.
+chown -R www-data:www-data "$DB_DIR"
+chmod 775 "$DB_DIR"
 chmod 664 "$DB_DATABASE"
+
+echo "Checking SQLite database permissions..."
+
+ls -ld "$DB_DIR"
+ls -l "$DB_DATABASE"
 
 echo "Clearing Laravel config cache..."
 
@@ -79,12 +87,10 @@ echo "Running AdminRole..."
 php /var/www/html/artisan db:seed \
     --class="App\Features\Role\Seeders\AdminRole" --force
 
-
 echo "Running AuthSeeder..."
 
 php /var/www/html/artisan db:seed \
     --class="App\Features\Auth\Seeders\UserSeeder" --force
-
 
 echo "Starting PHP-FPM..."
 

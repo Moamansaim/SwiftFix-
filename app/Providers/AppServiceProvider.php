@@ -89,9 +89,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Service::class, ServicePolicy::class);
         Gate::policy(ShopProduct::class, ShopProductPolicy::class);
-        Gate::policy(
-            User::class,
-            ShopOwnerVerificationPolicy::class
-        );
+        Gate::policy(User::class,ShopOwnerVerificationPolicy::class);
     }
 }
