@@ -79,6 +79,17 @@ echo "Running AdminRole..."
 php /var/www/html/artisan db:seed \
     --class="App\Features\Role\Seeders\AdminRole" --force
 
+
+echo "Running AuthSeeder..."
+
+php /var/www/html/artisan db:seed \
+    --class="App\Features\Auth\Seeders\AuthSeeder" --force
+
+echo "Running ShopSeeder..."
+
+php /var/www/html/artisan db:seed \
+    --class="App\Features\ShopOwner\Seeders\ShopSeeder" --force
+
 echo "Starting PHP-FPM..."
 
 php-fpm -D
