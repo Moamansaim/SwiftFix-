@@ -83,7 +83,7 @@ php /var/www/html/artisan db:seed \
 echo "Running AuthSeeder..."
 
 php /var/www/html/artisan db:seed \
-    --class="App\Features\Auth\Seeders\AuthSeeder" --force
+    --class="App\Features\Auth\Seeders\UserSeeder" --force
 
 echo "Running ShopSeeder..."
 
