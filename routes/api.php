@@ -751,8 +751,8 @@ Route::group([
     'middleware' => 'auth:sanctum',
 ], function () {
 
-    // Get shop recommendations
-    Route::get('/shop-recommendations', ShopRecommendationController::class);
+    // Get shop recommendations (supports both GET and POST)
+    Route::match(['get', 'post'], '/shop-recommendations', [ShopRecommendationController::class, 'recommend']);
 });
 
 /*
