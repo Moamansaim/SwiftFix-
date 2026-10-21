@@ -1115,10 +1115,23 @@ PROMPT;
     /**
      * Fallback response when Gemini fails.
      *
+     * @param \Throwable|null $exception
      * @return array<string, mixed>
      */
-    private function errorResponse(): array
+    private function errorResponse(?\Throwable $exception = null): array
     {
+        if ($exception !== null) {
+            \Illuminate\Support\Facades\Log::error(
+                'Gemini service error.',
+                [
+                    'exception' => get_class($exception),
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                ]
+            );
+        }
+
         return [
             'intent' => [
                 'type' => 'general_question',
@@ -1132,6 +1145,10 @@ PROMPT;
                 'distance_preference' => null,
                 'rating_preference' => null,
             ],
+
+            'message' => $exception !== null
+                ? 'خطأ Gemini: ' . $exception->getMessage()
+                : 'عذراً، حدث خطأ أثناء معالجة طلبك.',
 
             'recommendations' => [],
         ];
