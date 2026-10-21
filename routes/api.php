@@ -752,7 +752,7 @@ Route::group([
 ], function () {
 
     // Get shop recommendations
-    Route::post('/shop-recommendations', ShopRecommendationController::class);
+    Route::get('/shop-recommendations', ShopRecommendationController::class);
 });
 
 /*
