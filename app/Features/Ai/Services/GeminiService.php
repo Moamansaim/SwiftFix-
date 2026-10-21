@@ -1113,7 +1113,7 @@ PROMPT;
      */
     private function errorResponse(Throwable $exception = null): array
     {
-       
+
         return [
             'intent' => [
                 'type' => 'general_question',
@@ -1128,8 +1128,10 @@ PROMPT;
                 'rating_preference' => null,
             ],
 
-            'message' =>  'خطأ Gemini: ' . $exception->getMessage() ?? 'لم أتمكن من معالجة طلبك حالياً.',
-
+            'message' => $exception !== null
+                ? 'خطأ Gemini: ' . $exception->getMessage()
+                : 'لم أتمكن من معالجة طلبك حالياً.',
+                
             'recommendations' => [],
         ];
     }
