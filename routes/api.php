@@ -748,6 +748,7 @@ Route::group([
 
 Route::group([
     'prefix' => 'ai',
+    'middleware' => 'auth:sanctum',
 ], function () {
 
     // Get shop recommendations
