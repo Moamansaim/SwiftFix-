@@ -1138,7 +1138,7 @@ PROMPT;
                 'rating_preference' => null,
             ],
 
-            'message' =>  'خطأ Gemini: ' . $exception->getMessage()
+            'message' =>  'خطأ Gemini: ' . $exception->getMessage(),
 
             'recommendations' => [],
         ];
