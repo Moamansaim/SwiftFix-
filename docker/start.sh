@@ -24,7 +24,6 @@ DB_DIR="$(dirname "$DB_DATABASE")"
 mkdir -p "$DB_DIR"
 touch "$DB_DATABASE"
 
-# Configure SQLite permissions
 chown www-data:www-data "$DB_DIR"
 chown www-data:www-data "$DB_DATABASE"
 
@@ -43,9 +42,10 @@ mkdir -p \
     /var/www/html/storage/framework/sessions \
     /var/www/html/storage/framework/views \
     /var/www/html/storage/logs \
-    /var/www/html/bootstrap/cache
+    /var/www/html/bootstrap/cache \
+    /var/www/html/storage/app/public/shop-owner/national-ids
 
-# Set directory permissions
+# Set Laravel directory permissions
 find /var/www/html/storage \
     /var/www/html/bootstrap/cache \
     -type d -exec chmod 775 {} \;
@@ -59,13 +59,36 @@ chown -R www-data:www-data \
     /var/www/html/storage \
     /var/www/html/bootstrap/cache
 
-echo "Clearing Laravel configuration cache..."
+# Prepare public image storage permissions
+echo "Preparing public image storage..."
 
+chown -R www-data:www-data \
+    /var/www/html/storage/app/public
+
+chmod -R 775 /var/www/html/storage/app/public
+
+# Create the public storage symbolic link safely
+echo "Creating Laravel storage link..."
+
+if [ -L /var/www/html/public/storage ]; then
+    echo "Storage symbolic link already exists."
+elif [ -e /var/www/html/public/storage ]; then
+    echo "ERROR: public/storage exists but is not a symbolic link."
+    echo "Please inspect this path before replacing it."
+    exit 1
+else
+    php artisan storage:link
+fi
+
+echo "Verifying public storage link..."
+ls -ld /var/www/html/public/storage
+
+# Clear Laravel configuration cache
+echo "Clearing Laravel configuration cache..."
 php artisan config:clear
 
 # Run migrations without deleting existing tables
 echo "Running migrations..."
-
 php artisan migrate --force
 
 # Run seeders
@@ -117,12 +140,13 @@ find /var/www/html/storage \
     /var/www/html/bootstrap/cache \
     -type f -exec chmod 664 {} \;
 
-# Verify that the PHP-FPM user can write to Laravel directories
+# Verify that PHP-FPM can write to Laravel and SQLite directories
 if ! su -s /bin/sh www-data -c \
     'test -w /var/www/html/storage/framework/cache/data &&
      test -w /var/www/html/storage/framework/sessions &&
      test -w /var/www/html/storage/framework/views &&
      test -w /var/www/html/storage/logs &&
+     test -w /var/www/html/storage/app/public &&
      test -w /var/www/html/bootstrap/cache &&
      test -w "$DB_DATABASE"'; then
     echo "ERROR: Laravel or SQLite directories are not writable."
@@ -139,13 +163,11 @@ PORT="${PORT:-10000}"
 sed -i "s/listen 80;/listen ${PORT};/" \
     /etc/nginx/sites-available/default
 
-# Validate Nginx configuration before starting
+# Validate Nginx configuration
 nginx -t
 
 echo "Starting PHP-FPM..."
-
 php-fpm -D
 
 echo "Starting Nginx on port $PORT..."
-
 exec nginx -g "daemon off;"
