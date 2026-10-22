@@ -292,7 +292,7 @@ class AuthController extends Controller
         // Redirect to the React application after successful verification.
         if ($verified) {
             return redirect()->away(
-                'https://swiftfix-app-project.vercel.app/'
+                'https://swiftfix-app-project.vercel.app'
             );
         }
 
