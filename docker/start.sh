@@ -67,28 +67,52 @@ chown -R www-data:www-data \
 
 chmod -R 775 /var/www/html/storage/app/public
 
-# Create the public storage symbolic link safely
+# Create or repair Laravel public storage symbolic link
 echo "Creating Laravel storage link..."
 
 if [ -L /var/www/html/public/storage ]; then
     echo "Storage symbolic link already exists."
+
+elif [ -d /var/www/html/public/storage ]; then
+    echo "Existing public/storage directory found."
+    echo "Removing it to create the correct symbolic link..."
+
+    rm -rf /var/www/html/public/storage
+
+    php artisan storage:link
+
 elif [ -e /var/www/html/public/storage ]; then
-    echo "ERROR: public/storage exists but is not a symbolic link."
-    echo "Please inspect this path before replacing it."
-    exit 1
+    echo "Existing public/storage file found."
+    echo "Removing it to create the correct symbolic link..."
+
+    rm -f /var/www/html/public/storage
+
+    php artisan storage:link
+
 else
     php artisan storage:link
 fi
 
+# Verify public storage link
 echo "Verifying public storage link..."
+
 ls -ld /var/www/html/public/storage
+
+if [ ! -L /var/www/html/public/storage ]; then
+    echo "ERROR: Failed to create the public storage symbolic link."
+    exit 1
+fi
+
+echo "Laravel public storage link is ready."
 
 # Clear Laravel configuration cache
 echo "Clearing Laravel configuration cache..."
+
 php artisan config:clear
 
 # Run migrations without deleting existing tables
 echo "Running migrations..."
+
 php artisan migrate --force
 
 # Run seeders
@@ -140,7 +164,7 @@ find /var/www/html/storage \
     /var/www/html/bootstrap/cache \
     -type f -exec chmod 664 {} \;
 
-# Verify that PHP-FPM can write to Laravel and SQLite directories
+# Verify PHP-FPM can write to Laravel and SQLite directories
 if ! su -s /bin/sh www-data -c \
     'test -w /var/www/html/storage/framework/cache/data &&
      test -w /var/www/html/storage/framework/sessions &&
@@ -167,7 +191,9 @@ sed -i "s/listen 80;/listen ${PORT};/" \
 nginx -t
 
 echo "Starting PHP-FPM..."
+
 php-fpm -D
 
 echo "Starting Nginx on port $PORT..."
+
 exec nginx -g "daemon off;"
