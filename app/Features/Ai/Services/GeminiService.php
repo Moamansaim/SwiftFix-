@@ -237,63 +237,55 @@ class GeminiService
      * @param string $userPrompt
      * @param array<int, array<string, string>> $conversation
      * @return array<string, mixed>
+     * @throws \Throwable
      */
     public function chat(
         string $userPrompt,
         array $conversation = []
     ): array {
-        try {
-            $response = Http::timeout(60)
-                ->post(
-                    "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}",
-                    [
-                        'systemInstruction' => [
-                            'parts' => [
-                                [
-                                    'text' => $this->chatSystemPrompt(),
-                                ],
+        $response = Http::timeout(60)
+            ->post(
+                "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}",
+                [
+                    'systemInstruction' => [
+                        'parts' => [
+                            [
+                                'text' => $this->chatSystemPrompt(),
                             ],
                         ],
+                    ],
 
-                        /*
-                         * Send the complete conversation on every request.
-                         */
-                        'contents' => $this->buildConversationContents(
-                            conversation: $conversation,
-                            userPrompt: $userPrompt
-                        ),
+                    /*
+                     * Send the complete conversation on every request.
+                     */
+                    'contents' => $this->buildConversationContents(
+                        conversation: $conversation,
+                        userPrompt: $userPrompt
+                    ),
 
-                        'generationConfig' => [
-                            'temperature' => 0.3,
-                        ],
-                    ]
-                );
-
-            if ($response->failed()) {
-                return [
-                    'message' => 'عذراً، حدث خطأ أثناء معالجة طلبك.',
-                ];
-            }
-
-            $text = data_get(
-                $response->json(),
-                'candidates.0.content.parts.0.text'
+                    'generationConfig' => [
+                        'temperature' => 0.3,
+                    ],
+                ]
             );
 
-            if (! is_string($text) || trim($text) === '') {
-                return [
-                    'message' => 'عذراً، لم أتمكن من معالجة طلبك.',
-                ];
-            }
-
-            return [
-                'message' => trim($text),
-            ];
-        } catch (\Throwable) {
-            return [
-                'message' => 'عذراً، حدث خطأ أثناء معالجة طلبك.',
-            ];
+        if ($response->failed()) {
+            // إظهار الخطأ الحقيقي القادم من قوقل بدلاً من إخفائه
+            throw new \Exception('Gemini API Error: ' . $response->body(), $response->status());
         }
+
+        $text = data_get(
+            $response->json(),
+            'candidates.0.content.parts.0.text'
+        );
+
+        if (! is_string($text) || trim($text) === '') {
+            throw new \Exception('Gemini returned an empty or invalid response structure.');
+        }
+
+        return [
+            'message' => trim($text),
+        ];
     }
 
     /**
