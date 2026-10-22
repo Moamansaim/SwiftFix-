@@ -4,6 +4,7 @@ namespace App\Features\Ai\Services;
 
 use Illuminate\Support\Facades\Http;
 use JsonException;
+use Throwable;
 
 class GeminiService
 {
@@ -1110,20 +1111,9 @@ PROMPT;
      * @param \Throwable|null $exception
      * @return array<string, mixed>
      */
-    private function errorResponse(?\Throwable $exception = null): array
+    private function errorResponse(Throwable $exception): array
     {
-        if ($exception !== null) {
-            \Illuminate\Support\Facades\Log::error(
-                'Gemini service error.',
-                [
-                    'exception' => get_class($exception),
-                    'message' => $exception->getMessage(),
-                    'file' => $exception->getFile(),
-                    'line' => $exception->getLine(),
-                ]
-            );
-        }
-
+       
         return [
             'intent' => [
                 'type' => 'general_question',
