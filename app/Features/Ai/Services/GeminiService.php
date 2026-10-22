@@ -1111,7 +1111,7 @@ PROMPT;
      * @param \Throwable|null $exception
      * @return array<string, mixed>
      */
-    private function errorResponse(Throwable $exception): array
+    private function errorResponse(Throwable $exception = null): array
     {
        
         return [
@@ -1128,7 +1128,7 @@ PROMPT;
                 'rating_preference' => null,
             ],
 
-            'message' =>  'خطأ Gemini: ' . $exception->getMessage(),
+            'message' =>  'خطأ Gemini: ' . $exception->getMessage() ?? 'لم أتمكن من معالجة طلبك حالياً.',
 
             'recommendations' => [],
         ];
