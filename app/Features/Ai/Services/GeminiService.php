@@ -22,6 +22,7 @@ class GeminiService
         );
     }
 
+
     /**
      * Analyze the user's request and recommend suitable shops
      * based only on the real shop data provided by Laravel.
@@ -30,207 +31,224 @@ class GeminiService
      * @param array<int, array<string, mixed>> $shops
      * @param array<int, array<string, string>> $conversation
      * @return array<string, mixed>
+     * @throws \Throwable
      */
     public function recommendShops(
         string $userPrompt,
         array $shops,
         array $conversation = []
     ): array {
-        try {
-            $response = Http::timeout(60)
-                ->post(
-                    "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}",
-                    [
-                        'systemInstruction' => [
-                            'parts' => [
-                                [
-                                    'text' => $this->recommendationSystemPrompt(),
-                                ],
+        $response = Http::timeout(60)
+            ->post(
+                "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}",
+                [
+                    'systemInstruction' => [
+                        'parts' => [
+                            [
+                                'text' => $this->recommendationSystemPrompt(),
                             ],
                         ],
+                    ],
 
-                        'contents' => $this->buildRecommendationContents(
-                            userPrompt: $userPrompt,
-                            shops: $shops,
-                            conversation: $conversation
-                        ),
+                    'contents' => $this->buildRecommendationContents(
+                        userPrompt: $userPrompt,
+                        shops: $shops,
+                        conversation: $conversation
+                    ),
 
-                        'generationConfig' => [
-                            'temperature' => 0.1,
-                            'responseMimeType' => 'application/json',
-
-                            'responseSchema' => [
-                                'type' => 'OBJECT',
-
-                                'properties' => [
-                                    'intent' => [
+                    'generationConfig' => [
+                        'temperature' => 0.1,
+                        'responseMimeType' => 'application/json',
+                        'responseSchema' => [
+                            'type' => 'OBJECT',
+                            'properties' => [
+                                'intent' => [
+                                    'type' => 'OBJECT',
+                                    'properties' => [
+                                        'type' => [
+                                            'type' => 'STRING',
+                                            'enum' => [
+                                                'shop_search',
+                                                'general_question',
+                                                'clarification',
+                                            ],
+                                        ],
+                                        'device' => [
+                                            'type' => 'STRING',
+                                            'nullable' => true,
+                                        ],
+                                        'brand' => [
+                                            'type' => 'STRING',
+                                            'nullable' => true,
+                                        ],
+                                        'model' => [
+                                            'type' => 'STRING',
+                                            'nullable' => true,
+                                        ],
+                                        'service' => [
+                                            'type' => 'STRING',
+                                            'nullable' => true,
+                                        ],
+                                        'spare_part' => [
+                                            'type' => 'STRING',
+                                            'nullable' => true,
+                                        ],
+                                        'city' => [
+                                            'type' => 'STRING',
+                                            'nullable' => true,
+                                        ],
+                                        'price_preference' => [
+                                            'type' => 'STRING',
+                                            'enum' => [
+                                                'cheapest',
+                                                'most_expensive',
+                                            ],
+                                            'nullable' => true,
+                                        ],
+                                        'distance_preference' => [
+                                            'type' => 'STRING',
+                                            'enum' => [
+                                                'nearest',
+                                                'farthest',
+                                            ],
+                                            'nullable' => true,
+                                        ],
+                                        'rating_preference' => [
+                                            'type' => 'STRING',
+                                            'enum' => [
+                                                'highest',
+                                                'lowest',
+                                            ],
+                                            'nullable' => true,
+                                        ],
+                                    ],
+                                    'required' => [
+                                        'type',
+                                        'device',
+                                        'brand',
+                                        'model',
+                                        'service',
+                                        'spare_part',
+                                        'city',
+                                        'price_preference',
+                                        'distance_preference',
+                                        'rating_preference',
+                                    ],
+                                ],
+                                'message' => [
+                                    'type' => 'STRING',
+                                ],
+                                'recommendations' => [
+                                    'type' => 'ARRAY',
+                                    'items' => [
                                         'type' => 'OBJECT',
-
                                         'properties' => [
-                                            'type' => [
+                                            'shop_id' => [
+                                                'type' => 'INTEGER',
+                                            ],
+                                            'rank' => [
+                                                'type' => 'INTEGER',
+                                            ],
+                                            'reason' => [
+                                                'type' => 'STRING',
+                                            ],
+                                            'confidence' => [
                                                 'type' => 'STRING',
                                                 'enum' => [
-                                                    'shop_search',
-                                                    'general_question',
-                                                    'clarification',
+                                                    'high',
+                                                    'medium',
+                                                    'low',
                                                 ],
-                                            ],
-
-                                            'device' => [
-                                                'type' => 'STRING',
-                                                'nullable' => true,
-                                            ],
-
-                                            'brand' => [
-                                                'type' => 'STRING',
-                                                'nullable' => true,
-                                            ],
-
-                                            'model' => [
-                                                'type' => 'STRING',
-                                                'nullable' => true,
-                                            ],
-
-                                            'service' => [
-                                                'type' => 'STRING',
-                                                'nullable' => true,
-                                            ],
-
-                                            'spare_part' => [
-                                                'type' => 'STRING',
-                                                'nullable' => true,
-                                            ],
-
-                                            'city' => [
-                                                'type' => 'STRING',
-                                                'nullable' => true,
-                                            ],
-
-                                            'price_preference' => [
-                                                'type' => 'STRING',
-                                                'enum' => [
-                                                    'cheapest',
-                                                    'most_expensive',
-                                                ],
-                                                'nullable' => true,
-                                            ],
-
-                                            'distance_preference' => [
-                                                'type' => 'STRING',
-                                                'enum' => [
-                                                    'nearest',
-                                                    'farthest',
-                                                ],
-                                                'nullable' => true,
-                                            ],
-
-                                            'rating_preference' => [
-                                                'type' => 'STRING',
-                                                'enum' => [
-                                                    'highest',
-                                                    'lowest',
-                                                ],
-                                                'nullable' => true,
                                             ],
                                         ],
-
                                         'required' => [
-                                            'type',
-                                            'device',
-                                            'brand',
-                                            'model',
-                                            'service',
-                                            'spare_part',
-                                            'city',
-                                            'price_preference',
-                                            'distance_preference',
-                                            'rating_preference',
+                                            'shop_id',
+                                            'rank',
+                                            'reason',
+                                            'confidence',
                                         ],
                                     ],
-
-                                    'message' => [
-                                        'type' => 'STRING',
-                                    ],
-
-                                    'recommendations' => [
-                                        'type' => 'ARRAY',
-
-                                        'items' => [
-                                            'type' => 'OBJECT',
-
-                                            'properties' => [
-                                                'shop_id' => [
-                                                    'type' => 'INTEGER',
-                                                ],
-
-                                                'rank' => [
-                                                    'type' => 'INTEGER',
-                                                ],
-
-                                                'reason' => [
-                                                    'type' => 'STRING',
-                                                ],
-
-                                                'confidence' => [
-                                                    'type' => 'STRING',
-                                                    'enum' => [
-                                                        'high',
-                                                        'medium',
-                                                        'low',
-                                                    ],
-                                                ],
-                                            ],
-
-                                            'required' => [
-                                                'shop_id',
-                                                'rank',
-                                                'reason',
-                                                'confidence',
-                                            ],
-                                        ],
-                                    ],
-                                ],
-
-                                'required' => [
-                                    'intent',
-                                    'message',
-                                    'recommendations',
                                 ],
                             ],
+                            'required' => [
+                                'intent',
+                                'message',
+                                'recommendations',
+                            ],
                         ],
-                    ]
-                );
-
-            if ($response->failed()) {
-                return $this->errorResponse();
-            }
-
-            $text = data_get(
-                $response->json(),
-                'candidates.0.content.parts.0.text'
+                    ],
+                ]
             );
 
-            if (! is_string($text) || trim($text) === '') {
-                return $this->errorResponse();
-            }
+        /*
+     * Preserve Google's actual HTTP status and error response.
+     */
+        if ($response->failed()) {
+            $googleError = data_get(
+                $response->json(),
+                'error.message'
+            );
 
+            $message = is_string($googleError) && $googleError !== ''
+                ? $googleError
+                : $response->body();
+
+            throw new \RuntimeException(
+                "Gemini API HTTP {$response->status()}: {$message}",
+                $response->status()
+            );
+        }
+
+        $text = data_get(
+            $response->json(),
+            'candidates.0.content.parts.0.text'
+        );
+
+        if (! is_string($text) || trim($text) === '') {
+            $reason = data_get(
+                $response->json(),
+                'promptFeedback.blockReason'
+            );
+
+            $finishReason = data_get(
+                $response->json(),
+                'candidates.0.finishReason'
+            );
+
+            throw new \RuntimeException(
+                'Gemini returned no text. '
+                    . 'Block reason: ' . ($reason ?? 'none')
+                    . '; Finish reason: ' . ($finishReason ?? 'none')
+            );
+        }
+
+        try {
             $result = json_decode(
                 $text,
                 true,
                 512,
                 JSON_THROW_ON_ERROR
             );
-
-            return $this->validateResult(
-                result: $result,
-                shops: $shops
+        } catch (JsonException $e) {
+            throw new \RuntimeException(
+                'Gemini returned invalid JSON: ' . $e->getMessage(),
+                0,
+                $e
             );
-        } catch (JsonException) {
-            return $this->errorResponse();
-        } catch (\Throwable) {
-            return $this->errorResponse();
         }
+
+        if (! is_array($result)) {
+            throw new \UnexpectedValueException(
+                'Gemini response JSON is not an object.'
+            );
+        }
+
+        return $this->validateResult(
+            result: $result,
+            shops: $shops
+        );
     }
+
 
     /**
      * Normal SwiftFix chat.
@@ -1105,15 +1123,10 @@ PROMPT;
             : null;
     }
 
-    /**
-     * Fallback response when Gemini fails.
-     *
-     * @param \Throwable|null $exception
-     * @return array<string, mixed>
-     */
-    private function errorResponse(Throwable $exception = null): array
-    {
 
+
+    private function errorResponse(?Throwable $exception = null): array
+    {
         return [
             'intent' => [
                 'type' => 'general_question',
@@ -1129,9 +1142,9 @@ PROMPT;
             ],
 
             'message' => $exception !== null
-                ? 'خطأ Gemini: ' . $exception->getMessage()
-                : 'لم أتمكن من معالجة طلبك حالياً.',
-                
+                ? 'Gemini Error: ' . $exception->getMessage()
+                : 'لم يتم تمرير الاستثناء إلى errorResponse().',
+
             'recommendations' => [],
         ];
     }

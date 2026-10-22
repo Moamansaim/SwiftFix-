@@ -32,11 +32,12 @@ class ShopRecommendationController
                 'data' => $result,
             ], 200);
         } catch (Throwable $e) {
-          
-           // Return detailed errors only when APP_DEBUG=true.
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Shop Recommendation Error',
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
                 'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ], 500);
         }
     }
