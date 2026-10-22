@@ -1140,7 +1140,7 @@ PROMPT;
 
             'message' => $exception !== null
                 ? 'خطأ Gemini: ' . $exception->getMessage()
-                : 'عذراً، حدث خطأ أثناء معالجة طلبك.',
+                : 'عذراً، حدث  بببييخطأ أثناء معالجة طلبك.',
 
             'recommendations' => [],
         ];
