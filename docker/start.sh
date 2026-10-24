@@ -149,6 +149,9 @@ php artisan db:seed --class="App\Features\Role\Seeders\AdminRole" --force
 echo "Running AuthSeeder..."
 php artisan db:seed --class="App\Features\Auth\Seeders\UserSeeder" --force
 
+echo "Running AccountDeletionReasonSeeder..."
+php artisan db:seed --class="App\Features\UserSettings\Seeders\AccountDeletionReasonSeeder" --force
+
 # Restore correct ownership after Artisan commands
 echo "Finalizing Laravel permissions..."
 
