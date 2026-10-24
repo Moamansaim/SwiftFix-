@@ -12,6 +12,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "propaganistas/laravel-phone": "^6.0",
+        "resend/resend-laravel": "^1.7",
         "spatie/laravel-permission": "^6.25"
     },
     "require-dev": {
